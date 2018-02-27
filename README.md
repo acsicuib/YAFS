@@ -1,5 +1,5 @@
 
-![YAFS logo](https://github.com/wisaaco/YAFS/raw/master/docs/_static/yafs_logo.png)
+![YAFS logo](https://github.com/acsicuib/YAFS/raw/master/docs/_static/yafs_logo.png)
 
 YAFS (Yet Another Fog Simulator) is designed to create simulations of [Fog Computing](https://en.wikipedia.org/wiki/Fog_computing) ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ... [IoT environments](https://en.wikipedia.org/wiki/Internet_of_things) are the most evident fact of this type of architecture.
 
