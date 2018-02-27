@@ -1,0 +1,453 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yafs.topology &mdash; YAFS 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="YAFS 0.1 documentation" href="../../contents.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for yafs.topology</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="kn">as</span> <span class="nn">rnd</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+
+<div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Different type of entities that there is in an environment. It is the abstract function that a node of the topology has.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ENTITY_CLUSTER</span> <span class="o">=</span> <span class="s2">&quot;CLUSTER&quot;</span>
+    <span class="s2">&quot; A node who is a cluster&quot;</span>
+    <span class="c1"># ENTITY_SOURCE = &quot;SOURCE&quot;</span>
+
+
+    <span class="c1"># ENTITY_EDGE = &quot;EDGE&quot;</span>
+    <span class="c1"># &quot;Only nodes where clients requests SERVICEs are tagged as EDGE device&quot;</span>
+
+    <span class="n">ENTITY_FOG</span> <span class="o">=</span> <span class="s2">&quot;FOG&quot;</span>
+    <span class="s2">&quot;By default, all nodes are FOG Entities. All nodes can run a SERVICE&quot;</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">matplotlib.markers</span>
+<span class="sd"># https://matplotlib.org/api/markers_api.html</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">SHAPE_CLUSTER</span> <span class="o">=</span> <span class="s2">&quot;p&quot;</span>
+<span class="n">SHAPE_EDGE</span> <span class="o">=</span> <span class="s2">&quot;&gt;&quot;</span>
+<span class="n">SHAPE_FOG</span> <span class="o">=</span> <span class="s2">&quot;o&quot;</span>
+
+<span class="n">DRAW_ENTITY_TYPE</span> <span class="o">=</span> <span class="s2">&quot;ENTITY_TYPE&quot;</span>
+
+
+<div class="viewcode-block" id="Topology"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology">[docs]</a><span class="k">class</span> <span class="nc">Topology</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class unifies the functions to deal with **Complex Networks** as a network topology within of the simulator. In addition, it facilitates its creation, and assignment of attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">LINK_BW</span> <span class="o">=</span> <span class="s2">&quot;BW&quot;</span>
+    <span class="s2">&quot;Link feature: Bandwidth&quot;</span>
+
+    <span class="n">LINK_PR</span> <span class="o">=</span> <span class="s2">&quot;PR&quot;</span>
+    <span class="s2">&quot;Link feauture:  Propagation delay&quot;</span>
+
+    <span class="c1"># LINK_LATENCY = &quot;LATENCY&quot;</span>
+    <span class="c1"># &quot; A edge or a network link has a Bandwidth&quot;</span>
+
+    <span class="n">NODE_IPT</span> <span class="o">=</span> <span class="s2">&quot;IPT&quot;</span>
+    <span class="s2">&quot;Node feature: IPS . Instructions per Simulation Time &quot;</span>
+
+    <span class="n">NODE_RAM</span> <span class="o">=</span> <span class="s2">&quot;RAM&quot;</span>
+    <span class="s2">&quot;Node feature: RAM Capacity of a node&quot;</span>
+
+    <span class="n">NODE_COST</span> <span class="o">=</span> <span class="s2">&quot;COST&quot;</span>
+    <span class="s2">&quot;Node feature: Cost per unit time&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c1">#G is a networkx graph</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1">#A simple *cache* to have all cluster nodes</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__update_centrality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">closeness_centrality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Topology.get_edges"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.get_edges">[docs]</a>    <span class="k">def</span> <span class="nf">get_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: a list of graph edges, i.e.: ((1,0),(0,2),...)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span></div>
+
+<div class="viewcode-block" id="Topology.get_edge"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): a edge identifier, i.e. (1,9)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: a list of edge attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Topology.get_nodes"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.get_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: a list of all nodes features</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span></div>
+
+<div class="viewcode-block" id="Topology.get_node"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.get_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            key (int): a node identifier</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: a list of node features</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Topology.create_topology_from_graph"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.create_topology_from_graph">[docs]</a>    <span class="k">def</span> <span class="nf">create_topology_from_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It generates the topology from a NetworkX graph</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">             G (*networkx.classes.graph.Graph*)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">G</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span></div>
+
+<div class="viewcode-block" id="Topology.create_random_topology"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.create_random_topology">[docs]</a>    <span class="k">def</span> <span class="nf">create_random_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nxGraphGenerator</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It generates the topology from a Graph generators of NetworkX</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">             nxGraphGenerator (function): a graph generator function</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            params (dict): a list of parameters of *nxGraphGenerator* function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">nxGraphGenerator</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SHAPE_FOG</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span></div>
+
+<div class="viewcode-block" id="Topology.load"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It generates the topology from a JSON file</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                 data (str): a json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">],</span> <span class="n">BW</span><span class="o">=</span><span class="n">edge</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">LINK_BW</span><span class="p">],</span><span class="n">PR</span><span class="o">=</span><span class="n">edge</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">LINK_PR</span><span class="p">])</span>
+        <span class="c1"># The node is created in edge creation</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="c1"># For drawing purporses</span>
+            <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]][</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SHAPE_FOG</span>
+            <span class="k">elif</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]][</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SHAPE_CLUSTER</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Topology.set_cluster_nodes_centrality"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.set_cluster_nodes_centrality">[docs]</a>    <span class="k">def</span> <span class="nf">set_cluster_nodes_centrality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It selects a percentage of nodes as a Entity.Cluster according with network centrality</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            density (float): a percentage of nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">centrality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_centrality</span><span class="p">()</span>
+        <span class="n">centrality</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">centrality</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">centrality</span><span class="p">[</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">density</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()):])[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SHAPE_CLUSTER</span></div>
+
+<div class="viewcode-block" id="Topology.set_cluster_nodes_fix"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.set_cluster_nodes_fix">[docs]</a>    <span class="k">def</span> <span class="nf">set_cluster_nodes_fix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Defines a list of nodes as a Entity.cluster</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodes (list): a list of nodes&#39; identifiers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SHAPE_CLUSTER</span></div>
+
+<div class="viewcode-block" id="Topology.set_cluster_nodes_random"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.set_cluster_nodes_random">[docs]</a>    <span class="k">def</span> <span class="nf">set_cluster_nodes_random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prob</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Randomly chooses a number of nodes as cluster entities</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prob (float): probability of selecting a node as a cluster</span>
+
+<span class="sd">            min (int): minimum number of cluster nodes, by default, one</span>
+
+<span class="sd">            max (int): maximum number of cluster nodes, by default, (-1) those that arise</span>
+
+<span class="sd">            seed (int): random seed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rnd</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">min</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">Exception</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idNode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">rnd</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mf">0.1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idNode</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">max</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SHAPE_CLUSTER</span></div>
+
+
+
+    <span class="c1"># def set_edges_att(self, attr, edge_speed):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     DEPRECATED</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Assignment of attributes to a link.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         edgeSpeed: a dictionary where Keys are edges and Value is speed :</span>
+    <span class="c1">#          key: (0,1) value: 1GB</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     nx.set_edge_attributes(self.G, attr, edge_speed)  # CHECK if NetworkX Bug</span>
+
+
+<div class="viewcode-block" id="Topology.set_edges_NonUniformAtt"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.set_edges_NonUniformAtt">[docs]</a>    <span class="k">def</span> <span class="nf">set_edges_NonUniformAtt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns one attribute to edges the values according with a non uniform distribution  (list of probabilities-values)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr (str): attribute identifier</span>
+
+<span class="sd">            values (list): a list of possible values</span>
+
+<span class="sd">            p (list): a list of</span>
+
+<span class="sd">            seed (int): random seed, by default 0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">edge_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">),</span> <span class="n">p</span><span class="p">)</span>
+        <span class="c1"># nx.set_edge_attributes(self.G, &#39;speed&#39;, dict(zip(self.G.edges.keys(),edgeSpeed)))</span>
+        <span class="c1">## NOTE: It is a networkx bug -- TypeError: unhashable type: &#39;dict&#39;</span>
+        <span class="c1"># ALTERNATIVE</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_speed</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Topology.set_nodes_NonUniformAtt"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.set_nodes_NonUniformAtt">[docs]</a>    <span class="k">def</span> <span class="nf">set_nodes_NonUniformAtt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">fogp</span><span class="p">,</span> <span class="n">clusterp</span><span class="o">=</span><span class="p">[],</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns models of devices to nodes according with non uniform distribution</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr (dict)</span>
+
+<span class="sd">            fogp (list) odds of choosing one of fogs devices</span>
+
+<span class="sd">            clusterp (list) odds of choosing one of cluster devices</span>
+
+<span class="sd">            seed (int): random seed, by default 0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">node_fog_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">attr</span><span class="p">[</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">])),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span> <span class="n">fogp</span><span class="p">)</span>
+        <span class="n">node_cloud_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">attr</span><span class="p">[</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span><span class="p">])),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span> <span class="n">clusterp</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">][</span><span class="n">node_fog_pos</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span><span class="p">][</span><span class="n">node_cloud_pos</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span></div>
+
+
+<div class="viewcode-block" id="Topology.get_nodes_att"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.get_nodes_att">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_att</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary with the features of the nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span></div>
+
+<div class="viewcode-block" id="Topology.size"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            an int with the number of nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Topology.add_node"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a list of nodes in the topology</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodes (list): a list of identifiers</span>
+
+<span class="sd">            edges (list): a list of destination edges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span> <span class="o">=</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)))</span>
+
+        <span class="c1">#self.__updateCentrality()</span>
+        <span class="c1">#TODO</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span></div>
+
+<div class="viewcode-block" id="Topology.remove_node"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a node of the topology</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id_node (int): node identifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#TODO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">id_node</span><span class="p">)</span>
+        <span class="c1">#        self.__updateCentrality()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="Topology.get_centrality"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.get_centrality">[docs]</a>    <span class="k">def</span> <span class="nf">get_centrality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the centrality of each node.</span>
+<span class="sd">        It is an example of how to obtain topological features of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_centrality</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Topology.draw_color"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology.draw_color">[docs]</a>    <span class="k">def</span> <span class="nf">draw_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">disable_color</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw the network using matplotlib library</span>
+
+<span class="sd">        Default Color is based on Centrality Value. Depending on the complexity of the network, this value can be expensive to obtain and the color option can be disabled.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            disable_color (boolean): Disables the coloring of the nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_color</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">disable_color</span><span class="p">:</span>
+            <span class="n">node_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_centrality</span><span class="p">()</span>
+
+        <span class="c1"># TODO define specific att.labels</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()),</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">())))</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="n">node_color</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">disable_color</span> <span class="k">else</span> <span class="bp">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Blues</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">nodelist</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clusterNodes</span><span class="p">,</span>
+                                   <span class="n">node_shape</span><span class="o">=</span><span class="n">SHAPE_CLUSTER</span><span class="p">)</span>  <span class="c1"># LA shape puede ser especial</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">None</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edge_labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../contents.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">OVERVIEW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">YAFS in 5 Minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference/index.html">API REFERENCE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">ABOUT</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../contents.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Isaac Lera, Carlos Guerrero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

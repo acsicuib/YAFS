@@ -1,0 +1,68 @@
+.. only:: html
+
+    .. figure:: _static/yafs_logo.png
+        :align: center
+
+        Yet Another Fog Simulator for Python
+
+        `PyPI <https://pypi.python.org/pypi/yafs>`_
+
+.. only:: html
+
+    .. sidebar:: Documentation
+
+        :ref:`Tutorial <intro>`
+            learn the basics
+
+        :ref:`Topical Guides <architecture>`
+            guides covering various features of this architecture
+
+        :ref:`Examples <examples>`
+            usage examples
+
+        :ref:`API Reference <api_reference>`
+            detailed description of YAFS' API
+
+        :ref:`About <about>`
+            authors, history, license, citing, ...
+
+========
+OVERVIEW
+========
+
+YAFS (Yet Another Fog Simulator) is designed to create simulations of `Fog Computing <https://en.wikipedia.org/wiki/Fog_computing>`_ ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ...
+A typical Fog architecture is an `IoT environments <https://en.wikipedia.org/wiki/Internet_of_things>`_.
+
+
+It is a lightweight, robust and highly configurable simulator. The learning curve of the simulator is quite low compared
+to other similar simulators. The number of classes has been reduced by a simple and intuitive abstraction of the elements
+of the ecosystem offering absolute control to the user to implement the following real characteristics of these environments:
+
+* **Topology** The topology of a Fog ecosystem is represented by `Complex Networks <https://en.wikipedia.org/wiki/Complex_network>`_ theory. The user can decide whether wants to represent elements of a network (i.e. Gateways, Routers, ...) or directly abstracts the model so that the elements are entities that are capable of executing services. This second aspect offers the IoT application developer the possibility of focusing on the QoS of the services it implements. User attention should not be directed to network routing policies. In addition, Complex Networks theory provide useful topological features in order to control the deployment of services, the allocation of resources and network design considerations.
+* **Topology evolution** The topology of a FOG environment varies over time. New nodes and links emerge and fall, which affects the deployment of services.
+* **Request evolution**  Service requests in FOG environments is not always reduced to the same access points along the wholel simulation.  Requests can be generated from any point of the network following a temporary distribution.
+* **Placement algorithm** Yet another classical module that decides how to assign module applications to the topology.
+* **Selection algorithm** In a network, routing can be controlled by network devices but with new Fog applications the applications can controlled these messages, it depends on the user abstraction level. It offers new analytical models for the adaptation of traffic.
+
+
+YAFS registers the main system events in a raw format. There is not hidden variables or *stranger things* where this data is stored. This data can be accessed from any point of the simulator so any module has access to the stats.
+
+The documentation contains a :ref:`tutorial <intro>`, :ref:`architecture details <architecture>` explaining key concepts, a number of :ref:`examples <examples>` and the :ref:`API reference <api_reference>`.
+
+
+YAFS is released under the MIT License.
+
+Cite this work
+^^^^^^^^^^^^^^
+
+Please, consider including this reference in your works or publications:
+
+.. code-block:: python
+
+    PENDING
+
+.. code-block:: python
+
+    PENDING
+
+

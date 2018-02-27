@@ -1,0 +1,708 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yafs.core &mdash; YAFS 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="YAFS 0.1 documentation" href="../../contents.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for yafs.core</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module unifies the event-discrete simulation environment with the rest of modules: placement, topology, selection, population, utils and metrics.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">simpy</span>
+<span class="kn">from</span> <span class="nn">tinydb</span> <span class="kn">import</span> <span class="n">TinyDB</span><span class="p">,</span> <span class="n">Query</span>
+
+<span class="kn">from</span> <span class="nn">yafs.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
+<span class="kn">from</span> <span class="nn">yafs.topology</span> <span class="kn">import</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">yafs.application</span> <span class="kn">import</span> <span class="n">Application</span>
+
+<span class="n">EVENT_UP_ENTITY</span> <span class="o">=</span> <span class="s2">&quot;node_up&quot;</span>
+<span class="n">EVENT_DOWN_ENTITY</span> <span class="o">=</span> <span class="s2">&quot;node_down&quot;</span>
+
+
+<div class="viewcode-block" id="Sim"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim">[docs]</a><span class="k">class</span> <span class="nc">Sim</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    This class contains the cloud event-discrete simulation environment and it controls the structure variables.</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">       topology (object) - the associate (:mod:`Topology`) of the environment. There is only one.</span>
+
+<span class="sd">    Kwargs:</span>
+<span class="sd">       name_register (str): database file name where are registered the events.</span>
+
+<span class="sd">       purge_register (boolean): True - clean the database</span>
+
+<span class="sd">       logger (logger) - logger</span>
+
+
+<span class="sd">    **Main variables to coordinate with algorithm:**</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># M_LINK = &quot;measurement_link&quot;</span>
+    <span class="c1"># M_Node = &quot;measurement_node&quot;</span>
+
+    <span class="c1"># METRICS</span>
+    <span class="c1"># TODO</span>
+    <span class="n">NODE_METRIC</span> <span class="o">=</span> <span class="s2">&quot;COMP_M&quot;</span>
+    <span class="n">SOURCE_METRIC</span> <span class="o">=</span> <span class="s2">&quot;SRC_M&quot;</span>
+    <span class="n">FORWARD_METRIC</span> <span class="o">=</span> <span class="s2">&quot;FWD_M&quot;</span>
+    <span class="n">SINK_METRIC</span> <span class="o">=</span> <span class="s2">&quot;SINK_M&quot;</span>
+    <span class="n">LINK_METRIC</span> <span class="o">=</span> <span class="s2">&quot;L_M&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topology</span><span class="p">,</span> <span class="n">name_register</span><span class="o">=</span><span class="s1">&#39;events_log.json&#39;</span><span class="p">,</span> <span class="n">purge_register</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        the discrete-event simulator (aka DES)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__idProcess</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># an unique indentifier for each process in the DES</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_ctrl_pipe</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Store</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">)</span>
+        <span class="c1"># a shared resource that control the exchange of messagess in the topology</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any algorithm can stop internally the simulation putting these value to True. By default is False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">topology</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apps</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">TinyDB</span><span class="p">(</span><span class="n">name_register</span><span class="p">)</span>
+        <span class="s2">&quot;Contains the database where all events are recorded&quot;</span>
+
+        <span class="k">if</span> <span class="n">purge_register</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">purge</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear the database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__init_metrics</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Current consumed metrics of each element topology: Nodes &amp; Edges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">placement_policy</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># for app.name the placement algorithm</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">population_policy</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># for app.name the population algorithm</span>
+
+        <span class="c1"># for app.nmae</span>
+        <span class="c1"># self.process_topology = {}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_id_running</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Start/stop flag for each pure source</span>
+        <span class="c1"># key: id.source.process</span>
+        <span class="c1"># value: Boolean</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_topology</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Relationship of pure source with topology entity</span>
+        <span class="c1"># id.source.process -&gt; value: entity.id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">consumer_pipes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Queues for each message</span>
+        <span class="c1"># App+module -&gt; pipe</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_app_module</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represents the deployment of a module in an entity of the topology.</span>
+
+<span class="sd">        It used for (:mod:`Placement`) class interaction.</span>
+
+<span class="sd">        A dictionary where the key is an app.name and value is a dictionary with key is a module and value an array with entitiy identifiers</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            {&quot;EGG_GAME&quot;:{&quot;Controller&quot;:[1,3,5],&quot;Client&quot;:[4]}}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_entity_module</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># DEPRECATED</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Store for each app.name the selection policy</span>
+        <span class="c1"># app.name -&gt; Selector</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># must be updated with up/down nodes</span>
+        <span class="c1"># This variable control the lag of each busy network links. It avoids the generation of a DES-process for each link</span>
+        <span class="c1"># edge -&gt; last_use_channel (float) = Simulation time</span>
+
+    <span class="k">def</span> <span class="nf">__send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">id_src</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any exchange of messages is done with this function. It is responsible for updating the metrics</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            app_name (string)</span>
+
+<span class="sd">            message: (:mod:`Message`)</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            id_src (int) identifier of a pure source module</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">id_src</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_topology</span><span class="p">[</span><span class="n">id_src</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_app_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">][</span><span class="n">message</span><span class="o">.</span><span class="n">src</span><span class="p">]</span>
+        <span class="n">dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_app_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">][</span><span class="n">message</span><span class="o">.</span><span class="n">dst</span><span class="p">]</span>
+
+        <span class="c1"># self.db.insert({&quot;type&quot;: type, &quot;app&quot;: app_name, &quot;module&quot;: message.get_src(), &quot;time_in&quot;: self.env.now,</span>
+        <span class="c1">#                 &quot;msg_name&quot;: message.get_name()})</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span><span class="p">)</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">app_name</span> <span class="o">=</span> <span class="n">app_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_ctrl_pipe</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add_network_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is an internal DES-process who manages the latency of messages sent in the network.</span>
+<span class="sd">        Performs the simulation of packages within the path between src and dst entities decided by the selection algorithm.</span>
+<span class="sd">        In this way, the message has a transmission latency.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_edges</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)))</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_ctrl_pipe</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="c1"># print &quot;NetworkProcess: %d &quot; %self.env.now</span>
+            <span class="c1"># print &quot;name &quot; + message.name</span>
+            <span class="c1"># print message.path</span>
+            <span class="c1"># print message.dst_int</span>
+            <span class="c1"># print message.timestamp</span>
+            <span class="c1"># print message.dst</span>
+            <span class="c1"># print &quot;-&quot;*30</span>
+
+            <span class="c1"># If same SRC and PATH or the message has achieved the penultimate node to reach the dst</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">path</span> <span class="ow">or</span> <span class="n">message</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">message</span><span class="o">.</span><span class="n">dst_int</span><span class="p">:</span>
+                <span class="n">pipe_id</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">app_name</span> <span class="o">+</span> <span class="n">message</span><span class="o">.</span><span class="n">dst</span>  <span class="c1"># app_name + module_name (dst)</span>
+                <span class="c1"># Timestamp reception message in the module</span>
+                <span class="n">message</span><span class="o">.</span><span class="n">timestamp_rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span>
+                <span class="c1"># The message is sent to the module.pipe</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">consumer_pipes</span><span class="p">[</span><span class="n">pipe_id</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># The message is sent at first time or it sent more times.</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">dst_int</span><span class="p">:</span>
+                    <span class="n">src_int</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">message</span><span class="o">.</span><span class="n">dst_int</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">src_int</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">dst_int</span>
+                    <span class="n">message</span><span class="o">.</span><span class="n">dst_int</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">dst_int</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="c1"># arista set by (src_int,message.dst_int)</span>
+                <span class="n">link</span> <span class="o">=</span> <span class="p">(</span><span class="n">src_int</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">dst_int</span><span class="p">)</span>
+                <span class="c1"># Links in the topology are bidirectional: (a,b) == (b,a)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">last_used</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span><span class="p">[</span><span class="n">link</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">link</span> <span class="o">=</span> <span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">dst_int</span><span class="p">,</span> <span class="n">src_int</span><span class="p">)</span>
+                    <span class="n">last_used</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span><span class="p">[</span><span class="n">link</span><span class="p">]</span>
+
+                <span class="n">size_bits</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">bytes</span> <span class="o">*</span> <span class="mi">8</span>
+                <span class="n">transmit</span> <span class="o">=</span> <span class="n">size_bits</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="n">link</span><span class="p">)[</span><span class="n">Topology</span><span class="o">.</span><span class="n">LINK_BW</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000000.0</span><span class="p">)</span>  <span class="c1"># MBITS!</span>
+                <span class="n">propagation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="n">link</span><span class="p">)[</span><span class="n">Topology</span><span class="o">.</span><span class="n">LINK_PR</span><span class="p">]</span>
+                <span class="n">latency_msg_link</span> <span class="o">=</span> <span class="n">transmit</span> <span class="o">+</span> <span class="n">propagation</span>
+
+                <span class="c1"># We compute the future latency considering the current utilization of the link</span>
+                <span class="k">if</span> <span class="n">last_used</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">:</span>
+                    <span class="n">shift_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="n">last_used</span> <span class="o">=</span> <span class="n">latency_msg_link</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span>  <span class="c1"># future arrival time</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">shift_time</span> <span class="o">=</span> <span class="n">last_used</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span>
+                    <span class="n">last_used</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span> <span class="o">+</span> <span class="n">shift_time</span> <span class="o">+</span> <span class="n">latency_msg_link</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span><span class="p">[</span><span class="n">link</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_used</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__wait_message</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">latency_msg_link</span><span class="p">,</span> <span class="n">shift_time</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__wait_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">latency</span><span class="p">,</span> <span class="n">shift_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Each message sleeps its latency time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">latency</span> <span class="o">+</span> <span class="n">shift_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_ctrl_pipe</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_id_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A DES-process has an unique identifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__idProcess</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__idProcess</span>
+
+    <span class="k">def</span> <span class="nf">__init_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Each entity and node metrics are initialized with empty values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes_att</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_nodes_att</span><span class="p">()</span>
+        <span class="n">measures</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;link&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">nodes_att</span><span class="p">:</span>
+            <span class="n">measures</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;RAM&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">nodes_att</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="s2">&quot;COST&quot;</span><span class="p">:</span> <span class="n">nodes_att</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;COST&quot;</span><span class="p">]}</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
+            <span class="n">measures</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">][</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LATENCY&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">LINK_LATENCY</span><span class="p">],</span>
+                                      <span class="s2">&quot;BW&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">LINK_BW</span><span class="p">]}</span>
+        <span class="k">return</span> <span class="n">measures</span>
+
+    <span class="k">def</span> <span class="nf">__add_placement_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">placement</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A DES-process who controls the invocation of Placement.run</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">myId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added_Process - Placement Process - #</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">myId</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">placement</span><span class="o">.</span><span class="n">get_next_activation</span><span class="p">())</span>
+            <span class="n">placement</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(P:</span><span class="si">%i</span><span class="s2">) </span><span class="si">%7.4f</span><span class="s2"> Run - Placement Policy: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">myId</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">))</span>  <span class="c1"># Rewrite</span>
+
+    <span class="k">def</span> <span class="nf">__add_population_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A DES-process who controls the invocation of Population.run</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">myId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added_Process - Population Process - #</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">myId</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">get_next_activation</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(P:</span><span class="si">%i</span><span class="s2">) </span><span class="si">%7.4f</span><span class="s2"> Run - Population Policy: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">myId</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">))</span>  <span class="c1"># REWRITE</span>
+            <span class="n">population</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add_source_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name_app</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">next_event</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A DES-process who controls the invocation of several Pure Source Moudules</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">myId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added_Process - Source Population Process - #</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">myId</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_id_running</span><span class="p">[</span><span class="nb">id</span><span class="p">]:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">next_event</span><span class="p">(</span><span class="o">**</span><span class="n">param</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#P:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module - Generating Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name_app</span><span class="p">,</span> <span class="n">myId</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">message</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__send_message</span><span class="p">(</span><span class="n">name_app</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_METRIC</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(P:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%i</span><span class="s2">) </span><span class="si">%7.4f</span><span class="s2"> STOP Source &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">myId</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">))</span>  <span class="c1"># REWRITE</span>
+
+    <span class="k">def</span> <span class="nf">__update_node_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_app</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It computes the service time in processing a message and record this event</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">name_app</span><span class="p">]</span><span class="o">.</span><span class="n">get_sink_modules</span><span class="p">():</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The module is a SINK (Actuactor)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">id_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_app_module</span><span class="p">[</span><span class="n">name_app</span><span class="p">][</span><span class="n">module</span><span class="p">]</span>
+            <span class="n">time_service</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The module is a processing module</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># print &quot;*&quot; * 40</span>
+            <span class="c1"># print &quot;| Node METRIC | &quot;</span>
+            <span class="c1"># print &quot;|-------------- &quot;</span>
+            <span class="c1"># print &quot;| Message recibed by MODULE:  %s&quot; % module</span>
+            <span class="c1"># print &quot;| +- Message name:  %s &quot; % message.get_name()</span>
+            <span class="c1"># print &quot;| +- Message from :  %s &quot; % message.get_src()</span>
+            <span class="c1"># print &quot;| o- Node to update : %s &quot; % self.assignaments_app_module[name_app][message.get_dst()]</span>
+            <span class="c1"># print &quot;*&quot; * 40</span>
+
+            <span class="n">id_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_app_module</span><span class="p">[</span><span class="n">name_app</span><span class="p">][</span><span class="n">message</span><span class="o">.</span><span class="n">dst</span><span class="p">]</span>
+            <span class="n">att_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_nodes_att</span><span class="p">()[</span><span class="n">id_node</span><span class="p">]</span>
+            <span class="n">time_service</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">inst</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">att_node</span><span class="p">[</span><span class="s2">&quot;IPT&quot;</span><span class="p">])</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        it records the entity.id who sends this message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+            <span class="n">from_id_source</span> <span class="o">=</span> <span class="n">id_node</span>  <span class="c1"># same src like dst</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">from_id_source</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="n">name_app</span><span class="p">,</span> <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="n">module</span><span class="p">,</span> <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">time_service</span><span class="p">,</span> <span class="s2">&quot;time_in&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span>
+             <span class="s2">&quot;time_out&quot;</span><span class="p">:</span> <span class="n">time_service</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="s2">&quot;time_emit&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span>
+             <span class="s2">&quot;time_reception&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">timestamp_rec</span><span class="p">,</span> <span class="s2">&quot;msg_name&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+             <span class="s2">&quot;id_node&quot;</span><span class="p">:</span> <span class="n">id_node</span><span class="p">,</span> <span class="s2">&quot;from_node&quot;</span><span class="p">:</span> <span class="n">from_id_source</span><span class="p">,</span> <span class="s2">&quot;from_module&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">src</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">time_service</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MEJORAR - ASOCIAR UN PROCESO QUE LOS CONTROLES.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__add_up_node_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_entity</span><span class="p">,</span> <span class="n">next_event</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">):</span>
+        <span class="n">myId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added_Process - UP entity Creation - #</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">myId</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+            <span class="c1"># TODO Define function to ADD a new NODE in topology</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">next_event</span><span class="p">(</span><span class="o">**</span><span class="n">param</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(P:</span><span class="si">%i</span><span class="s2">) </span><span class="si">%7.4f</span><span class="s2"> Node &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">myId</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">))</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MEJORAR - ASOCIAR UN PROCESO QUE LOS CONTROLES.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__add_down_node_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_entity</span><span class="p">,</span> <span class="n">next_event</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">):</span>
+        <span class="n">myId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added_Process - Down entity Creation - #</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">myId</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+            <span class="c1"># TODO Define function to REMOVE a new NODE in topology</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">next_event</span><span class="p">(</span><span class="o">**</span><span class="n">param</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(P:</span><span class="si">%i</span><span class="s2">) </span><span class="si">%7.4f</span><span class="s2"> Node &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">myId</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__add_source_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_app</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">next_event</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It generates a DES process associated to a compute module for the generation of messages</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">myId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added_Process - Source Module: #</span><span class="si">%s</span><span class="s2"> - #</span><span class="si">%i</span><span class="s2"> - &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">myId</span><span class="p">))</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">next_event</span><span class="p">(</span><span class="o">**</span><span class="n">param</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#P:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module - Generating Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name_app</span><span class="p">,</span> <span class="n">myId</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">message</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__send_message</span><span class="p">(</span><span class="n">name_app</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_METRIC</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add_consumer_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_app</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">register_consumer_msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It generates a DES process associated to a compute module</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">myId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added_Process - Consumer Module: #</span><span class="si">%s</span><span class="s2"> - #</span><span class="si">%i</span><span class="s2"> - &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">myId</span><span class="p">))</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer_pipes</span><span class="p">[</span><span class="n">name_app</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="c1"># One pipe for each module name</span>
+
+            <span class="k">for</span> <span class="n">register</span> <span class="ow">in</span> <span class="n">register_consumer_msg</span><span class="p">:</span>
+                <span class="c1"># Only the first</span>
+                <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_in&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="c1"># The message can be treated by this module</span>
+                    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Processing the message</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NODE_METRIC</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">]:</span>
+                        <span class="nb">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SINK_METRIC</span>
+                    <span class="c1"># we update the type of register event</span>
+                    <span class="n">service_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_node_metrics</span><span class="p">(</span><span class="n">name_app</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_in&quot;</span><span class="p">],</span> <span class="nb">type</span><span class="p">)</span>
+                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">service_time</span><span class="p">)</span>
+
+                    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Transferring the message</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">]:</span>
+                        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                        Sink behaviour (nothing to send)</span>
+<span class="sd">                        &quot;&quot;&quot;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#P:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module - Sink Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name_app</span><span class="p">,</span> <span class="n">myId</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;dist&quot;</span><span class="p">](</span><span class="o">**</span><span class="n">register</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">]):</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;module_dest&quot;</span><span class="p">]:</span>
+                                <span class="c1"># it nos a broadcasting message</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#P:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module - Transmit Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                    <span class="n">name_app</span><span class="p">,</span> <span class="n">myId</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+                                <span class="n">msg_out</span> <span class="o">=</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">]</span>
+                                <span class="n">msg_out</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span>
+
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__send_message</span><span class="p">(</span><span class="n">name_app</span><span class="p">,</span> <span class="n">msg_out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FORWARD_METRIC</span><span class="p">)</span>
+
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="c1"># it is a broadcasting message</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#P:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module - Broadcasting Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                    <span class="n">name_app</span><span class="p">,</span> <span class="n">myId</span><span class="p">,</span> <span class="n">myName</span><span class="p">,</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                                <span class="n">msg_out</span> <span class="o">=</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">]</span>
+                                <span class="n">msg_out</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span>
+                                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">module_dst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">register</span><span class="p">[</span><span class="s2">&quot;module_dest&quot;</span><span class="p">]):</span>
+                                    <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]:</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">__send_message</span><span class="p">(</span><span class="n">name_app</span><span class="p">,</span> <span class="n">msg_out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FORWARD_METRIC</span><span class="p">)</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#P:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module - Stopped Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">name_app</span><span class="p">,</span> <span class="n">myId</span><span class="p">,</span> <span class="n">myName</span><span class="p">,</span> <span class="n">register</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                    <span class="k">break</span>
+
+    <span class="k">def</span> <span class="nf">__add_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">next_event</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a DES process for user purpose</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">myId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added_Process - Monitor: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">next_event</span><span class="p">(</span><span class="o">**</span><span class="n">param</span><span class="p">))</span>
+            <span class="n">function</span><span class="p">()</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SECTION FOR PUBLIC METHODS</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Sim.deploy_monitor"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.deploy_monitor">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a DES process for user purpose</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (string) name of monitor</span>
+
+<span class="sd">            function (function): function that will be invoked within the simulator with the user&#39;s code</span>
+
+<span class="sd">            distribution (function): a temporary distribution function</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            param (dict): the parameters of the *distribution* function</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_monitor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Sim.register_event_entity"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.register_event_entity">[docs]</a>    <span class="k">def</span> <span class="nf">register_event_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_event_dist</span><span class="p">,</span> <span class="n">type_entity</span><span class="o">=</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="n">EVENT_UP_ENTITY</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">EVENT_UP_ENTITY</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_up_node_process</span><span class="p">(</span><span class="n">type_entity</span><span class="p">,</span> <span class="n">next_event_dist</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">EVENT_DOWN_ENTITY</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_down_node_process</span><span class="p">(</span><span class="n">type_entity</span><span class="p">,</span> <span class="n">next_event_dist</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Sim.deploy_source"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.deploy_source">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a DES process for deploy pure source modules (sensors)</span>
+<span class="sd">        This function its used by (:mod:`Population`) algorithm</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): an unique identifier.</span>
+
+<span class="sd">            app_name (str): application name</span>
+
+<span class="sd">            node (int): entity.id of the topology who will create the messages</span>
+
+<span class="sd">            distribution (function): a temporary distribution function</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            param - the parameters of the *distribution* function</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            id (int) the same input *id*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_id_running</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_source_population</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">param</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_topology</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">return</span> <span class="nb">id</span></div>
+
+<div class="viewcode-block" id="Sim.deploy_sink"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.deploy_sink">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_sink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a DES process for deploy pure SINK modules (actuators)</span>
+<span class="sd">        This function its used by (:mod:`Placement`): algorithm</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            app_name (str): application name</span>
+
+<span class="sd">            node (int): entity.id of the topology who will create the messages</span>
+
+<span class="sd">            module (str): module</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_app_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">][</span><span class="n">module</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="c1"># Update the relathionships among module-entity</span>
+
+        <span class="c1"># deprecated</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_entity_module</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">app_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_entity_module</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_entity_module</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">app_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_entity_module</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">app_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="n">app_name</span><span class="p">:</span> <span class="p">[</span><span class="n">module</span><span class="p">]})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assignaments_entity_module</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="n">app_name</span><span class="p">:</span> <span class="p">[</span><span class="n">module</span><span class="p">]})</span></div>
+
+<div class="viewcode-block" id="Sim.stop_source"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.stop_source">[docs]</a>    <span class="k">def</span> <span class="nf">stop_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        All pure source modules (sensors) are controlled by this boolean.</span>
+<span class="sd">        Using this function (:mod:`Population`) algorithm can stop one source</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id.source (int): the identifier of the DES process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_id_running</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span></div>
+
+<div class="viewcode-block" id="Sim.deploy_app"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.deploy_app">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">placement</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This process is responsible for linking the application to the different algorithms, and internally generates DES processes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            app (object): :mod:`Application` class</span>
+
+<span class="sd">            placement (object): :mod:`Placement` class</span>
+
+<span class="sd">            population (object): :mod:`Population` class</span>
+
+<span class="sd">            selector (object): :mod:`Selector` class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
+
+        <span class="c1"># Generate a pipe for each module name</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consumer_pipes</span><span class="p">[</span><span class="n">app</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">simpy</span><span class="o">.</span><span class="n">Store</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">)</span>
+
+        <span class="c1"># Create the DES process</span>
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">services</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">register_consumer_msg</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Application</span><span class="o">.</span><span class="n">TYPE_SOURCE</span><span class="p">:</span>
+                    <span class="sd">&quot;&quot;&quot; TYPE GENERATOR : adding process:  __add_source_module &quot;&quot;&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__add_source_module</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">],</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;dist&quot;</span><span class="p">],</span>
+                                                 <span class="o">**</span><span class="n">service</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="sd">&quot;&quot;&quot; TYPE CONSUMER : adding process:  __add_consumer_module &quot;&quot;&quot;</span>
+                    <span class="c1"># 1 module puede consumir N type de messages con diferentes funciones de distribucion</span>
+                    <span class="n">register_consumer_msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">{</span><span class="s2">&quot;message_in&quot;</span><span class="p">:</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;message_in&quot;</span><span class="p">],</span> <span class="s2">&quot;message_out&quot;</span><span class="p">:</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">],</span>
+                         <span class="s2">&quot;module_dest&quot;</span><span class="p">:</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;module_dest&quot;</span><span class="p">],</span> <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;dist&quot;</span><span class="p">],</span> <span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">service</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">]})</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">register_consumer_msg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_consumer_module</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">register_consumer_msg</span><span class="p">))</span>
+
+        <span class="c1"># Placement control</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">placement</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">placement_policy</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># First Time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">placement_policy</span><span class="p">[</span><span class="n">placement</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;placement_policy&quot;</span><span class="p">:</span> <span class="n">placement</span><span class="p">,</span> <span class="s2">&quot;apps&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_placement_process</span><span class="p">(</span><span class="n">placement</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">placement_policy</span><span class="p">[</span><span class="n">placement</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;apps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Population control</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">population</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_policy</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># First Time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population_policy</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;population_policy&quot;</span><span class="p">:</span> <span class="n">population</span><span class="p">,</span> <span class="s2">&quot;apps&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+            <span class="k">if</span> <span class="n">population</span><span class="o">.</span><span class="n">activation_dist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_population_process</span><span class="p">(</span><span class="n">placement</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population_policy</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;apps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Selection control</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span><span class="p">[</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">selector</span></div>
+
+<div class="viewcode-block" id="Sim.run"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">until</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the simulation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            until (int): Defines a stop time. If None the simulation runs until some internal algorithm changes the var *yafs.core.sim.stop* to True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_network_process</span><span class="p">())</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creating app.sources and deploy the sources in the topology</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_policy</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">app_name</span> <span class="ow">in</span> <span class="n">pop</span><span class="p">[</span><span class="s2">&quot;apps&quot;</span><span class="p">]:</span>
+                <span class="n">pop</span><span class="p">[</span><span class="s2">&quot;population_policy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">)</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creating initial deploy of services</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">place</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">placement_policy</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="n">place</span><span class="p">[</span><span class="s2">&quot;placement_policy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># internally consideres the apps in charge</span>
+
+        <span class="c1"># print self.assignaments_entity_module</span>
+        <span class="c1"># print &quot;-&quot;*30</span>
+        <span class="c1"># print self.assignaments_app_module</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        RUN</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">until</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../contents.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">OVERVIEW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">YAFS in 5 Minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference/index.html">API REFERENCE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">ABOUT</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../contents.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Isaac Lera, Carlos Guerrero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

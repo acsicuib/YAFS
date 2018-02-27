@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>OVERVIEW &mdash; YAFS 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="YAFS 0.1 documentation" href="contents.html" />
+    <link rel="next" title="YAFS in 5 Minutes" href="introduction/index.html" />
+    <link rel="prev" title="Documentation for YAFS" href="contents.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="figure align-center" id="id1">
+<img alt="_images/yafs_logo.png" src="_images/yafs_logo.png" />
+<p class="caption"><span class="caption-text">Yet Another Fog Simulator for Python</span></p>
+<div class="legend">
+<a class="reference external" href="https://pypi.python.org/pypi/yafs">PyPI</a></div>
+</div>
+<div class="sidebar">
+<p class="first sidebar-title">Documentation</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="introduction/index.html#intro"><span>Tutorial</span></a></dt>
+<dd>learn the basics</dd>
+<dt><a class="reference internal" href="architecture/index.html#architecture"><span>Topical Guides</span></a></dt>
+<dd>guides covering various features of this architecture</dd>
+<dt><a class="reference internal" href="examples/index.html#examples"><span>Examples</span></a></dt>
+<dd>usage examples</dd>
+<dt><a class="reference internal" href="api_reference/index.html#api-reference"><span>API Reference</span></a></dt>
+<dd>detailed description of YAFS&#8217; API</dd>
+<dt><a class="reference internal" href="about/index.html#about"><span>About</span></a></dt>
+<dd>authors, history, license, citing, ...</dd>
+</dl>
+</div>
+<div class="section" id="overview">
+<h1>OVERVIEW<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>YAFS (Yet Another Fog Simulator) is designed to create simulations of <a class="reference external" href="https://en.wikipedia.org/wiki/Fog_computing">Fog Computing</a> ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ...
+A typical Fog architecture is an <a class="reference external" href="https://en.wikipedia.org/wiki/Internet_of_things">IoT environments</a>.</p>
+<p>It is a lightweight, robust and highly configurable simulator. The learning curve of the simulator is quite low compared
+to other similar simulators. The number of classes has been reduced by a simple and intuitive abstraction of the elements
+of the ecosystem offering absolute control to the user to implement the following real characteristics of these environments:</p>
+<ul class="simple">
+<li><strong>Topology</strong> The topology of a Fog ecosystem is represented by <a class="reference external" href="https://en.wikipedia.org/wiki/Complex_network">Complex Networks</a> theory. The user can decide whether wants to represent elements of a network (i.e. Gateways, Routers, ...) or directly abstracts the model so that the elements are entities that are capable of executing services. This second aspect offers the IoT application developer the possibility of focusing on the QoS of the services it implements. User attention should not be directed to network routing policies. In addition, Complex Networks theory provide useful topological features in order to control the deployment of services, the allocation of resources and network design considerations.</li>
+<li><strong>Topology evolution</strong> The topology of a FOG environment varies over time. New nodes and links emerge and fall, which affects the deployment of services.</li>
+<li><strong>Request evolution</strong>  Service requests in FOG environments is not always reduced to the same access points along the wholel simulation.  Requests can be generated from any point of the network following a temporary distribution.</li>
+<li><strong>Placement algorithm</strong> Yet another classical module that decides how to assign module applications to the topology.</li>
+<li><strong>Selection algorithm</strong> In a network, routing can be controlled by network devices but with new Fog applications the applications can controlled these messages, it depends on the user abstraction level. It offers new analytical models for the adaptation of traffic.</li>
+</ul>
+<p>YAFS registers the main system events in a raw format. There is not hidden variables or <em>stranger things</em> where this data is stored. This data can be accessed from any point of the simulator so any module has access to the stats.</p>
+<p>The documentation contains a <a class="reference internal" href="introduction/index.html#intro"><span>tutorial</span></a>, <a class="reference internal" href="architecture/index.html#architecture"><span>architecture details</span></a> explaining key concepts, a number of <a class="reference internal" href="examples/index.html#examples"><span>examples</span></a> and the <a class="reference internal" href="api_reference/index.html#api-reference"><span>API reference</span></a>.</p>
+<p>YAFS is released under the MIT License.</p>
+<div class="section" id="cite-this-work">
+<h2>Cite this work<a class="headerlink" href="#cite-this-work" title="Permalink to this headline">¶</a></h2>
+<p>Please, consider including this reference in your works or publications:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">PENDING</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">PENDING</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="contents.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">OVERVIEW</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cite-this-work">Cite this work</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="introduction/index.html">YAFS in 5 Minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture/index.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference/index.html">API REFERENCE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about/index.html">ABOUT</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="contents.html">Documentation overview</a><ul>
+      <li>Previous: <a href="contents.html" title="previous chapter">Documentation for YAFS</a></li>
+      <li>Next: <a href="introduction/index.html" title="next chapter">YAFS in 5 Minutes</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Isaac Lera, Carlos Guerrero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

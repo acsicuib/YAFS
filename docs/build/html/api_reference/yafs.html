@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yafs &mdash; YAFS 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="YAFS 0.1 documentation" href="../contents.html" />
+    <link rel="up" title="API REFERENCE" href="index.html" />
+    <link rel="next" title="yafs.core — Simulator engine" href="yafs.core.html" />
+    <link rel="prev" title="API REFERENCE" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-yafs">
+<span id="yafs"></span><h1><code class="docutils literal"><span class="pre">yafs</span></code><a class="headerlink" href="#module-yafs" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">yafs</span></code> module is the main component who perform the simulation.</p>
+<p>The following tables list all of the available components in this module.</p>
+<div class="section" id="core">
+<h2>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Sim</span></code>(topology[,&nbsp;name_register,&nbsp;...])</td>
+<td>This class contains the cloud event-discrete simulation environment and it controls the structure variables.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="topology">
+<h2>Topology<a class="headerlink" href="#topology" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Topology</span></code>([logger])</td>
+<td>This class unifies the functions to deal with <strong>Complex Networks</strong> as a network topology within of the simulator.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Entity</span></code></td>
+<td>Different type of entities that there is in an environment.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Application</span></code>(name)</td>
+<td>An application is defined by a DAG between modules that generate, compute and receive messages.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Message</span></code>(name,&nbsp;src,&nbsp;dst[,&nbsp;inst,&nbsp;bytes])</td>
+<td>A message is set by the following values:</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="population">
+<h2>Population<a class="headerlink" href="#population" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Population</span></code>(name[,&nbsp;activation_dist,&nbsp;logger])</td>
+<td>A population algorithm controls how the message generation of the sensor modules is associated in the nodes of the topology.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Statical</span></code>(name[,&nbsp;activation_dist,&nbsp;logger])</td>
+<td>This implementation of a population algorithm statically assigns the generation of a source in a node of the topology.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="placement">
+<h2>Placement<a class="headerlink" href="#placement" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Placement</span></code>(name,&nbsp;activation_dist[,&nbsp;logger])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">ClusterPlacement</span></code>(name,&nbsp;activation_dist[,&nbsp;logger])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="selection">
+<h2>Selection<a class="headerlink" href="#selection" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Selection</span></code>([logger])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">OneRandomPath</span></code>([logger])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">First_ShortestPath</span></code>([logger])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../contents.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">OVERVIEW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">YAFS in 5 Minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API REFERENCE</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">yafs</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core">Core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#topology">Topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#population">Population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#placement">Placement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#selection">Selection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.core.html"><code class="docutils literal"><span class="pre">yafs.core</span></code> &#8212; Simulator engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.topology.html"><code class="docutils literal"><span class="pre">yafs.topology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.application.html"><code class="docutils literal"><span class="pre">yafs.application</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.selection.html"><code class="docutils literal"><span class="pre">yafs.selection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.utils.html"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">ABOUT</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../contents.html">Documentation overview</a><ul>
+  <li><a href="index.html">API REFERENCE</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">API REFERENCE</a></li>
+      <li>Next: <a href="yafs.core.html" title="next chapter"><code class="docutils literal"><span class="pre">yafs.core</span></code> &#8212; Simulator engine</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Isaac Lera, Carlos Guerrero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="../_sources/api_reference/yafs.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yafs.selection &mdash; YAFS 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="YAFS 0.1 documentation" href="../contents.html" />
+    <link rel="up" title="API REFERENCE" href="index.html" />
+    <link rel="next" title="yafs.utils" href="yafs.utils.html" />
+    <link rel="prev" title="yafs.placement" href="yafs.placement.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-yafs.selection">
+<span id="yafs-selection"></span><h1><code class="docutils literal"><span class="pre">yafs.selection</span></code><a class="headerlink" href="#module-yafs.selection" title="Permalink to this headline">¶</a></h1>
+<p>This algorithm have one obligatory functions:</p>
+<blockquote>
+<div><em>get_path</em>: It provides the route to follow the message within the topology to reach the destination module, it can also be seen as an orchestration algorithm.</div></blockquote>
+<dl class="class">
+<dt id="yafs.selection.Selection">
+<em class="property">class </em><code class="descclassname">yafs.selection.</code><code class="descname">Selection</code><span class="sig-paren">(</span><em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.Selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>A selection algorithm provide the route among topology entities for that a message reach the destiny module.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A class interface</p>
+</div>
+<dl class="method">
+<dt id="yafs.selection.Selection.get_path">
+<code class="descname">get_path</code><span class="sig-paren">(</span><em>sim</em>, <em>src</em>, <em>dst</em>, <em>message</em>, <em>traffic</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection.get_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.Selection.get_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div><p>sim (yafs.core.Sim)</p>
+<p>src (int): the node source</p>
+<p>dst (dst): the node destiny</p>
+<p>message (yafs.application.Message)</p>
+<p>traffic (dict): the current occupation of the network</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>a path among nodes</div></blockquote>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">override required</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.selection.OneRandomPath">
+<em class="property">class </em><code class="descclassname">yafs.selection.</code><code class="descname">OneRandomPath</code><span class="sig-paren">(</span><em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#OneRandomPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.OneRandomPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Among all the possible options, it returns a random path.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.selection.First_ShortestPath">
+<em class="property">class </em><code class="descclassname">yafs.selection.</code><code class="descname">First_ShortestPath</code><span class="sig-paren">(</span><em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#First_ShortestPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.First_ShortestPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Among all possible shorter paths, returns the first.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../contents.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">OVERVIEW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">YAFS in 5 Minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API REFERENCE</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="yafs.html"><code class="docutils literal"><span class="pre">yafs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.core.html"><code class="docutils literal"><span class="pre">yafs.core</span></code> &#8212; Simulator engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.topology.html"><code class="docutils literal"><span class="pre">yafs.topology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.application.html"><code class="docutils literal"><span class="pre">yafs.application</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">yafs.selection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.utils.html"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">ABOUT</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../contents.html">Documentation overview</a><ul>
+  <li><a href="index.html">API REFERENCE</a><ul>
+      <li>Previous: <a href="yafs.placement.html" title="previous chapter"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
+      <li>Next: <a href="yafs.utils.html" title="next chapter"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Isaac Lera, Carlos Guerrero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="../_sources/api_reference/yafs.selection.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

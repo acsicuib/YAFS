@@ -1,0 +1,7 @@
+Changelog for YAFS
+==================
+
+0.1  - 2017-11-21
+-------------------
+
+- Uploaded the first version (Isaac Lera and Carlos Guerrero)
