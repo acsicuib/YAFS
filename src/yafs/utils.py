@@ -5,7 +5,7 @@ import copy
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
-
+import numpy as np
 #DISTRIBUTIONS
 
 def next_time_uniform_dist(min,max):
@@ -30,6 +30,7 @@ def fractional_selectivity(threshold):
 
 
 
+
 def draw_topology(topology,alloc_entity):
     """
     Draw the modeled topology
@@ -37,6 +38,7 @@ def draw_topology(topology,alloc_entity):
     .. Note: This classes can be extended to export the topology (graph) to other visualization tools
     """
     G = copy.copy(topology.G)
+
 
     lastID = len(G.nodes())
     labels = dict(zip(range(topology.size()), range(topology.size())))
@@ -66,8 +68,11 @@ def draw_topology(topology,alloc_entity):
     nx.draw_networkx_edges(G, edgelist=edgesM, pos=pos, style="dashed",width=0.8,ax=ax)
     nx.draw_networkx_edges(G, edgelist=G.edges()-edgesM, pos=pos, width=1.2,ax=ax)
     plt.axis('off')
+
+    plt.ion()
     plt.show()
-    #fig.savefig(file_path+'/model.eps',format='eps')
+
+    fig.savefig('app_deployed.png',format='png')
     plt.close(fig)
 
 

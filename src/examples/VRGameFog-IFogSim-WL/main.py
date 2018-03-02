@@ -43,7 +43,7 @@ def create_application():
     m_egg = Message("M.EGG", "EGG", "Client", instructions=2000*10^6, bytes=500)
     m_sensor = Message("M.Sensor", "Client", "Calculator", instructions=3500*10^6, bytes=500)
     m_player_game_state = Message("M.Player_Game_State", "Calculator", "Coordinator", instructions=1000*10^6, bytes=1000)
-    m_concentration = Message("M.Concentration", "Calculator", "Client", instructions=14*10^6, bytes=500, broadcasting=True)           # This message is sent to all client modules
+    m_concentration = Message("M.Concentration", "Calculator", "Client", instructions=14*10^6, bytes=500)           # This message is sent to all client modules
     m_global_game_state = Message("M.Global_Game_State", "Coordinator", "Client", instructions=28*10^6, bytes=1000, broadcasting=True) # This message is sent to all client modules
     m_global_state_update = Message("M.Global_State_Update", "Client", "Display",instructions=1000*10^6,bytes=500)
     m_self_state_update = Message("M.Self_State_Update", "Client", "Display",instructions=1000*10^6,bytes=500)
@@ -123,6 +123,8 @@ def create_json_topology(numOfDepts,numOfMobilesPerDept):
 
     return topology_json
 
+
+
 # @profile
 def main(simulated_time,depth,police):
 
@@ -195,6 +197,7 @@ def main(simulated_time,depth,police):
     stop_time = simulated_time
     s = Sim(t, default_results_path="Results_%s_%i_%i" % (police, stop_time, depth))
     s.deploy_app(app, placement, pop, selectorPath)
+
     s.run(stop_time,test_initial_deploy=False,show_progress_monitor=False)
     # s.draw_allocated_topology() # for debugging
 
@@ -211,7 +214,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.time:
-        stop_time = 1000
+        stop_time = 10000
     else:
         stop_time = int(args.time)
 
@@ -226,6 +229,7 @@ if __name__ == '__main__':
     else:
         police = str(args.police)
 
+    # police ="edge"
     main(stop_time,dep,police)
 
     print("\n--- %s seconds ---" % (time.time() - start_time))

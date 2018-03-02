@@ -1,10 +1,10 @@
 
 ![YAFS logo](https://github.com/acsicuib/YAFS/raw/master/docs/_static/yafs_logo.png)
 
-YAFS (Yet Another Fog Simulator) is designed to create simulations of [Fog Computing](https://en.wikipedia.org/wiki/Fog_computing) ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ... [IoT environments](https://en.wikipedia.org/wiki/Internet_of_things) are the most evident fact of this type of architecture.
+YAFS (Yet Another Fog Simulator) is a simulator tool based on Python of architectures such as: [Fog Computing](https://en.wikipedia.org/wiki/Fog_computing) ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ... [IoT environments](https://en.wikipedia.org/wiki/Internet_of_things) are the most evident fact of this type of architecture.
 
 
-The **highlights** of YAFS are:
+The **highlights** points of YAFS are:
 * **Dinamyc topology:** entities and network links can be created or removed along the simulation.
 * **Dinamyc creation of messages sources:** sensors can generate messages from different point access along the simulation.
 * And for hence, the **placement allocation algorithm** and **the orchestration algorithm,** that are extended by the user, can run along the simulation.
@@ -61,10 +61,10 @@ list](mailto:python-yafs@googlegroups.com). You must dig through the [source cod
 
 
 
-Similar libraries
------------------
+Similar simulators
+------------------
 
-Some similar libraries are available in:
+Some similar simulators are in:
 
 - [CloudSim](<http://www.cloudbus.org/cloudsim/>) (JAVA)
 

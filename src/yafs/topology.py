@@ -128,10 +128,7 @@ class Topology:
         self.G = nx.Graph()
         for edge in data["link"]:
             self.G.add_edge(edge["s"], edge["d"], BW=edge[self.LINK_BW],PR=edge[self.LINK_PR])
-        # The node is created in edge creation
 
-
-        #TODO
         for node in data["entity"]:
             self.nodeAttributes[node["id"]] = node
 

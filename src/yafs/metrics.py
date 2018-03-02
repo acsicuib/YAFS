@@ -23,7 +23,7 @@ class Metrics:
 
         columns_event = ["type", "app", "module", "message","DES.src","DES.dst","TOPO.src","TOPO.dst","module.src","service", "time_in","time_out",
                          "time_emit","time_reception"]
-        columns_link = ["type", "src", "dst", "app", "latency", "message", "ctime", "size"]
+        columns_link = ["type", "src", "dst", "app", "latency", "message", "ctime", "size","buffer"]
 
         path = "result"
         if  default_results_path is not None:
@@ -65,12 +65,15 @@ class Metrics:
                     value["message"],
                     value["ctime"],
                     value["size"],
+                    value["buffer"],
 
                             ])
 
 
 
-
+    def close(self):
+        self.__filef.close()
+        self.__filel.close()
 
 
     #TODO

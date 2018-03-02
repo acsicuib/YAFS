@@ -17,9 +17,12 @@ from yafs.application import Application
 from yafs.metrics import Metrics
 import utils
 
+import numpy as np
+
 EVENT_UP_ENTITY = "node_up"
 EVENT_DOWN_ENTITY = "node_down"
 
+NETWORK_LIMIT = 100000000
 
 class Sim:
     """
@@ -42,11 +45,6 @@ class Sim:
 
 
     """
-    # M_LINK = "measurement_link"
-    # M_Node = "measurement_node"
-
-    # METRICS
-    # TODO
     NODE_METRIC = "COMP_M"
     SOURCE_METRIC = "SRC_M"
     FORWARD_METRIC = "FWD_M"
@@ -64,6 +62,7 @@ class Sim:
         # an unique indentifier for each process in the DES
 
         self.network_ctrl_pipe = simpy.Store(self.env)
+        self.network_pump = 0
         # a shared resource that control the exchange of messagess in the topology
 
         self.stop = False
@@ -79,7 +78,10 @@ class Sim:
         #self.db = TinyDB(name_register)
         self.metrics = Metrics(default_results_path=default_results_path)
 
+
+
         "Contains the database where all events are recorded"
+
 
 
         """
@@ -239,7 +241,7 @@ class Sim:
 
                 # update link metrics
                 self.metrics.insert_link(
-                    {"type": self.LINK_METRIC,"src":link[0],"dst":link[1],"app":message.app_name,"latency":latency_msg_link,"message": message.name,"ctime":self.env.now,"size":message.bytes})#"path":message.path})
+                    {"type": self.LINK_METRIC,"src":link[0],"dst":link[1],"app":message.app_name,"latency":latency_msg_link,"message": message.name,"ctime":self.env.now,"size":message.bytes,"buffer":self.network_pump})#"path":message.path})
 
                 # We compute the future latency considering the current utilization of the link
                 if last_used < self.env.now:
@@ -259,7 +261,9 @@ class Sim:
         """
         Simulates the transfer behavior of a message on a link
         """
+        self.network_pump += 1
         yield self.env.timeout(latency + shift_time)
+        self.network_pump -= 1
         self.network_ctrl_pipe.put(msg)
 
     def __get_id_process(self):
@@ -572,17 +576,17 @@ class Sim:
         if self.until:
             if show_progress_monitor:
                 self.pbar.update(time_shift)
-            if self.env.now == self.until:
+            if self.env.now >= self.until:
                 self.stop = True
                 if show_progress_monitor:
                     self.pbar.close()
                 self.logger.info("! Stop simulation at time: %f !" % self.env.now)
 
 
+
     """
     SECTION FOR PUBLIC METHODS
     """
-
     def deploy_monitor(self, name, function, distribution, **param):
         """
         Add a DES process for user purpose
@@ -822,17 +826,15 @@ class Sim:
         return id_DES
 
 
-
     def draw_allocated_topology(self):
         entities = self.get_alloc_entities()
-        # self.topology.draw()
         utils.draw_topology(self.topology,entities)
 
 
 
     def print_debug_assignaments(self):
         """
-        This functions prints debug information about the assignmanet of DES process - Topology ID - Source Module or Modules
+        This functions prints debug information about the assignment of DES process - Topology ID - Source Module or Modules
         """
         fullAssignation = {}
 
@@ -880,6 +882,8 @@ class Sim:
         self.env.process(self.__add_stop_monitor("Stop_Control_Monitor",self.__ctrl_progress_monitor,utils.deterministicDistribution,show_progress_monitor,time_shift=200))
 
 
+
+
         self.print_debug_assignaments()
 
 
@@ -890,3 +894,4 @@ class Sim:
         if not test_initial_deploy:
             self.env.run(until=until) #This does not stop the simpy.simulation at time. We have to force the stop
 
+        self.metrics.close()
