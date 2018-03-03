@@ -149,13 +149,12 @@ class Stats:
         print "\tNetwork bytes transmitted:"
         print "\t\t%.1f" % self.bytes_transmitted()
 
-    # def store_results(self, name):
-    #     self.__df.to_csv(name + "_events.csv")
-    #     self.__df_link.to_csv(name + "_links.csv")
 
+    def average_messages_not_transmitted(self):
+        return np.mean(self.df_link.buffer)
 
-    def get(self):
-        """
-        TEST
-        """
-        return self.df, self.df_link
+    def peak_messages_not_transmitted(self):
+        return np.max(self.df_link.buffer)
+
+    def messages_not_transmitted(self):
+        return self.df_link.buffer[-1:]

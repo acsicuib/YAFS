@@ -165,6 +165,7 @@ if __name__ == '__main__':
     m = Stats(defaultPath="Results") #Same name of the results
     time_loops = [["M.A", "M.B"]]
     m.showResults2(1000, time_loops=time_loops)
-#TODO
-    m.average_waiting_messages()
-    m.messages_not_transmitted()
+    print "\t- Network saturation -"
+    print "\t\tAverage number of  messages no transmitted: %i" %m.average_messages_not_transmitted()
+    print "\t\tTotal number of messages no transmitted: %i" %m.messages_not_transmitted()
+    print "\t\tPeak number of m. no transmitted: %i" %m.peak_messages_not_transmitted()
