@@ -158,3 +158,20 @@ class Stats:
 
     def messages_not_transmitted(self):
         return self.df_link.buffer[-1:]
+
+    def get_df_modules(self):
+        g = self.df.groupby(["module", "DES.dst"]).agg({"service": ['mean', 'sum', 'count']})
+        return g.reset_index()
+
+    def get_df_service_utilization(self,service,time):
+        """
+        Returns the utilization(%) of a specific module
+        """
+        g = self.df.groupby(["module", "DES.dst"]).agg({"service": ['mean', 'sum', 'count']})
+        g.reset_index(inplace=True)
+        h = pd.DataFrame()
+        h["module"] = g[g.module == service].module
+        h["utilization"] = g[g.module == service]["service"]["sum"]*100 / time
+        return h
+
+

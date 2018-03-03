@@ -25,7 +25,9 @@ class CloudPlacement(Placement):
         services = app.services
 
         for module in services.keys():
-            idDES = sim.deploy_module(app_name,module,services[module],id_cluster)
+            if module in self.scaleServices.keys():
+                for rep in range(0, self.scaleServices[module]):
+                    idDES = sim.deploy_module(app_name,module,services[module],id_cluster)
 
     #end function
 
