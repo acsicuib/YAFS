@@ -156,7 +156,7 @@ if __name__ == '__main__':
     logging.config.fileConfig(os.getcwd()+'/logging.ini')
 
     start_time = time.time()
-    #main(simulated_time=1000)
+    main(simulated_time=1000)
 
     print("\n--- %s seconds ---" % (time.time() - start_time))
 
@@ -172,6 +172,9 @@ if __name__ == '__main__':
     print "\t\tTotal number of messages no transmitted: %i" %m.messages_not_transmitted()
     print "\t\tPeak number of m. no transmitted: %i" %m.peak_messages_not_transmitted()
 
-    print "\t- Stats of each service deployed -"
+    print "\n\t- Stats of each service deployed -"
     print m.get_df_modules()
     print m.get_df_service_utilization("ServiceA",1000)
+
+    print "\n\t- Stats of each DEVICE -"
+    #TODO
