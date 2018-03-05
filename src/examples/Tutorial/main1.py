@@ -109,7 +109,7 @@ def main(simulated_time):
     PLACEMENT algorithm
     """
     placement = CloudPlacement("onCloud") # it defines the deployed rules: module-device
-    # placement.scaleService({"ServiceA": 1}) # Optional: you can specify the number of deployed modules in each device (by default 1)
+    placement.scaleService({"ServiceA": 1})
 
     """
     POPULATION algorithm

@@ -196,7 +196,7 @@ var Stemmer = function() {
 
 
 /**
- * Simple result scoring code.
+ * Tutorial result scoring code.
  */
 var Scorer = {
   // Implement the following function to further tweak the score for each result
