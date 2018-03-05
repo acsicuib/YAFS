@@ -323,6 +323,7 @@ class Sim:
             msg = copy.copy(message)
             msg.timestamp = self.env.now
 
+
             self.__send_message(name_app, msg, idDES, self.SOURCE_METRIC)
 
         self.logger.debug("STOP_Process - Module Pure Source\t#DES:%i" % idDES)
@@ -429,7 +430,7 @@ class Sim:
         It generates a DES process associated to a compute module for the generation of messages
         """
         self.logger.debug("Added_Process - Module Source: %s\t#DES:%i" % (module, idDES))
-        while not self.stop and self.source_id_running[idDES]:
+        while (not self.stop) and self.source_id_running[idDES]:
             yield self.env.timeout(next_event(**param))
             self.logger.debug(
                 "(App:%s#DES:%i#%s)\tModule - Generating Message:\t%s" % (app_name, idDES, module, message.name))
@@ -437,7 +438,9 @@ class Sim:
             msg.timestamp = self.env.now
 
 
+
             self.__send_message(app_name, msg, idDES,self.SOURCE_METRIC)
+
         self.logger.debug("STOP_Process - Module Source: %s\t#DES:%i" % (module, idDES))
 
 

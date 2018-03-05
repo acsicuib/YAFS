@@ -109,9 +109,7 @@ def main(simulated_time):
     PLACEMENT algorithm
     """
     placement = CloudPlacement("onCloud") # it defines the deployed rules: module-device
-
-    ### THERE ARE MORE SERVICES of a specified type
-    placement.scaleService({"ServiceA": 4}) # Optional: you can specify the number of deployed modules in each device (by default 1)
+    placement.scaleService({"ServiceA": 4})
 
     """
     POPULATION algorithm
@@ -168,9 +166,9 @@ if __name__ == '__main__':
     time_loops = [["M.A", "M.B"]]
     m.showResults2(1000, time_loops=time_loops)
     print "\t- Network saturation -"
-    print "\t\tAverage number of  messages no transmitted: %i" %m.average_messages_not_transmitted()
-    print "\t\tTotal number of messages no transmitted: %i" %m.messages_not_transmitted()
-    print "\t\tPeak number of m. no transmitted: %i" %m.peak_messages_not_transmitted()
+    print "\t\tAverage waiting messages : %i" % m.average_messages_not_transmitted()
+    print "\t\tPeak of waiting messages : %i" % m.peak_messages_not_transmitted()
+    print "\t\tTOTAL messages not transmitted: %i" % m.messages_not_transmitted()
 
     print "\n\t- Stats of each service deployed -"
     print m.get_df_modules()

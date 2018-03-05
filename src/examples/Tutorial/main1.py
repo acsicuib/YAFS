@@ -145,7 +145,7 @@ def main(simulated_time):
 
     s.run(stop_time,show_progress_monitor=False)
 
-    s.draw_allocated_topology() # for debugging
+    # s.draw_allocated_topology() # for debugging
 
 if __name__ == '__main__':
     import logging.config
@@ -166,6 +166,6 @@ if __name__ == '__main__':
     time_loops = [["M.A", "M.B"]]
     m.showResults2(1000, time_loops=time_loops)
     print "\t- Network saturation -"
-    print "\t\tAverage number of  messages no transmitted: %i" %m.average_messages_not_transmitted()
-    print "\t\tTotal number of messages no transmitted: %i" %m.messages_not_transmitted()
-    print "\t\tPeak number of m. no transmitted: %i" %m.peak_messages_not_transmitted()
+    print "\t\tAverage waiting messages : %i" % m.average_messages_not_transmitted()
+    print "\t\tPeak of waiting messages : %i" % m.peak_messages_not_transmitted()
+    print "\t\tTOTAL messages not transmitted: %i" % m.messages_not_transmitted()

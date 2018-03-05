@@ -20,7 +20,7 @@ from yafs.application import Application,Message
 from yafs.population import *
 from yafs.topology import Topology
 
-from selection_multipleDeploys import BroadPath
+from selection_multipleDeploys import BroadPath,CloudPath_RR
 from placement_Cluster_Edge import CloudPlacement,FogPlacement
 from yafs.utils import *
 import time
@@ -59,7 +59,7 @@ def create_application():
     # MODULE SOURCES: only periodic messages
     a.add_service_source("Calculator", next_time_periodic, m_player_game_state, time_shift=100.0) #According with the comments on VRGameFog.java, the period is 100ms
     a.add_service_source("Coordinator", next_time_periodic, m_global_game_state, time_shift=100.0)
-    # MODULE SERVICES
+    # # MODULE SERVICES
     a.add_service_module("Client", m_egg, m_sensor, fractional_selectivity, threshold=0.9)
     a.add_service_module("Client", m_concentration, m_self_state_update, fractional_selectivity, threshold=1.0)
     a.add_service_module("Client", m_global_game_state, m_global_state_update, fractional_selectivity, threshold=1.0)
@@ -91,7 +91,7 @@ def create_json_topology(numOfDepts,numOfMobilesPerDept):
     proxy_dev = {"id":id, "model": "Proxy-server", "IPT": 2800* 10 ^ 6, "RAM": 4000,
                  "COST": 3,"WATT":40.0}
 
-    topology_json = {"entity": [cloud_dev, proxy_dev], "link": [{"s": 0, "d": 1, "BW": 10000, "PR": 100}]}
+    topology_json = {"entity": [cloud_dev, proxy_dev], "link": [{"s": 0, "d": 1, "BW": 10000, "PR": 14}]}
     id += 1
 
     for idx in range(numOfDepts):
@@ -99,7 +99,7 @@ def create_json_topology(numOfDepts,numOfMobilesPerDept):
         gw = id
         topology_json["entity"].append(
             {"id": id, "model": "d-", "IPT": 2800 * 10 ^ 6, "RAM": 4000, "COST": 3,"WATT":40.0})
-        topology_json["link"].append({"s": 1, "d": id, "BW": 100, "PR": 4})
+        topology_json["link"].append({"s": 1, "d": id, "BW": 100, "PR": 10})
         id += 1
 
         for idm in range(numOfMobilesPerDept):
@@ -112,7 +112,7 @@ def create_json_topology(numOfDepts,numOfMobilesPerDept):
             # SENSOR
             topology_json["entity"].append(
                 {"id": id, "model": "s", "COST": 0,"WATT":0.0})
-            topology_json["link"].append({"s": id - 1, "d": id, "BW": 100, "PR": 6})
+            topology_json["link"].append({"s": id - 1, "d": id, "BW": 100, "PR": 4})
             id += 1
             # ACTUATOR
             topology_json["entity"].append(
@@ -158,12 +158,13 @@ def main(simulated_time,depth,police):
     if police == "cloud":
         print "cloud"
         placement = CloudPlacement("onCloud")
+        placement.scaleService(
+            {"Calculator": numOfDepts * numOfMobilesPerDept, "Coordinator": 1})
     else:
         print "EDGE"
         placement = FogPlacement("onProxies")
-
-    placement.scaleService(
-        {"Calculator": numOfMobilesPerDept, "Coordinator": numOfDepts * numOfMobilesPerDept})
+        placement.scaleService(
+            {"Calculator": numOfMobilesPerDept, "Coordinator": 1})
 
     # placement = ClusterPlacement("onCluster", activation_dist=next_time_periodic, time_shift=600)
     """
@@ -181,14 +182,17 @@ def main(simulated_time,depth,police):
     pop.set_sink_control({"model": "a","number":1,"module":app.get_sink_modules()})
 
     #In addition, a source includes a distribution function:
-    pop.set_src_control({"model": "s", "number":1,"message": app.get_message("M.EGG"), "distribution": deterministicDistribution,"param": {"time_shift": 40}})#5.1}})
+    pop.set_src_control({"model": "s", "number":1,"message": app.get_message("M.EGG"), "distribution": deterministicDistribution,"param": {"time_shift": 100}})
 
     """--
     SELECTOR algorithm
     """
     #Their "selector" is actually the shortest way, there is not type of orchestration algorithm.
     #This implementation is already created in selector.class,called: First_ShortestPath
-    selectorPath = BroadPath(numOfMobilesPerDept,police)
+    if police == "cloud":
+        selectorPath = CloudPath_RR()
+    else:
+        selectorPath = BroadPath(numOfMobilesPerDept)
 
     """
     SIMULATION ENGINE
@@ -214,13 +218,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.time:
-        stop_time = 10000
+        stop_time =  1000
     else:
         stop_time = int(args.time)
 
     start_time = time.time()
     if not args.depth:
-        dep  = 4
+        dep  = 2
     else:
         dep = int(args.depth)
 
