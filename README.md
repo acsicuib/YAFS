@@ -30,7 +30,7 @@ YAFS requires Python 2.7, PyPy 2.0 or above.
 You can install YAFS easily via [pip](<http://pypi.python.org/pypi/pip>):
 
 ```bash
-    $ pip install -U yafs
+    $ pip install yafs
 ```
 
 You can also download and install YAFS manually:
@@ -56,21 +56,10 @@ The [documentation](https://yafs.readthedocs.io/en/latest/) contains a [tutorial
 concepts, a number of [examples](https://yafs.readthedocs.io/en/latest/examples/index.html) and the [API reference](https://yafs.readthedocs.io/en/latest/api_reference/index.html).
 
 
-For more help, contact the YAFS [mailing
-list](mailto:python-yafs@googlegroups.com). You must dig through the [source code](https://github.com/wisaaco/YAFS)
-
-
-
-Similar simulators
-------------------
-
-Some similar simulators are in:
-
-- [CloudSim](<http://www.cloudbus.org/cloudsim/>) (JAVA)
-
+For more help, contact with the authors or You must dig through the [source code](https://github.com/acsicuib/YAFS)
 
 
 Acknowledge
 -----------
 
-Authors acknowledge financial support through project ORD-CoT (TIN2017-88547-P MINECO, SPAIN).
+Authors acknowledge financial support through project ORDCOT TIN2017-88547-P (AEI/FEDER, UE)

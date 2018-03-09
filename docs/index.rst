@@ -52,6 +52,16 @@ The documentation contains a :ref:`tutorial <intro>`, :ref:`architecture details
 
 YAFS is released under the MIT License.
 
+Installation
+^^^^^^^^^^^^
+The most simple way to install yafs library is using pip installer.
+
+.. code-block:: python
+
+   sudo pip install yafs
+
+
+
 Cite this work
 ^^^^^^^^^^^^^^
 
@@ -64,6 +74,9 @@ Please, consider including this reference in your works or publications:
 .. code-block:: python
 
     PENDING
+
+Please let it knows us if you use this project in your research. We will cite them. Thank you
+
 
 ===========
 Acknowledge

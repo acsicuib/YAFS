@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 
 from yafs.metrics import Metrics
-import csv
-import json
+
 
 class Stats:
 

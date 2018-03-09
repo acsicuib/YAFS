@@ -4,19 +4,21 @@ from setuptools import setup, find_packages
 
 setup(
     name='yafs',
-    version='0.1',
+    version='0.1.1',
     author='Isaac Lera, Carlos Guerrero',
-    author_email='isaac.lera at uib.es; carlos.guerrero at uib.es',
+    author_email='isaac.lera@uib.es, carlos.guerrero@ouib.es',
     description='Yet Another Fog Simulator for Python.',
     long_description='\n\n'.join(
         open(f, 'rb').read().decode('utf-8')
-        for f in ['README.md', 'CHANGES.txt', 'AUTHORS.txt']),
+        for f in ['README.txt', 'CHANGES.txt', 'AUTHORS.txt']),
     url='https://yafs.readthedocs.io',
     license='MIT License',
-    packages=find_packages(where='src'),
+    #packages=find_packages(where='src',exclude=("*.tests",)),
+    packages=find_packages(where='src',exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_dir={'': 'src'},
     include_package_data=True,
-    install_requires=['simpy','pandas','networkx','tinydb'],
+
+    install_requires=['simpy','pandas','networkx','numpy','tqdm'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

@@ -8,7 +8,7 @@
 """
 
 import logging
-from application import Application
+
 
 class Placement(object):
     """

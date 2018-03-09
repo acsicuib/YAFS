@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-import matplotlib.pyplot as plt
-import numpy as np
-import random as rnd
 
 
 import networkx as nx
 
-from networkx.drawing.nx_agraph import write_dot, graphviz_layout
 
 
 

@@ -249,7 +249,7 @@ jQuery.extend({
 
 	noop: function() {},
 
-	// See test/unit/core.js for details concerning isFunction.
+	// See tests/unit/core.js for details concerning isFunction.
 	// Since version 1.3, DOM methods and functions like alert
 	// aren't supported. They return false on IE (#2968).
 	isFunction: function( obj ) {
@@ -1113,7 +1113,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Support: IE<10
 	// Check if getElementById returns elements by name
 	// The broken getElementById methods don't pick up programatically-set names,
-	// so use a roundabout getElementsByName test
+	// so use a roundabout getElementsByName tests
 	support.getById = assert(function( div ) {
 		docElem.appendChild( div ).id = expando;
 		return !doc.getElementsByName || !doc.getElementsByName( expando ).length;
@@ -1202,7 +1202,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		// Regex strategy adopted from Diego Perini
 		assert(function( div ) {
 			// Select is set to empty string on purpose
-			// This is to test IE's treatment of not explicitly
+			// This is to tests IE's treatment of not explicitly
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// http://bugs.jquery.com/ticket/12359
@@ -1210,7 +1210,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 			// Support: IE8, Opera 11-12.16
 			// Nothing should be selected when empty strings follow ^= or $= or *=
-			// The test attribute must be unknown in Opera but "safe" for WinRT
+			// The tests attribute must be unknown in Opera but "safe" for WinRT
 			// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
 			if ( div.querySelectorAll("[msallowclip^='']").length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
@@ -3550,7 +3550,7 @@ for ( i in jQuery( support ) ) {
 support.ownLast = i !== "0";
 
 // Note: most support tests are defined in their respective modules.
-// false until the test is run
+// false until the tests is run
 support.inlineBlockNeedsLayout = false;
 
 // Execute ASAP in case we need to set body.style.zoom
@@ -3595,7 +3595,7 @@ jQuery(function() {
 (function() {
 	var div = document.createElement( "div" );
 
-	// Execute the test only if not already executed in another module.
+	// Execute the tests only if not already executed in another module.
 	if (support.deleteExpando == null) {
 		// Support: IE<9
 		support.deleteExpando = true;
@@ -4213,7 +4213,7 @@ var rcheckableType = (/^(?:checkbox|radio)$/i);
 		div.cloneNode( true ).click();
 	}
 
-	// Execute the test only if not already executed in another module.
+	// Execute the tests only if not already executed in another module.
 	if (support.deleteExpando == null) {
 		// Support: IE<9
 		support.deleteExpando = true;
@@ -4568,7 +4568,7 @@ jQuery.event = {
 				jQuery.acceptData( elem ) ) {
 
 				// Call a native DOM method on the target with the same name name as the event.
-				// Can't use an .isFunction() check here because IE6/7 fails that test.
+				// Can't use an .isFunction() check here because IE6/7 fails that tests.
 				// Don't do default actions on window, that's where global variables be (#6170)
 				if ( ontype && elem[ type ] && !jQuery.isWindow( elem ) ) {
 
@@ -6225,7 +6225,7 @@ function addGetHookIf( conditionFn, hookFn ) {
 			var condition = conditionFn();
 
 			if ( condition == null ) {
-				// The test was not ready at this point; screw the hook this time
+				// The tests was not ready at this point; screw the hook this time
 				// but check again when needed next time.
 				return;
 			}
@@ -6238,7 +6238,7 @@ function addGetHookIf( conditionFn, hookFn ) {
 				return;
 			}
 
-			// Hook needed; redefine it so that the support test is not executed again.
+			// Hook needed; redefine it so that the support tests is not executed again.
 
 			return (this.get = hookFn).apply( this, arguments );
 		}
