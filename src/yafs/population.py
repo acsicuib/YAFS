@@ -76,10 +76,8 @@ class Population(object):
             sim (:mod: yafs.core.Sim)
         """
         self.logger.debug("Activiting - RUN - Population")
-        """ Define Population evolution """
+        """ User definition of the Population evolution """
 
-
-        """ End """
 
 class Statical(Population):
     """

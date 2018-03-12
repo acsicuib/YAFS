@@ -10,11 +10,12 @@ import argparse
 from yafs.core import Sim
 from yafs.application import Application,Message
 
-from yafs.population import *
 from yafs.topology import Topology
 
 from simpleSelection import MinPath_RoundRobin
 from simplePlacement import CloudPlacement
+from evolutivePopulationTopology import SimpleDynamicChanges
+
 from yafs.utils import *
 from yafs.stats import Stats
 import time
@@ -63,15 +64,19 @@ def create_json_topology():
     topology_json["entity"] = []
     topology_json["link"] = []
 
-    cloud_dev    = {"id": 0, "model": "cloud","mytag":"cloud", "IPT": 5000 * 10 ^ 6, "RAM": 40000,"COST": 3,"WATT":20.0}
-    sensor_dev   = {"id": 1, "model": "sensor-device", "IPT": 100* 10 ^ 6, "RAM": 4000,"COST": 3,"WATT":40.0}
-    actuator_dev = {"id": 2, "model": "actuator-device", "IPT": 100 * 10 ^ 6, "RAM": 4000,"COST": 3, "WATT": 40.0}
+    cloud_dev    = {"id": 0, "model": "cloud",          "mytag":"cloud", "IPT": 5000 * 10 ^ 6, "RAM": 40000,"COST": 3,"WATT":20.0}
+    sensor_dev1  = {"id": 1, "model": "sensor-device-1", "IPT": 100* 10 ^ 6, "RAM": 4000,"COST": 3,"WATT":40.0}
+    sensor_dev2  = {"id": 2, "model": "sensor-device-2", "IPT": 100 * 10 ^ 6, "RAM": 4000, "COST": 3, "WATT": 40.0}
+    sensor_dev3  = {"id": 3, "model": "sensor-device-3", "IPT": 100 * 10 ^ 6, "RAM": 4000, "COST": 3, "WATT": 40.0}
+    actuator_dev = {"id": 4, "model": "actuator-device", "IPT": 100 * 10 ^ 6, "RAM": 4000,"COST": 3, "WATT": 40.0}
 
     link1 = {"s": 0, "d": 1, "BW": 1, "PR": 10}
-    link2 = {"s": 0, "d": 2, "BW": 1, "PR": 1}
+    link2 = {"s": 0, "d": 4, "BW": 1, "PR": 1}
 
     topology_json["entity"].append(cloud_dev)
-    topology_json["entity"].append(sensor_dev)
+    topology_json["entity"].append(sensor_dev1)
+    topology_json["entity"].append(sensor_dev2)
+    topology_json["entity"].append(sensor_dev3)
     topology_json["entity"].append(actuator_dev)
     topology_json["link"].append(link1)
     topology_json["link"].append(link2)
@@ -102,14 +107,16 @@ def main(simulated_time):
     PLACEMENT algorithm
     """
     placement = CloudPlacement("onCloud") # it defines the deployed rules: module-device
-    placement.scaleService({"ServiceA": 4})
+    placement.scaleService({"ServiceA": 2})
 
     """
     POPULATION algorithm
     """
     #In ifogsim, during the creation of the application, the Sensors are assigned to the topology, in this case no. As mentioned, YAFS differentiates the adaptive sensors and their topological assignment.
     #In their case, the use a statical assignment.
-    pop = Statical("Statical")
+    pop = SimpleDynamicChanges("Dynamic",activation_dist=deterministicDistribution,time_shift=300)
+
+    #, activation_dist = deterministicDistribution, time_shift = 100.0)
     #For each type of sink modules we set a deployment on some type of devices
     #A control sink consists on:
     #  args:
@@ -119,7 +126,17 @@ def main(simulated_time):
     pop.set_sink_control({"model": "actuator-device","number":2,"module":app.get_sink_modules()})
 
     #In addition, a source includes a distribution function:
-    pop.set_src_control({"model": "sensor-device", "number":1,"message": app.get_message("M.A"), "distribution": deterministicDistribution,"param": {"time_shift": 100}})#5.1}})
+    pop.set_src_control({"model": "sensor-device-1", "number":1,"message": app.get_message("M.A"), "distribution": deterministicDistribution,"param": {"time_shift": 100}})
+
+
+    """
+    Topology and Changes on the population dynamically
+
+    Population, Placement can be run in simulation time according with a distribution function
+    """
+
+
+
 
     """--
     SELECTOR algorithm
@@ -138,7 +155,7 @@ def main(simulated_time):
 
     s.run(stop_time,show_progress_monitor=False)
 
-    s.draw_allocated_topology() # for debugging
+    #s.draw_allocated_topology() # This implementation does not work when there is some node not linked
 
 if __name__ == '__main__':
     import logging.config

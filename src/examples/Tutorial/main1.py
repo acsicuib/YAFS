@@ -1,10 +1,5 @@
 """
 
-    This example is an implementation of "VRGameFog.java [#f1]_  of EGG_GAME a latency-sensitive online game" presented in [#f2]_ (first case study).
-
-    .. [#f1] https://github.com/wolfbrother/iFogSim/blob/master/src/org/fog/examples/VRGameFog.java
-    .. [#f2] Gupta, H., Vahid Dastjerdi, A., Ghosh, S. K., & Buyya, R. (2017). iFogSim: A toolkit for modeling and simulation of resource management techniques in the Internet of Things, Edge and Fog computing environments. Software: Practice and Experience, 47(9), 1275-1296.
-
     Created on Wed Nov 22 15:03:21 2017
 
     @author: isaac

@@ -102,10 +102,14 @@ class Sim:
         # for app.nmae
         # self.process_topology = {}
 
-        self.source_id_running = {}
+        self.des_process_running = {}
         # Start/stop flag for each pure source
         # key: id.source.process
         # value: Boolean
+
+        self.des_control_process = {}
+        # key: app.name
+        # value: des process
 
         self.alloc_source = {}
         """
@@ -292,8 +296,11 @@ class Sim:
         A DES-process who controls the invocation of Placement.run
         """
         myId = self.__get_id_process()
+        self.des_process_running[myId] = True
+        self.des_control_process[placement.name]=myId
+
         self.logger.debug("Added_Process - Placement Algorithm\t#DES:%i" % myId)
-        while not self.stop:
+        while not self.stop and self.des_process_running[myId]:
             yield self.env.timeout(placement.get_next_activation())
             placement.run(self)
             self.logger.debug("(DES:%i) %7.4f Run - Placement Policy: %s " % (myId, self.env.now, self.stop))  # Rewrite
@@ -304,8 +311,11 @@ class Sim:
         A DES-process who controls the invocation of Population.run
         """
         myId = self.__get_id_process()
+        self.des_process_running[myId] = True
+        self.des_control_process[population.name] = myId
+
         self.logger.debug("Added_Process - Population Algorithm\t#DES:%i" % myId)
-        while not self.stop:
+        while not self.stop and self.des_process_running[myId]:
             yield self.env.timeout(population.get_next_activation())
             self.logger.debug("(DES:%i) %7.4f Run - Population Policy: %s " % (myId, self.env.now, self.stop))  # REWRITE
             population.run(self)
@@ -316,7 +326,7 @@ class Sim:
         A DES-process who controls the invocation of several Pure Source Modules
         """
         self.logger.debug("Added_Process - Module Pure Source\t#DES:%i" % idDES)
-        while not self.stop and self.source_id_running[idDES]:
+        while not self.stop and self.des_process_running[idDES]:
             yield self.env.timeout(next_event(**param))
             self.logger.debug("(App:%s#DES:%i)\tModule - Generating Message: %s \t(T:%d)" % (name_app, idDES, message.name,self.env.now))
 
@@ -417,9 +427,9 @@ class Sim:
 
     def __add_down_node_process(self, next_event, **param):
         myId = self.__get_id_process()
+        self.des_process_running[myId] = True
         self.logger.debug("Added_Process - Down entity Creation\t#DES:%i" % myId)
-        while not self.stop:
-            # TODO Define function to REMOVE a new NODE in topology
+        while not self.stop and self.des_process_running[myId]:
             yield self.env.timeout(next_event(**param))
             self.logger.debug("(DES:%i) %7.4f Node " % (myId, self.env.now))
 
@@ -430,7 +440,7 @@ class Sim:
         It generates a DES process associated to a compute module for the generation of messages
         """
         self.logger.debug("Added_Process - Module Source: %s\t#DES:%i" % (module, idDES))
-        while (not self.stop) and self.source_id_running[idDES]:
+        while (not self.stop) and self.des_process_running[idDES]:
             yield self.env.timeout(next_event(**param))
             self.logger.debug(
                 "(App:%s#DES:%i#%s)\tModule - Generating Message:\t%s" % (app_name, idDES, module, message.name))
@@ -449,7 +459,7 @@ class Sim:
         It generates a DES process associated to a compute module
         """
         self.logger.debug("Added_Process - Module Consumer: %s\t#DES:%i" % (module, ides))
-        while not self.stop and self.source_id_running[ides]:
+        while not self.stop and self.des_process_running[ides]:
             msg = yield self.consumer_pipes["%s%s%i"%(app_name,module,ides)].get()
             # One pipe for each module name
 
@@ -526,7 +536,7 @@ class Sim:
         It generates a DES process associated to a SINK module
         """
         self.logger.debug("Added_Process - Module Pure Sink: %s\t#DES:%i" % (module, ides))
-        while not self.stop and self.source_id_running[ides]:
+        while not self.stop and self.des_process_running[ides]:
             msg = yield self.consumer_pipes["%s%s%i" % (app_name, module, ides)].get()
             """
             Processing the message
@@ -590,6 +600,10 @@ class Sim:
     """
     SECTION FOR PUBLIC METHODS
     """
+
+    def get_DES(self,name):
+        return self.des_control_process[name]
+
     def deploy_monitor(self, name, function, distribution, **param):
         """
         Add a DES process for user purpose
@@ -636,7 +650,7 @@ class Sim:
 
         """
         idDES = self.__get_id_process()
-        self.source_id_running[idDES] = True
+        self.des_process_running[idDES] = True
         self.env.process(self.__add_source_population(idDES, app_name, msg, distribution, param))
         self.alloc_DES[idDES] = id_node
         self.alloc_source[idDES] = {"id":id_node,"app":app_name,"module":msg.src}
@@ -664,7 +678,7 @@ class Sim:
 
         """
         idDES = self.__get_id_process()
-        self.source_id_running[idDES] = True
+        self.des_process_running[idDES] = True
         self.env.process(self.__add_source_module(idDES, app_name, module,msg, distribution, **param))
         self.alloc_DES[idDES] = id_node
         return idDES
@@ -692,7 +706,7 @@ class Sim:
 
         """
         idDES = self.__get_id_process()
-        self.source_id_running[idDES] = True
+        self.des_process_running[idDES] = True
         self.env.process(self.__add_consumer_module(idDES,app_name, module,register_consumer_msg))
         # To generate the QUEUE of a SERVICE module
         self.__add_consumer_service_pipe(app_name, module, idDES)
@@ -718,7 +732,7 @@ class Sim:
             module (str): module
         """
         idDES = self.__get_id_process()
-        self.source_id_running[idDES] = True
+        self.des_process_running[idDES] = True
         self.alloc_DES[idDES] = node
         self.__add_consumer_service_pipe(app_name, module, idDES)
         # Update the relathionships among module-entity
@@ -729,7 +743,7 @@ class Sim:
         self.env.process(self.__add_sink_module(idDES,app_name, module))
 
 
-    def stop_source(self, id):
+    def stop_process(self, id):
         """
         All pure source modules (sensors) are controlled by this boolean.
         Using this function (:mod:`Population`) algorithm can stop one source
@@ -737,7 +751,7 @@ class Sim:
         Args:
             id.source (int): the identifier of the DES process.
         """
-        self.source_id_running[id] = False
+        self.des_process_running[id] = False
 
     def deploy_app(self, app, placement, population, selector):
         """
@@ -769,7 +783,7 @@ class Sim:
         if not population.name in self.population_policy.keys():  # First Time
             self.population_policy[population.name] = {"population_policy": population, "apps": []}
             if population.activation_dist is not None:
-                self.env.process(self.__add_population_process(placement))
+                self.env.process(self.__add_population_process(population))
         self.population_policy[population.name]["apps"].append(app.name)
 
         # Add Selection control to the App

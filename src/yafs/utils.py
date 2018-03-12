@@ -21,7 +21,6 @@ def next_time_periodic(time_shift):
 def deterministicDistribution(time_shift):
     return time_shift
 
-
 def fractional_selectivity(threshold):
     return random.random() <= threshold
 
