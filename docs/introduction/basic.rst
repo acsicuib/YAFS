@@ -31,7 +31,7 @@ In the definition of your devices, nodes,  you can include your custom tags.
 
 .. code-block:: python
 
-    from sim.topology import Topology
+    from yafs.topology import Topology
 
     topology_json = {}
     topology_json["entity"] = []
@@ -81,8 +81,8 @@ We illustrate this example using *EEG_GAME application* [#f1]_ following the ide
 .. code-block:: python
 
     import random
-    from sim.application import Application
-    from sim.application import Message
+    from yafs.application import Application
+    from yafs.application import Message
 
 
     def create_application():
@@ -131,7 +131,7 @@ The most simple case, it is a statical creation of requests. For each message of
 .. code-block:: python
 
 
-    from sim.population import Statical
+    from yafs.population import Statical
 
     pop = Statical("Statical")
     pop.set_src_control({"model": "sensor-device", "number":1,"message": app.get_message("M.A"), "distribution": deterministicDistribution,"param": {"time_shift": 100}})#5.1}})

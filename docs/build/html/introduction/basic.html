@@ -60,7 +60,7 @@
 </ul>
 <p>A network can be created using a json file or through more complex algorithms (see <a class="reference internal" href="../architecture/index.html#architecture"><span class="std std-ref">architecture details</span></a>).</p>
 <p>In the definition of your devices, nodes,  you can include your custom tags.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sim.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yafs.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
 
 <span class="n">topology_json</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">topology_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -104,8 +104,8 @@
 <p class="last">In <em>sim.utils</em> package there are defined several distributions</p>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">sim.application</span> <span class="kn">import</span> <span class="n">Application</span>
-<span class="kn">from</span> <span class="nn">sim.application</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">yafs.application</span> <span class="kn">import</span> <span class="n">Application</span>
+<span class="kn">from</span> <span class="nn">yafs.application</span> <span class="kn">import</span> <span class="n">Message</span>
 
 
 <span class="k">def</span> <span class="nf">create_application</span><span class="p">():</span>
@@ -146,7 +146,7 @@
 For that reason, each population model is associated to one application and it runs according to a set of events or time distribution.</p>
 <p>The association of controls to a node can be dynamic and this process is executed every certain time to change the creation policies associated with the nodes. The population model can be so complex as you wish. More advanced details in <a class="reference internal" href="../architecture/index.html#architecture"><span class="std std-ref">architecture details</span></a>.</p>
 <p>The most simple case, it is a statical creation of requests. For each message of a pure service source (or sensor), it will have a generation control associated to it.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sim.population</span> <span class="kn">import</span> <span class="n">Statical</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yafs.population</span> <span class="kn">import</span> <span class="n">Statical</span>
 
 <span class="n">pop</span> <span class="o">=</span> <span class="n">Statical</span><span class="p">(</span><span class="s2">&quot;Statical&quot;</span><span class="p">)</span>
 <span class="n">pop</span><span class="o">.</span><span class="n">set_src_control</span><span class="p">({</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;sensor-device&quot;</span><span class="p">,</span> <span class="s2">&quot;number&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">app</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="s2">&quot;M.A&quot;</span><span class="p">),</span> <span class="s2">&quot;distribution&quot;</span><span class="p">:</span> <span class="n">deterministicDistribution</span><span class="p">,</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;time_shift&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}})</span><span class="c1">#5.1}})</span>
