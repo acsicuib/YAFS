@@ -1,38 +1,39 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>yafs.topology &mdash; YAFS 0.1 documentation</title>
-    
+    <title>yafs.topology &#8212; YAFS 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="YAFS 0.1 documentation" href="../contents.html" />
-    <link rel="up" title="API REFERENCE" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="yafs.application" href="yafs.application.html" />
     <link rel="prev" title="yafs.core — Simulator engine" href="yafs.core.html" />
    
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -41,24 +42,6 @@
             
   <div class="section" id="module-yafs.topology">
 <span id="yafs-topology"></span><h1><code class="docutils literal"><span class="pre">yafs.topology</span></code><a class="headerlink" href="#module-yafs.topology" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="yafs.topology.Entity">
-<em class="property">class </em><code class="descclassname">yafs.topology.</code><code class="descname">Entity</code><a class="reference internal" href="../_modules/yafs/topology.html#Entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Entity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Different type of entities that there is in an environment. It is the abstract function that a node of the topology has.</p>
-<dl class="attribute">
-<dt id="yafs.topology.Entity.ENTITY_CLUSTER">
-<code class="descname">ENTITY_CLUSTER</code><em class="property"> = 'CLUSTER'</em><a class="headerlink" href="#yafs.topology.Entity.ENTITY_CLUSTER" title="Permalink to this definition">¶</a></dt>
-<dd><p>A node who is a cluster</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="yafs.topology.Entity.ENTITY_FOG">
-<code class="descname">ENTITY_FOG</code><em class="property"> = 'FOG'</em><a class="headerlink" href="#yafs.topology.Entity.ENTITY_FOG" title="Permalink to this definition">¶</a></dt>
-<dd><p>By default, all nodes are FOG Entities. All nodes can run a SERVICE</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="class">
 <dt id="yafs.topology.Topology">
 <em class="property">class </em><code class="descclassname">yafs.topology.</code><code class="descname">Topology</code><span class="sig-paren">(</span><em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology" title="Permalink to this definition">¶</a></dt>
@@ -128,21 +111,15 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="yafs.topology.Topology.draw_color">
-<code class="descname">draw_color</code><span class="sig-paren">(</span><em>disable_color=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.draw_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.draw_color" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw the network using matplotlib library</p>
-<p>Default Color is based on Centrality Value. Depending on the complexity of the network, this value can be expensive to obtain and the color option can be disabled.</p>
+<dt id="yafs.topology.Topology.find_IDs">
+<code class="descname">find_IDs</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.find_IDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.find_IDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for nodes with the same attributes that value</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>disable_color (boolean): Disables the coloring of the nodes.</dd>
+<dd>value (dict). example value = {“model”: “m-“}. Only one key is admitted</dd>
+<dt>Returns:</dt>
+<dd>A list with the ID of each node that have the same attribute that the value.value</dd>
 </dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="yafs.topology.Topology.get_centrality">
-<code class="descname">get_centrality</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_centrality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.get_centrality" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function returns the centrality of each node.
-It is an example of how to obtain topological features of the network.</p>
 </dd></dl>
 
 <dl class="method">
@@ -161,7 +138,7 @@ It is an example of how to obtain topological features of the network.</p>
 <code class="descname">get_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.get_edges" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Returns:</dt>
-<dd>list: a list of graph edges, i.e.: ((1,0),(0,2),...)</dd>
+<dd>list: a list of graph edges, i.e.: ((1,0),(0,2),…)</dd>
 </dl>
 </dd></dl>
 
@@ -215,68 +192,6 @@ It is an example of how to obtain topological features of the network.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="yafs.topology.Topology.set_cluster_nodes_centrality">
-<code class="descname">set_cluster_nodes_centrality</code><span class="sig-paren">(</span><em>density=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.set_cluster_nodes_centrality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.set_cluster_nodes_centrality" title="Permalink to this definition">¶</a></dt>
-<dd><p>It selects a percentage of nodes as a Entity.Cluster according with network centrality</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>density (float): a percentage of nodes</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="yafs.topology.Topology.set_cluster_nodes_fix">
-<code class="descname">set_cluster_nodes_fix</code><span class="sig-paren">(</span><em>nodes=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.set_cluster_nodes_fix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.set_cluster_nodes_fix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines a list of nodes as a Entity.cluster</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>nodes (list): a list of nodes&#8217; identifiers</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="yafs.topology.Topology.set_cluster_nodes_random">
-<code class="descname">set_cluster_nodes_random</code><span class="sig-paren">(</span><em>prob=0.1</em>, <em>min=1</em>, <em>max=-1</em>, <em>seed=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.set_cluster_nodes_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.set_cluster_nodes_random" title="Permalink to this definition">¶</a></dt>
-<dd><p>Randomly chooses a number of nodes as cluster entities</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">prob (float): probability of selecting a node as a cluster</p>
-<p>min (int): minimum number of cluster nodes, by default, one</p>
-<p>max (int): maximum number of cluster nodes, by default, (-1) those that arise</p>
-<p class="last">seed (int): random seed</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="yafs.topology.Topology.set_edges_NonUniformAtt">
-<code class="descname">set_edges_NonUniformAtt</code><span class="sig-paren">(</span><em>attr</em>, <em>values</em>, <em>p</em>, <em>seed=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.set_edges_NonUniformAtt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.set_edges_NonUniformAtt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assigns one attribute to edges the values according with a non uniform distribution  (list of probabilities-values)</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">attr (str): attribute identifier</p>
-<p>values (list): a list of possible values</p>
-<p>p (list): a list of</p>
-<p class="last">seed (int): random seed, by default 0</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="yafs.topology.Topology.set_nodes_NonUniformAtt">
-<code class="descname">set_nodes_NonUniformAtt</code><span class="sig-paren">(</span><em>attr</em>, <em>fogp</em>, <em>clusterp=[]</em>, <em>seed=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.set_nodes_NonUniformAtt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.set_nodes_NonUniformAtt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assigns models of devices to nodes according with non uniform distribution</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">attr (dict)</p>
-<p>fogp (list) odds of choosing one of fogs devices</p>
-<p>clusterp (list) odds of choosing one of cluster devices</p>
-<p class="last">seed (int): random seed, by default 0</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="yafs.topology.Topology.size">
 <code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.size" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
@@ -298,13 +213,14 @@ It is an example of how to obtain topological features of the network.</p>
 <h3><a href="../contents.html">Table Of Contents</a></h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">OVERVIEW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#acknowledge">Acknowledge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">YAFS in 5 Minutes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API REFERENCE</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="yafs.html"><code class="docutils literal"><span class="pre">yafs</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.core.html"><code class="docutils literal"><span class="pre">yafs.core</span></code> &#8212; Simulator engine</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">yafs.topology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.core.html"><code class="docutils literal"><span class="pre">yafs.core</span></code> — Simulator engine</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">yafs.topology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.application.html"><code class="docutils literal"><span class="pre">yafs.application</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
@@ -319,7 +235,7 @@ It is an example of how to obtain topological features of the network.</p>
 <ul>
   <li><a href="../contents.html">Documentation overview</a><ul>
   <li><a href="index.html">API REFERENCE</a><ul>
-      <li>Previous: <a href="yafs.core.html" title="previous chapter"><code class="docutils literal"><span class="pre">yafs.core</span></code> &#8212; Simulator engine</a></li>
+      <li>Previous: <a href="yafs.core.html" title="previous chapter"><code class="docutils literal"><span class="pre">yafs.core</span></code> — Simulator engine</a></li>
       <li>Next: <a href="yafs.application.html" title="next chapter"><code class="docutils literal"><span class="pre">yafs.application</span></code></a></li>
   </ul></li>
   </ul></li>
@@ -328,14 +244,11 @@ It is an example of how to obtain topological features of the network.</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -346,11 +259,11 @@ It is an example of how to obtain topological features of the network.</p>
       &copy;2017, Isaac Lera, Carlos Guerrero.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="../_sources/api_reference/yafs.topology.txt"
+      <a href="../_sources/api_reference/yafs.topology.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

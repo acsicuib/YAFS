@@ -1,38 +1,39 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>yafs.core — Simulator engine &mdash; YAFS 0.1 documentation</title>
-    
+    <title>yafs.core — Simulator engine &#8212; YAFS 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="YAFS 0.1 documentation" href="../contents.html" />
-    <link rel="up" title="API REFERENCE" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="yafs.topology" href="yafs.topology.html" />
     <link rel="prev" title="yafs" href="yafs.html" />
    
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -40,11 +41,11 @@
           <div class="body" role="main">
             
   <div class="section" id="module-yafs.core">
-<span id="yafs-core-simulator-engine"></span><h1><code class="docutils literal"><span class="pre">yafs.core</span></code> &#8212; Simulator engine<a class="headerlink" href="#module-yafs.core" title="Permalink to this headline">¶</a></h1>
+<span id="yafs-core-simulator-engine"></span><h1><code class="docutils literal"><span class="pre">yafs.core</span></code> — Simulator engine<a class="headerlink" href="#module-yafs.core" title="Permalink to this headline">¶</a></h1>
 <p>This module unifies the event-discrete simulation environment with the rest of modules: placement, topology, selection, population, utils and metrics.</p>
 <dl class="class">
 <dt id="yafs.core.Sim">
-<em class="property">class </em><code class="descclassname">yafs.core.</code><code class="descname">Sim</code><span class="sig-paren">(</span><em>topology</em>, <em>name_register='events_log.json'</em>, <em>purge_register=True</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">yafs.core.</code><code class="descname">Sim</code><span class="sig-paren">(</span><em>topology</em>, <em>name_register='events_log.json'</em>, <em>link_register='links_log.json'</em>, <em>redis=None</em>, <em>purge_register=True</em>, <em>logger=None</em>, <em>default_results_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class contains the cloud event-discrete simulation environment and it controls the structure variables.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -57,26 +58,40 @@
 </dl>
 <p><strong>Main variables to coordinate with algorithm:</strong></p>
 <dl class="attribute">
-<dt id="yafs.core.Sim.assignaments_app_module">
-<code class="descname">assignaments_app_module</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.assignaments_app_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Represents the deployment of a module in an entity of the topology.</p>
+<dt id="yafs.core.Sim.alloc_DES">
+<code class="descname">alloc_DES</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.alloc_DES" title="Permalink to this definition">¶</a></dt>
+<dd><p>The relationship between DES process and topology.node.id</p>
+<p>It is necessary to identify the message.source (topology.node)
+1.N. DES process -&gt; 1. topology.node</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.core.Sim.alloc_module">
+<code class="descname">alloc_module</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.alloc_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the deployment of a module in a DES PROCESS each DES has a one topology.node.id (see alloc_des var.)</p>
 <p>It used for (<code class="xref py py-mod docutils literal"><span class="pre">Placement</span></code>) class interaction.</p>
-<p>A dictionary where the key is an app.name and value is a dictionary with key is a module and value an array with entitiy identifiers</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;EGG_GAME&quot;</span><span class="p">:{</span><span class="s2">&quot;Controller&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span><span class="s2">&quot;Client&quot;</span><span class="p">:[</span><span class="mi">4</span><span class="p">]}}</span>
+<p>A dictionary where the key is an app.name and value is a dictionary with key is a module and value an array of id DES process</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;EGG_GAME&quot;</span><span class="p">:{</span><span class="s2">&quot;Controller&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span><span class="s2">&quot;Client&quot;</span><span class="p">:[</span><span class="mi">4</span><span class="p">]}}</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="yafs.core.Sim.db">
-<code class="descname">db</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the database where all events are recorded</p>
+<dt id="yafs.core.Sim.alloc_source">
+<code class="descname">alloc_source</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.alloc_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relationship of pure source with topology entity</p>
+<p>id.source.process -&gt; value: dict(“id”,”app”,”module”)</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">alloc_source</span><span class="p">[</span><span class="mi">34</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">id_node</span><span class="p">,</span><span class="s2">&quot;app&quot;</span><span class="p">:</span><span class="n">app_name</span><span class="p">,</span><span class="s2">&quot;module&quot;</span><span class="p">:</span><span class="n">source</span> <span class="n">module</span><span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="yafs.core.Sim.deploy_app">
 <code class="descname">deploy_app</code><span class="sig-paren">(</span><em>app</em>, <em>placement</em>, <em>population</em>, <em>selector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.deploy_app" title="Permalink to this definition">¶</a></dt>
-<dd><p>This process is responsible for linking the application to the different algorithms, and internally generates DES processes.</p>
+<dd><p>This process is responsible for linking the <em>application</em> to the different algorithms (placement, population, and service)</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd><p class="first">app (object): <code class="xref py py-mod docutils literal"><span class="pre">Application</span></code> class</p>
@@ -94,7 +109,7 @@
 <dl class="docutils">
 <dt>Args:</dt>
 <dd><p class="first">name (string) name of monitor</p>
-<p>function (function): function that will be invoked within the simulator with the user&#8217;s code</p>
+<p>function (function): function that will be invoked within the simulator with the user’s code</p>
 <p class="last">distribution (function): a temporary distribution function</p>
 </dd>
 <dt>Kwargs:</dt>
@@ -106,26 +121,25 @@
 <dt id="yafs.core.Sim.deploy_sink">
 <code class="descname">deploy_sink</code><span class="sig-paren">(</span><em>app_name</em>, <em>node</em>, <em>module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_sink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.deploy_sink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a DES process for deploy pure SINK modules (actuators)
-This function its used by (<code class="xref py py-mod docutils literal"><span class="pre">Placement</span></code>): algorithm</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">app_name (str): application name</p>
+This function its used by (<code class="xref py py-mod docutils literal"><span class="pre">Placement</span></code>): algorithm
+Internatlly, there is not a DES PROCESS for this type of behaviour
+Args:</p>
+<blockquote>
+<div><p>app_name (str): application name</p>
 <p>node (int): entity.id of the topology who will create the messages</p>
-<p class="last">module (str): module</p>
-</dd>
-</dl>
+<p>module (str): module</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="yafs.core.Sim.deploy_source">
-<code class="descname">deploy_source</code><span class="sig-paren">(</span><em>id</em>, <em>app_name</em>, <em>node</em>, <em>msg</em>, <em>distribution</em>, <em>param</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.deploy_source" title="Permalink to this definition">¶</a></dt>
+<code class="descname">deploy_source</code><span class="sig-paren">(</span><em>app_name</em>, <em>id_node</em>, <em>msg</em>, <em>distribution</em>, <em>param</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.deploy_source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a DES process for deploy pure source modules (sensors)
 This function its used by (<code class="xref py py-mod docutils literal"><span class="pre">Population</span></code>) algorithm</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd><p class="first">id (int): an unique identifier.</p>
-<p>app_name (str): application name</p>
-<p>node (int): entity.id of the topology who will create the messages</p>
+<dd><p class="first">app_name (str): application name</p>
+<p>id_node (int): entity.id of the topology who will create the messages</p>
 <p class="last">distribution (function): a temporary distribution function</p>
 </dd>
 <dt>Kwargs:</dt>
@@ -147,15 +161,27 @@ This function its used by (<code class="xref py py-mod docutils literal"><span c
 <dd><p>the discrete-event simulator (aka DES)</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="yafs.core.Sim.metrics">
+<code class="descname">metrics</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the database where all events are recorded</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.core.Sim.print_debug_assignaments">
+<code class="descname">print_debug_assignaments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.print_debug_assignaments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.print_debug_assignaments" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions prints debug information about the assignment of DES process - Topology ID - Source Module or Modules</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="yafs.core.Sim.register_event_entity">
-<code class="descname">register_event_entity</code><span class="sig-paren">(</span><em>next_event_dist</em>, <em>type_entity='FOG'</em>, <em>event_type='node_up'</em>, <em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.register_event_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.register_event_entity" title="Permalink to this definition">¶</a></dt>
+<code class="descname">register_event_entity</code><span class="sig-paren">(</span><em>next_event_dist</em>, <em>event_type='node_up'</em>, <em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.register_event_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.register_event_entity" title="Permalink to this definition">¶</a></dt>
 <dd><p>TODO</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="yafs.core.Sim.run">
-<code class="descname">run</code><span class="sig-paren">(</span><em>until=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.run" title="Permalink to this definition">¶</a></dt>
+<code class="descname">run</code><span class="sig-paren">(</span><em>until</em>, <em>test_initial_deploy=False</em>, <em>show_progress_monitor=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the simulation</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -170,8 +196,8 @@ This function its used by (<code class="xref py py-mod docutils literal"><span c
 </dd></dl>
 
 <dl class="method">
-<dt id="yafs.core.Sim.stop_source">
-<code class="descname">stop_source</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.stop_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.stop_source" title="Permalink to this definition">¶</a></dt>
+<dt id="yafs.core.Sim.stop_process">
+<code class="descname">stop_process</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.stop_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.stop_process" title="Permalink to this definition">¶</a></dt>
 <dd><p>All pure source modules (sensors) are controlled by this boolean.
 Using this function (<code class="xref py py-mod docutils literal"><span class="pre">Population</span></code>) algorithm can stop one source</p>
 <dl class="docutils">
@@ -193,12 +219,13 @@ Using this function (<code class="xref py py-mod docutils literal"><span class="
 <h3><a href="../contents.html">Table Of Contents</a></h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">OVERVIEW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#acknowledge">Acknowledge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">YAFS in 5 Minutes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API REFERENCE</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="yafs.html"><code class="docutils literal"><span class="pre">yafs</span></code></a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">yafs.core</span></code> &#8212; Simulator engine</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">yafs.core</span></code> — Simulator engine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.topology.html"><code class="docutils literal"><span class="pre">yafs.topology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.application.html"><code class="docutils literal"><span class="pre">yafs.application</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
@@ -223,14 +250,11 @@ Using this function (<code class="xref py py-mod docutils literal"><span class="
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -241,11 +265,11 @@ Using this function (<code class="xref py py-mod docutils literal"><span class="
       &copy;2017, Isaac Lera, Carlos Guerrero.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="../_sources/api_reference/yafs.core.txt"
+      <a href="../_sources/api_reference/yafs.core.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

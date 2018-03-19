@@ -1,36 +1,37 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>yafs.placement &mdash; YAFS 0.1 documentation</title>
-    
+    <title>yafs.placement &#8212; YAFS 0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
         VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="YAFS 0.1 documentation" href="../../contents.html" />
-    <link rel="up" title="Module code" href="../index.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
    
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -49,7 +50,8 @@
 
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<div class="viewcode-block" id="Placement"><a class="viewcode-back" href="../../api_reference/yafs.placement.html#yafs.placement.Placement">[docs]</a><span class="k">class</span> <span class="nc">Placement</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Placement"><a class="viewcode-back" href="../../api_reference/yafs.placement.html#yafs.placement.Placement">[docs]</a><span class="k">class</span> <span class="nc">Placement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A placement (or allocation) algorithm controls where to locate the service modules and their replicas in the different nodes of the topology, according to load criteria, or other objectives.</span>
 
@@ -65,19 +67,16 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">activation_dist</span><span class="p">,</span><span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="o">**</span><span class="n">param</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">activation_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">param</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">activation_dist</span> <span class="o">=</span> <span class="n">activation_dist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sink_control</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaleServices</span> <span class="o">=</span> <span class="p">[]</span>
 
 
-<div class="viewcode-block" id="Placement.set_sink_control"><a class="viewcode-back" href="../../api_reference/yafs.placement.html#yafs.placement.Placement.set_sink_control">[docs]</a>    <span class="k">def</span> <span class="nf">set_sink_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A placement algorithm also controls the localization of sink modules</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sink_control</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">scaleService</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">scale</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaleServices</span> <span class="o">=</span> <span class="n">scale</span>
 
 <div class="viewcode-block" id="Placement.get_next_activation"><a class="viewcode-back" href="../../api_reference/yafs.placement.html#yafs.placement.Placement.get_next_activation">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -87,12 +86,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation_dist</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Placement.initial_allocation"><a class="viewcode-back" href="../../api_reference/yafs.placement.html#yafs.placement.Placement.initial_allocation">[docs]</a>    <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sim</span><span class="p">):</span>
+<div class="viewcode-block" id="Placement.initial_allocation"><a class="viewcode-back" href="../../api_reference/yafs.placement.html#yafs.placement.Placement.initial_allocation">[docs]</a>    <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sim</span><span class="p">,</span><span class="n">app_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given an ecosystem, it starts the allocation of modules in the topology.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sim (:mod:yafs.core.Sim)</span>
+<span class="sd">            app_name (String)</span>
 
 <span class="sd">        .. attention:: override required</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
@@ -105,7 +105,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            sim (:mod: yafs.core.Sim)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Activiting - Placement&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Activiting - RUN - Placement&quot;</span><span class="p">)</span></div></div>
 
 
 
@@ -116,38 +116,77 @@
 <span class="sd">    It only runs once, in the initialization.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sim</span><span class="p">):</span>
-        <span class="c1">#Ideal to put all modules in one clusterNodes, thus, links &lt; bw</span>
-        <span class="c1">#SELECTION OF CLUSTER</span>
-        <span class="c1">#We loook for the most cheaper cluster</span>
-        <span class="c1">#The cluster has the computational resources to serve the whole apps</span>
-        <span class="n">cheapest_cost</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
-        <span class="n">id_cheapest</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">clusterNodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cheapest_cost</span> <span class="o">&gt;=</span> <span class="n">sim</span><span class="o">.</span><span class="n">entity_metrics</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">][</span><span class="nb">id</span><span class="p">][</span><span class="s2">&quot;COST&quot;</span><span class="p">]:</span>
-                <span class="n">cheapest_cost</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">entity_metrics</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">][</span><span class="nb">id</span><span class="p">][</span><span class="s2">&quot;COST&quot;</span><span class="p">]</span>
-                <span class="n">id_cheapest</span> <span class="o">=</span> <span class="nb">id</span>
+    <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">):</span>
+        <span class="c1">#We find the ID-nodo/resource</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;Cluster&quot;</span><span class="p">}</span>
+        <span class="n">id_cluster</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">find_IDs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="c1">#there is only ONE Cluster</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;m-&quot;</span><span class="p">}</span>
+        <span class="n">id_mobiles</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">find_IDs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-        <span class="c1">#Assignment of SERVICES in topology nodes</span>
-        <span class="c1">#Para cada app asignada a esta politica</span>
-        <span class="k">for</span> <span class="n">app_name</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">placement_policy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;apps&quot;</span><span class="p">]:</span>
-            <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
-            <span class="c1">#Double control</span>
-            <span class="c1">#module --&gt; app.node_entity</span>
-            <span class="n">sim</span><span class="o">.</span><span class="n">assignaments_app_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">get_pure_modules</span><span class="p">(),</span><span class="n">id_cheapest</span><span class="p">)</span>
-            <span class="c1">#entity --&gt; modules.app</span>
-            <span class="n">sim</span><span class="o">.</span><span class="n">assignaments_entity_module</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">id_cheapest</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="n">app_name</span><span class="p">:</span><span class="n">app</span><span class="o">.</span><span class="n">get_pure_modules</span><span class="p">()})</span>
+        <span class="c1">#Given an application we get its modules implemented</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
 
-        <span class="c1">#Assignment of SINK pure modules</span>
-        <span class="k">for</span> <span class="n">sink_module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sink_control</span><span class="p">:</span>
-            <span class="n">node</span> <span class="o">=</span> <span class="n">sink_module</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">]</span>
-            <span class="n">module</span> <span class="o">=</span> <span class="n">sink_module</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]</span>
-            <span class="n">sim</span><span class="o">.</span><span class="n">deploy_sink</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">)</span></div>
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">services</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;Coordinator&quot;</span> <span class="o">==</span> <span class="n">module</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;Coordinator&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaleServices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="c1"># print self.scaleServices[&quot;Coordinator&quot;]</span>
+                    <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">scaleServices</span><span class="p">[</span><span class="s2">&quot;Coordinator&quot;</span><span class="p">]):</span>
+                        <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span><span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],</span><span class="n">id_cluster</span><span class="p">)</span> <span class="c1">#Deploy as many modules as elements in the array</span>
+
+            <span class="k">elif</span> <span class="s2">&quot;Calculator&quot;</span> <span class="o">==</span> <span class="n">module</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;Calculator&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaleServices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaleServices</span><span class="p">[</span><span class="s2">&quot;Calculator&quot;</span><span class="p">]):</span>
+                        <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span><span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],</span><span class="n">id_cluster</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="s2">&quot;Client&quot;</span> <span class="o">==</span> <span class="n">module</span><span class="p">:</span>
+                <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],</span><span class="n">id_mobiles</span><span class="p">)</span></div>
+
+    <span class="c1">#end function</span>
+
+    <span class="c1"># def run(self, sim):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     This method will be invoked during the simulation to change the assignment of the modules to the topology</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         sim (:mod: yafs.core.Sim)</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     self.logger.debug(&quot;Activiting - Cluster Algorithm (do nothing)&quot;)</span>
 
 
-        <span class="c1"># print src.assignaments_app_module</span>
-        <span class="c1"># print src.assignaments_entity_module</span>
+<span class="k">class</span> <span class="nc">EdgePlacement</span><span class="p">(</span><span class="n">Placement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</span>
 
+<span class="sd">    It only runs once, in the initialization.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">):</span>
+        <span class="c1">#We find the ID-nodo/resource</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;Cluster&quot;</span><span class="p">}</span>
+        <span class="n">id_cluster</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">find_IDs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="c1">#there is only ONE Cluster</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;d-&quot;</span><span class="p">}</span>
+        <span class="n">id_proxies</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">find_IDs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+
+
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;m-&quot;</span><span class="p">}</span>
+        <span class="n">id_mobiles</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">find_IDs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1">#Given an application we get its modules implemented</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
+        <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
+
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">services</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="nb">print</span> <span class="n">module</span>
+
+            <span class="k">if</span> <span class="s2">&quot;Coordinator&quot;</span> <span class="o">==</span> <span class="n">module</span><span class="p">:</span>
+                <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span><span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],</span><span class="n">id_cluster</span><span class="p">)</span> <span class="c1">#Deploy as many modules as elements in the array</span>
+            <span class="k">elif</span> <span class="s2">&quot;Calculator&quot;</span> <span class="o">==</span> <span class="n">module</span><span class="p">:</span>
+                <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span><span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],</span><span class="n">id_proxies</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;Client&quot;</span> <span class="o">==</span> <span class="n">module</span><span class="p">:</span>
+                <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],</span><span class="n">id_mobiles</span><span class="p">)</span>
 
 
 
@@ -161,6 +200,7 @@
 <h3><a href="../../contents.html">Table Of Contents</a></h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">OVERVIEW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html#acknowledge">Acknowledge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">YAFS in 5 Minutes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture/index.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
@@ -179,14 +219,11 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -197,8 +234,8 @@
       &copy;2017, Isaac Lera, Carlos Guerrero.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>
 

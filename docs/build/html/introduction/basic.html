@@ -1,38 +1,39 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Basic Concepts &mdash; YAFS 0.1 documentation</title>
-    
+    <title>Basic Concepts &#8212; YAFS 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="YAFS 0.1 documentation" href="../contents.html" />
-    <link rel="up" title="YAFS in 5 Minutes" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Architecture" href="../architecture/index.html" />
     <link rel="prev" title="Glossary of terms" href="glossary.html" />
    
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">  
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -41,7 +42,7 @@
             
   <div class="section" id="basic-concepts">
 <h1>Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this headline">¶</a></h1>
-<p>In order to run a YAFS simulation you should define the following elements:</p>
+<p>In order to run a YAFS simulation you should define the following elements -we have used  tutorial/main1.py code- :x</p>
 <div class="section" id="network-topology">
 <h2>Network Topology<a class="headerlink" href="#network-topology" title="Permalink to this headline">¶</a></h2>
 <p>A topology consists of a set of nodes and links. The nodes are elements of the network that serve as a link between other elements and have the ability to execute or host the application.</p>
@@ -57,24 +58,26 @@
 <li><strong>PR</strong> Channel Propagation speed</li>
 <li><strong>Latency</strong> is dynamically computed using: Message.size.bits / BW + PR</li>
 </ul>
-<p>A network can be created using a json file or through more complex algorithms (see <a class="reference internal" href="../architecture/index.html#architecture"><span>architecture details</span></a>).</p>
+<p>A network can be created using a json file or through more complex algorithms (see <a class="reference internal" href="../architecture/index.html#architecture"><span class="std std-ref">architecture details</span></a>).</p>
+<p>In the definition of your devices, nodes,  you can include your custom tags.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sim.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
-<span class="kn">from</span> <span class="nn">sim.topology</span> <span class="kn">import</span> <span class="n">Entity</span>
 
-<span class="n">topology_json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;entity&quot;</span><span class="p">:[</span>
-        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;F_0&quot;</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;RAM&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;COST&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;F_1&quot;</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;RAM&quot;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;COST&quot;</span><span class="p">:</span><span class="mi">15</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;F_0&quot;</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;RAM&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;COST&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_FOG</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;F_0&quot;</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;RAM&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;COST&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="n">Entity</span><span class="o">.</span><span class="n">ENTITY_CLUSTER</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;C_1&quot;</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span><span class="mi">100000</span><span class="p">,</span> <span class="s2">&quot;RAM&quot;</span><span class="p">:</span><span class="mi">4000</span><span class="p">,</span> <span class="s2">&quot;COST&quot;</span><span class="p">:</span><span class="mi">15</span><span class="p">}</span>
-        <span class="p">],</span>
-    <span class="s2">&quot;link&quot;</span><span class="p">:[</span>
-        <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;BW&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;PR&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;BW&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="s2">&quot;PR&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;BW&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;PR&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;BW&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="s2">&quot;PR&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;BW&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="s2">&quot;PR&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
-    <span class="p">]}</span>
+<span class="n">topology_json</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">topology_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">topology_json</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">cloud_dev</span>    <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;cloud&quot;</span><span class="p">,</span><span class="s2">&quot;mytag&quot;</span><span class="p">:</span><span class="s2">&quot;cloud&quot;</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span> <span class="mi">5000</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">^</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;RAM&quot;</span><span class="p">:</span> <span class="mi">40000</span><span class="p">,</span><span class="s2">&quot;COST&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span><span class="s2">&quot;WATT&quot;</span><span class="p">:</span><span class="mf">20.0</span><span class="p">}</span>
+<span class="n">sensor_dev</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;sensor-device&quot;</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="o">*</span> <span class="mi">10</span> <span class="o">^</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;RAM&quot;</span><span class="p">:</span> <span class="mi">4000</span><span class="p">,</span><span class="s2">&quot;COST&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span><span class="s2">&quot;WATT&quot;</span><span class="p">:</span><span class="mf">40.0</span><span class="p">}</span>
+<span class="n">actuator_dev</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;actuator-device&quot;</span><span class="p">,</span> <span class="s2">&quot;IPT&quot;</span><span class="p">:</span> <span class="mi">100</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">^</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;RAM&quot;</span><span class="p">:</span> <span class="mi">4000</span><span class="p">,</span><span class="s2">&quot;COST&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;WATT&quot;</span><span class="p">:</span> <span class="mf">40.0</span><span class="p">}</span>
+
+<span class="n">link1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;BW&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;PR&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+<span class="n">link2</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;BW&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;PR&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="n">topology_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cloud_dev</span><span class="p">)</span>
+<span class="n">topology_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sensor_dev</span><span class="p">)</span>
+<span class="n">topology_json</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">actuator_dev</span><span class="p">)</span>
+<span class="n">topology_json</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link1</span><span class="p">)</span>
+<span class="n">topology_json</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link2</span><span class="p">)</span>
 
 <span class="n">t</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">()</span>
 <span class="n">t</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">topology_json</span><span class="p">)</span>
@@ -87,8 +90,8 @@
 <p>An application is set by a group of modules. A module can create messages (a pure source / sensor), a modul can consume messages (a pure sink  / actuator ) and other modules can do both tasks.</p>
 <p>The dependencies among modules are defined through messages.</p>
 <p>A <strong>message</strong> is the representation of a request between two modules. A message is set by an unique ID in the same application. It has a source and destiny module, a length of instructions, and a number of bytes. If the message arrive a pure sink this message does not require the last two attributes. In YAFS, it is possible to define <em>broadcast messages</em>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">m_global_game_state</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.Global_Game_State&quot;</span><span class="p">,</span> <span class="s2">&quot;Coordinator&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">280</span><span class="p">)</span>
-<span class="n">m_self_state_update</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.Self_State_Update&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="s2">&quot;Display&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">m_a</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor&quot;</span><span class="p">,</span> <span class="s2">&quot;ServiceA&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="mi">20</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">m_b</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.B&quot;</span><span class="p">,</span> <span class="s2">&quot;ServiceA&quot;</span><span class="p">,</span> <span class="s2">&quot;Actuator&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="mi">30</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We illustrate this example using <em>EEG_GAME application</em> <a class="footnote-reference" href="#f1" id="id1">[1]</a> following the idea used in CloudSim <a class="footnote-reference" href="#f2" id="id2">[2]</a> and other similar cloud simulators.</p>
@@ -104,61 +107,36 @@
 <span class="kn">from</span> <span class="nn">sim.application</span> <span class="kn">import</span> <span class="n">Application</span>
 <span class="kn">from</span> <span class="nn">sim.application</span> <span class="kn">import</span> <span class="n">Message</span>
 
-<span class="c1">#A periodic function</span>
-<span class="k">def</span> <span class="nf">next_time_periodic</span><span class="p">(</span><span class="n">time_shift</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">time_shift</span>
 
-<span class="c1">#A threshold function</span>
-<span class="k">def</span> <span class="nf">fractional_selectivity</span><span class="p">(</span><span class="n">threshold</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">threshold</span>
+<span class="k">def</span> <span class="nf">create_application</span><span class="p">():</span>
+    <span class="c1"># APLICATION</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Application</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;SimpleCase&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">create_aplication</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="c1"># APPLICATION</span>
-    <span class="c1"># App.name is unique</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">Application</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-
-    <span class="c1"># Modules/Services of the application</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EGG&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="s2">&quot;Calculator&quot;</span><span class="p">,</span> <span class="s2">&quot;Coordinator&quot;</span><span class="p">,</span> <span class="s2">&quot;Display&quot;</span><span class="p">]</span>
-
-    <span class="c1">#Setting pure source modules or Sensors</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">set_module</span><span class="p">([</span><span class="s2">&quot;EGG&quot;</span><span class="p">],</span> <span class="n">Application</span><span class="o">.</span><span class="n">TYPE_SOURCE</span><span class="p">)</span>
-    <span class="c1">#Setting pure sink modules or Actuators</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">set_module</span><span class="p">([</span><span class="s2">&quot;Display&quot;</span><span class="p">],</span> <span class="n">Application</span><span class="o">.</span><span class="n">TYPE_SINK</span><span class="p">)</span>
+    <span class="c1"># (S) --&gt; (ServiceA) --&gt; (A)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set_modules</span><span class="p">([{</span><span class="s2">&quot;Sensor&quot;</span><span class="p">:{</span><span class="s2">&quot;Type&quot;</span><span class="p">:</span><span class="n">Application</span><span class="o">.</span><span class="n">TYPE_SOURCE</span><span class="p">}},</span>
+                   <span class="p">{</span><span class="s2">&quot;ServiceA&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;RAM&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">Application</span><span class="o">.</span><span class="n">TYPE_MODULE</span><span class="p">}},</span>
+                   <span class="p">{</span><span class="s2">&quot;Actuator&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">Application</span><span class="o">.</span><span class="n">TYPE_SINK</span><span class="p">}}</span>
+                   <span class="p">])</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Messages among MODULES (AppEdge in iFogSim)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m_a</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor&quot;</span><span class="p">,</span> <span class="s2">&quot;ServiceA&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="mi">20</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">m_b</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.B&quot;</span><span class="p">,</span> <span class="s2">&quot;ServiceA&quot;</span><span class="p">,</span> <span class="s2">&quot;Actuator&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="mi">30</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Messages among MODULES</span>
+<span class="sd">    Defining which messages will be dynamically generated # the generation is controlled by Population algorithm</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">m_egg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.EGG&quot;</span><span class="p">,</span> <span class="s2">&quot;EGG&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="mi">2000000000</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span> <span class="c1">#Instrucctrions, Bytes</span>
-    <span class="n">m_sensor</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.Sensor&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="s2">&quot;Calculator&quot;</span><span class="p">,</span> <span class="mi">3500</span><span class="p">,</span> <span class="mi">750</span><span class="p">)</span>
-    <span class="n">m_concentration</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.Concentration&quot;</span><span class="p">,</span> <span class="s2">&quot;Calculator&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="n">m_player_game_state</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.Player_Game_State&quot;</span><span class="p">,</span> <span class="s2">&quot;Calculator&quot;</span><span class="p">,</span> <span class="s2">&quot;Coordinator&quot;</span><span class="p">,</span> <span class="mi">1000000000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="n">m_global_game_state</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.Global_Game_State&quot;</span><span class="p">,</span> <span class="s2">&quot;Coordinator&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">280</span><span class="p">)</span>
-    <span class="n">m_self_state_update</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.Self_State_Update&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="s2">&quot;Display&quot;</span><span class="p">)</span>
-    <span class="n">m_global_state_update</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;M.Global_State_Update&quot;</span><span class="p">,</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="s2">&quot;Display&quot;</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">add_source_messages</span><span class="p">(</span><span class="n">m_a</span><span class="p">)</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Defining which messages will be dynamically generated</span>
+<span class="sd">    MODULES/SERVICES: Definition of Generators and Consumers (AppEdges and TupleMappings in iFogSim)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_source_messages</span><span class="p">(</span><span class="n">m_egg</span><span class="p">)</span>
-
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    MODULES/SERVICES: Definition of Generators and Consumers</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># MODULE SOURCES: only messages generated by non-pure sources</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_source</span><span class="p">(</span><span class="s2">&quot;Calculator&quot;</span><span class="p">,</span> <span class="n">next_time_periodic</span><span class="p">,</span> <span class="n">m_player_game_state</span><span class="p">,</span> <span class="n">time_shift</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_source</span><span class="p">(</span><span class="s2">&quot;Coordinator&quot;</span><span class="p">,</span> <span class="n">next_time_periodic</span><span class="p">,</span> <span class="n">m_global_game_state</span><span class="p">,</span> <span class="n">time_shift</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span>
     <span class="c1"># MODULE SERVICES</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_module</span><span class="p">(</span><span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="n">m_egg</span><span class="p">,</span> <span class="n">m_sensor</span><span class="p">,</span> <span class="n">fractional_selectivity</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_module</span><span class="p">(</span><span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="n">m_concentration</span><span class="p">,</span> <span class="n">m_self_state_update</span><span class="p">,</span> <span class="n">fractional_selectivity</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_module</span><span class="p">(</span><span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="n">m_global_game_state</span><span class="p">,</span> <span class="n">m_global_state_update</span><span class="p">,</span> <span class="n">fractional_selectivity</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_module</span><span class="p">(</span><span class="s2">&quot;Calculator&quot;</span><span class="p">,</span> <span class="n">m_sensor</span><span class="p">,</span> <span class="n">m_concentration</span><span class="p">,</span> <span class="n">fractional_selectivity</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_module</span><span class="p">(</span><span class="s2">&quot;Coordinator&quot;</span><span class="p">,</span> <span class="n">m_player_game_state</span><span class="p">)</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_module</span><span class="p">(</span><span class="s2">&quot;Display&quot;</span><span class="p">,</span> <span class="n">m_self_state_update</span><span class="p">)</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">add_service_module</span><span class="p">(</span><span class="s2">&quot;Display&quot;</span><span class="p">,</span> <span class="n">m_global_state_update</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">add_service_module</span><span class="p">(</span><span class="s2">&quot;ServiceA&quot;</span><span class="p">,</span> <span class="n">m_a</span><span class="p">,</span> <span class="n">m_b</span><span class="p">,</span> <span class="n">fractional_selectivity</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">a</span>
 
-<span class="n">app1</span> <span class="o">=</span> <span class="n">create_aplication</span><span class="p">(</span><span class="s2">&quot;EGG_GAME&quot;</span><span class="p">)</span>
+<span class="n">app1</span> <span class="o">=</span> <span class="n">create_aplication</span><span class="p">(</span><span class="s2">&quot;Tutorial1&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -166,26 +144,53 @@
 <h2>Population model<a class="headerlink" href="#population-model" title="Permalink to this headline">¶</a></h2>
 <p>In real scenarios, sensors can move in the IoT ecosystem which it means, they can invoke services for several access points.
 For that reason, each population model is associated to one application and it runs according to a set of events or time distribution.</p>
-<p>The association of controls to a node can be dynamic and this process is executed every certain time to change the creation policies associated with the nodes. The population model can be so complex as you wish. More advanced details in <a class="reference internal" href="../architecture/index.html#architecture"><span>architecture details</span></a>.</p>
+<p>The association of controls to a node can be dynamic and this process is executed every certain time to change the creation policies associated with the nodes. The population model can be so complex as you wish. More advanced details in <a class="reference internal" href="../architecture/index.html#architecture"><span class="std std-ref">architecture details</span></a>.</p>
 <p>The most simple case, it is a statical creation of requests. For each message of a pure service source (or sensor), it will have a generation control associated to it.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sim.population</span> <span class="kn">import</span> <span class="n">Statical</span>
 
-<span class="k">def</span> <span class="nf">next_time_exponential_dist</span><span class="p">(</span><span class="n">lambd</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">lambd</span><span class="p">)</span>
-
 <span class="n">pop</span> <span class="o">=</span> <span class="n">Statical</span><span class="p">(</span><span class="s2">&quot;Statical&quot;</span><span class="p">)</span>
-<span class="n">ctrl_generator</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;msg&quot;</span><span class="p">:</span><span class="n">app1</span><span class="o">.</span><span class="n">get_source_message</span><span class="p">(</span><span class="s2">&quot;M.EGG&quot;</span><span class="p">),</span><span class="s2">&quot;dist&quot;</span><span class="p">:</span><span class="n">next_time_exponential_dist</span><span class="p">,</span><span class="s2">&quot;param&quot;</span><span class="p">:{</span><span class="s2">&quot;lambd&quot;</span><span class="p">:</span><span class="mf">100.0</span><span class="p">}}</span>
-<span class="n">pop</span><span class="o">.</span><span class="n">set_generator_control</span><span class="p">({</span><span class="s2">&quot;node&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;src&quot;</span><span class="p">:</span><span class="n">ctrl_generator</span><span class="p">})</span>
+<span class="n">pop</span><span class="o">.</span><span class="n">set_src_control</span><span class="p">({</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;sensor-device&quot;</span><span class="p">,</span> <span class="s2">&quot;number&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">app</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="s2">&quot;M.A&quot;</span><span class="p">),</span> <span class="s2">&quot;distribution&quot;</span><span class="p">:</span> <span class="n">deterministicDistribution</span><span class="p">,</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;time_shift&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}})</span><span class="c1">#5.1}})</span>
+<span class="n">pop</span><span class="o">.</span><span class="n">set_sink_control</span><span class="p">({</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;actuator-device&quot;</span><span class="p">,</span><span class="s2">&quot;number&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;module&quot;</span><span class="p">:</span><span class="n">app</span><span class="o">.</span><span class="n">get_sink_modules</span><span class="p">()})</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="selector-model">
 <h2>Selector model<a class="headerlink" href="#selector-model" title="Permalink to this headline">¶</a></h2>
-<p>This module is the &#8220;service orchestration&#8221;. It is the coordination and arrangement of multiple services exposed as a single aggregate service.</p>
+<p>This module is the “service orchestration”. It is the coordination and arrangement of multiple services exposed as a single aggregate service.</p>
 <p>The most simple case is one to one module using the shortest path between both modules.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sim.selection</span> <span class="kn">import</span> <span class="n">First_ShortestPath</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">selectorPath</span> <span class="o">=</span> <span class="n">MinimunPath</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>where internally this function is customized by the user. Mandatory returns are two arrays ( bestpath and bestdes). The first one is an array among id-nodes of the topology. The second one is also a sequence of id-process who are deployed in that nodes.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MinimunPath</span><span class="p">(</span><span class="n">Selection</span><span class="p">):</span>
 
-<span class="n">selector</span> <span class="o">=</span> <span class="n">First_ShortestPath</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">topology_src</span><span class="p">,</span> <span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the minimun path among the source elemento of the topology and the localizations of the module</span>
+
+<span class="sd">        Return the path and the identifier of the module deployed in the last element of that path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_src</span> <span class="o">=</span> <span class="n">topology_src</span>
+        <span class="n">DES_dst</span> <span class="o">=</span> <span class="n">alloc_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">][</span><span class="n">message</span><span class="o">.</span><span class="n">dst</span><span class="p">]</span>
+
+        <span class="k">print</span> <span class="s2">&quot;GET PATH&quot;</span>
+        <span class="k">print</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Node _ src (id_topology): </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">node_src</span>
+        <span class="k">print</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Request service: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span><span class="n">message</span><span class="o">.</span><span class="n">dst</span>
+        <span class="k">print</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Process serving that service: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span><span class="n">DES_dst</span>
+
+        <span class="n">bestPath</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">bestDES</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">des</span> <span class="ow">in</span> <span class="n">DES_dst</span><span class="p">:</span> <span class="c1">## In this case, there are only one deployment</span>
+            <span class="n">dst_node</span> <span class="o">=</span> <span class="n">alloc_DES</span><span class="p">[</span><span class="n">des</span><span class="p">]</span>
+            <span class="k">print</span> <span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> Looking the path to id_node: </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">dst_node</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">node_src</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">dst_node</span><span class="p">))</span>
+
+            <span class="n">bestPath</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>
+            <span class="n">bestDES</span> <span class="o">=</span> <span class="p">[</span><span class="n">des</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">bestPath</span><span class="p">,</span> <span class="n">bestDES</span>
 </pre></div>
 </div>
 </div>
@@ -194,106 +199,110 @@ For that reason, each population model is associated to one application and it r
 <p>In this module is implemented the algorithm to allocation resources.
 Placement module has two public methods: <em>initial_allocation</em> and <em>run</em>. The first is used in the first deployment of the application, the second one is used to move this modules in the topological entities according with some multi-objetive allocation algorithm or whatever idea.</p>
 <p>The most usual case is a deployment in the cluster. In this case, sink nodes (actuators) are fixed in the topology.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ClusterPlacement</span><span class="p">(</span><span class="n">Placement</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sim</span><span class="p">):</span>
-        <span class="c1">#We loook for the most cheaper cluster</span>
-        <span class="c1">#We guess that the cluster has the computational resources to serve the whole apps</span>
-        <span class="n">cheapest_cost</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
-        <span class="n">id_cheapest</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">clusterNodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cheapest_cost</span> <span class="o">&gt;=</span> <span class="n">sim</span><span class="o">.</span><span class="n">entity_metrics</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">][</span><span class="nb">id</span><span class="p">][</span><span class="s2">&quot;COST&quot;</span><span class="p">]:</span>
-                <span class="n">cheapest_cost</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">entity_metrics</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">][</span><span class="nb">id</span><span class="p">][</span><span class="s2">&quot;COST&quot;</span><span class="p">]</span>
-                <span class="n">id_cheapest</span> <span class="o">=</span> <span class="nb">id</span>
-
-        <span class="c1">#Assignment of SERVICES in topology nodes</span>
-        <span class="k">for</span> <span class="n">app_name</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">placement_policy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;apps&quot;</span><span class="p">]:</span>
-            <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
-            <span class="c1">#Double control</span>
-            <span class="c1">#module --&gt; app.node_entity</span>
-            <span class="n">sim</span><span class="o">.</span><span class="n">assignaments_app_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">get_pure_modules</span><span class="p">(),</span><span class="n">id_cheapest</span><span class="p">)</span>
-            <span class="c1">#entity --&gt; modules.app</span>
-            <span class="n">sim</span><span class="o">.</span><span class="n">assignaments_entity_module</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">id_cheapest</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="n">app_name</span><span class="p">:</span><span class="n">app</span><span class="o">.</span><span class="n">get_pure_modules</span><span class="p">()})</span>
-
-        <span class="c1">#Assignment of SINK pure modules</span>
-        <span class="k">for</span> <span class="n">sink_module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sink_control</span><span class="p">:</span>
-            <span class="n">node</span> <span class="o">=</span> <span class="n">sink_module</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">]</span>
-            <span class="n">module</span> <span class="o">=</span> <span class="n">sink_module</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]</span>
-            <span class="n">sim</span><span class="o">.</span><span class="n">deploy_sink</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sim</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Activiting - Placement on CLUSTER&quot;</span><span class="p">)</span>
-        <span class="bp">None</span>
-
-<span class="n">p</span> <span class="o">=</span> <span class="n">ClusterPlacement</span><span class="p">(</span><span class="s2">&quot;onCluster&quot;</span><span class="p">,</span> <span class="n">activation_dist</span><span class="o">=</span><span class="n">next_time_periodic</span><span class="p">,</span> <span class="n">time_shift</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
-<span class="n">p</span><span class="o">.</span><span class="n">set_sink_control</span><span class="p">({</span><span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="n">app1</span><span class="o">.</span><span class="n">get_sink_modules</span><span class="p">()[</span><span class="mi">0</span><span class="p">]})</span>  <span class="c1"># Asigna &quot;Display&quot; -solo hay uno- en un unico node</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">placement</span> <span class="o">=</span> <span class="n">CloudPlacement</span><span class="p">(</span><span class="s2">&quot;onCloud&quot;</span><span class="p">)</span> <span class="c1"># it defines the deployed rules: module-device</span>
+<span class="n">placement</span><span class="o">.</span><span class="n">scaleService</span><span class="p">({</span><span class="s2">&quot;ServiceA&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
 </pre></div>
 </div>
+<p>where:
+.. code-block:: python</p>
+<blockquote>
+<div><p>from yafs.placement import Placement</p>
+<p>class CloudPlacement(Placement):</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>def initial_allocation(self, sim, app_name):</dt>
+<dd><p class="first">#We find the ID-nodo/resource
+value = {“mytag”: “cloud”} # or whatever tag</p>
+<p>id_cluster = sim.topology.find_IDs(value)
+app = sim.apps[app_name]
+services = app.services</p>
+<dl class="last docutils">
+<dt>for module in services:</dt>
+<dd><dl class="first last docutils">
+<dt>if module in self.scaleServices:</dt>
+<dd><dl class="first last docutils">
+<dt>for rep in range(0, self.scaleServices[module]):</dt>
+<dd>idDES = sim.deploy_module(app_name,module,services[module],id_cluster)</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
 </div>
 <div class="section" id="running-the-simulator">
 <h2>Running the simulator<a class="headerlink" href="#running-the-simulator" title="Permalink to this headline">¶</a></h2>
 <p>Once defined the previous elements, we can associate them to the simulator. To do this, you have to <em>deploy</em> the application with its respective topology policies. Once this is done, we can launch the simulation.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Sim</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="c1"># t is the topology</span>
 <span class="n">simulation_time</span> <span class="o">=</span> <span class="mi">100000</span>
-<span class="n">s</span><span class="o">.</span><span class="n">deploy_app</span><span class="p">(</span><span class="n">application</span><span class="p">,</span><span class="n">placement</span><span class="p">,</span><span class="n">population</span><span class="p">,</span><span class="n">selector</span><span class="p">)</span>
-<span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">simulation_time</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">deploy_app</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">placement</span><span class="p">,</span> <span class="n">pop</span><span class="p">,</span> <span class="n">selectorPath</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">simulation_time</span><span class="p">,</span><span class="n">show_progress_monitor</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="results">
 <h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
-<p>The results are stored in a nosql database in a json format. One of the main events is the registration of each message in each entity of the topology that manages it.
+<p>The results are stored in a csv format in two files.  One of the main events is the registration of each message in each entity of the topology that manages it.
 In these types of events, the following attributes are recorded:</p>
 <ul class="simple">
-<li><strong>msg_name</strong> message name</li>
+<li><strong>type</strong> It represent the entity who run the taks: a module (COMP_M) or an actuator (SINK_M)</li>
 <li><strong>app</strong>  application name</li>
-<li><strong>service</strong>  service time</li>
 <li><strong>module</strong> Module or service who manages it</li>
-<li><strong>id_node</strong> identifier of the entity of the topology where is deployed the <em>module</em></li>
-<li><strong>from_module</strong> Module or service who send this message</li>
-<li><strong>from_node</strong> identifier of the entity of the topology where is deployed the <em>from_module</em></li>
-<li><strong>time_emit</strong> time when the message was sent</li>
-<li><strong>time_int</strong> time when the <em>module</em> accepts it</li>
-<li><strong>time_service</strong> service time</li>
+<li><strong>service</strong>  service time</li>
+<li><strong>message</strong> message name</li>
+<li><strong>DES.src</strong> DES process who send this message</li>
+<li><strong>DES.dst</strong> DES process who receive this message (the previous module(</li>
+<li><strong>TOPO.src</strong> ID node topology where the DES.src module is deployed</li>
+<li><strong>TOPO.dst</strong> ID node topology where the DES.dst module is deployed</li>
+<li><strong>module.src</strong> the module or service who send this message</li>
+<li><strong>service</strong> service time</li>
+<li><strong>time_in</strong> time when the <em>module</em> accepts it</li>
 <li><strong>time_out</strong> time when the <em>module</em> finishes its process</li>
-<li><strong>type</strong> is an identifier of the record type</li>
+<li><strong>time_emit</strong> time when the message was sent</li>
+<li><strong>time_reception</strong> time when the message is accepted by the module</li>
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The <strong>units of time</strong> have the scale defined by the user in the respective distribution units. It means, the results of time are the times of the simulator.</p>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="p">{</span>
-   <span class="s2">&quot;id_node&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-   <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-   <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="s2">&quot;EGG_GAME&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;from_module&quot;</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;Display&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;time_reception&quot;</span><span class="p">:</span> <span class="mf">41.43794155095091</span><span class="p">,</span>
-   <span class="s2">&quot;msg_name&quot;</span><span class="p">:</span> <span class="s2">&quot;M.Self_State_Update&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;time_emit&quot;</span><span class="p">:</span> <span class="mf">38.43794155095091</span><span class="p">,</span>
-   <span class="s2">&quot;time_in&quot;</span><span class="p">:</span> <span class="mf">41.43794155095091</span><span class="p">,</span>
-   <span class="s2">&quot;time_out&quot;</span><span class="p">:</span> <span class="mf">41.43794155095091</span><span class="p">,</span>
-   <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;SINK_M&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;from_node&quot;</span><span class="p">:</span> <span class="mi">4</span>
- <span class="p">},</span>
- <span class="s2">&quot;5&quot;</span><span class="p">:</span> <span class="p">{</span>
-   <span class="s2">&quot;id_node&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-   <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
-   <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="s2">&quot;EGG_GAME&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;from_module&quot;</span><span class="p">:</span> <span class="s2">&quot;EGG&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;Client&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;time_reception&quot;</span><span class="p">:</span> <span class="mf">202.44473295301344</span><span class="p">,</span>
-   <span class="s2">&quot;msg_name&quot;</span><span class="p">:</span> <span class="s2">&quot;M.EGG&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;time_emit&quot;</span><span class="p">:</span> <span class="mf">202.44473295301344</span><span class="p">,</span>
-   <span class="s2">&quot;time_in&quot;</span><span class="p">:</span> <span class="mf">202.44473295301344</span><span class="p">,</span>
-   <span class="s2">&quot;time_out&quot;</span><span class="p">:</span> <span class="mf">222.44473295301344</span><span class="p">,</span>
-   <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;COMP_M&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;from_node&quot;</span><span class="p">:</span> <span class="mi">0</span>
- <span class="p">},</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">,</span><span class="n">app</span><span class="p">,</span><span class="n">module</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">DES</span><span class="o">.</span><span class="n">src</span><span class="p">,</span><span class="n">DES</span><span class="o">.</span><span class="n">dst</span><span class="p">,</span><span class="n">TOPO</span><span class="o">.</span><span class="n">src</span><span class="p">,</span><span class="n">TOPO</span><span class="o">.</span><span class="n">dst</span><span class="p">,</span><span class="n">module</span><span class="o">.</span><span class="n">src</span><span class="p">,</span><span class="n">service</span><span class="p">,</span><span class="n">time_in</span><span class="p">,</span><span class="n">time_out</span><span class="p">,</span><span class="n">time_emit</span><span class="p">,</span><span class="n">time_reception</span>
+<span class="n">COMP_M</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="n">ServiceA</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">Sensor</span><span class="p">,</span><span class="mf">0.004119505659320882</span><span class="p">,</span><span class="mf">110.008</span><span class="p">,</span><span class="mf">110.01211950565931</span><span class="p">,</span><span class="mf">100.0</span><span class="p">,</span><span class="mf">110.008</span>
+<span class="n">SINK_M</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="n">Actuator</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">B</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">ServiceA</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">111.01611950565932</span><span class="p">,</span><span class="mf">111.01611950565932</span><span class="p">,</span><span class="mf">110.01211950565931</span><span class="p">,</span><span class="mf">111.01611950565932</span>
+<span class="n">COMP_M</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="n">ServiceA</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">Sensor</span><span class="p">,</span><span class="mf">0.004119505659320882</span><span class="p">,</span><span class="mf">210.008</span><span class="p">,</span><span class="mf">210.01211950565934</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">210.008</span>
+<span class="n">SINK_M</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="n">Actuator</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">B</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">ServiceA</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">211.01611950565933</span><span class="p">,</span><span class="mf">211.01611950565933</span><span class="p">,</span><span class="mf">210.01211950565934</span><span class="p">,</span><span class="mf">211.01611950565933</span>
+<span class="n">COMP_M</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="n">ServiceA</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">Sensor</span><span class="p">,</span><span class="mf">0.004119505659320882</span><span class="p">,</span><span class="mf">310.008</span><span class="p">,</span><span class="mf">310.0121195056593</span><span class="p">,</span><span class="mf">300.0</span><span class="p">,</span><span class="mf">310.008</span>
+<span class="n">SINK_M</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="n">Actuator</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">B</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">ServiceA</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">311.01611950565933</span><span class="p">,</span><span class="mf">311.01611950565933</span><span class="p">,</span><span class="mf">310.0121195056593</span><span class="p">,</span><span class="mf">311.01611950565933</span>
+<span class="n">COMP_M</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="n">ServiceA</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">Sensor</span><span class="p">,</span><span class="mf">0.004119505659320882</span><span class="p">,</span><span class="mf">410.008</span><span class="p">,</span><span class="mf">410.0121195056593</span><span class="p">,</span><span class="mf">400.0</span><span class="p">,</span><span class="mf">410.008</span>
 </pre></div>
 </div>
+<p>The other file storages the transmission process in the network</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">,</span><span class="n">src</span><span class="p">,</span><span class="n">dst</span><span class="p">,</span><span class="n">app</span><span class="p">,</span><span class="n">latency</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">ctime</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="nb">buffer</span>
+<span class="n">LINK</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="mf">10.008</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">LINK</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="mf">1.004</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">B</span><span class="p">,</span><span class="mf">110.01211950565931</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">LINK</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="mf">10.008</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">LINK</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="mf">1.004</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">B</span><span class="p">,</span><span class="mf">210.01211950565934</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">LINK</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="mf">10.008</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">LINK</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">SimpleCase</span><span class="p">,</span><span class="mf">1.004</span><span class="p">,</span><span class="n">M</span><span class="o">.</span><span class="n">B</span><span class="p">,</span><span class="mf">310.0121195056593</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>In these types of events, the following attributes are recorded:</p>
+<ul class="simple">
+<li><strong>type</strong> Link type</li>
+<li><strong>src</strong>  Source of the message - ID node topology</li>
+<li><strong>dst</strong>  Destination of the message - ID node topology</li>
+<li><strong>app</strong>  application name</li>
+<li><strong>latency</strong> the time taken to transmit the message between both nodes.</li>
+<li><strong>message</strong> message name</li>
+<li><strong>ctime</strong> simulation time</li>
+<li><strong>size</strong> size of the message</li>
+<li><strong>buffer</strong> This variable represents the number of waiting messages in all the links.</li>
+</ul>
 <p>How to obtain statistics of these results depends on the user, although there are a good number of processes implemented to obtain the main stats such as: average response time, average service time, average wait time, node utilization, average link latency, costs, and so on.</p>
-<p>You can find this example in the following subsection: <a class="reference internal" href="../examples/tutorial_example.html#tutorial-example"><span>basic example</span></a>.</p>
-<p>So far, we have explained the main parts of the simulator. Maybe it takes more than 5 minutes to understand this modelling, but the title of the section was attractive with that number. If you want to go deeper, you have to look at the rest of the sections: <a class="reference internal" href="../architecture/index.html#architecture"><span>architecture details</span></a> explaining key concepts, a number of <a class="reference internal" href="../examples/index.html#examples"><span>examples</span></a> and the <a class="reference internal" href="../api_reference/index.html#api-reference"><span>API reference</span></a>.</p>
+<p>You can find this example in the following subsection: <a class="reference internal" href="../examples/tutorial_example.html#tutorial-example"><span class="std std-ref">basic example</span></a>.</p>
+<p>So far, we have explained the main parts of the simulator. Maybe it takes more than 5 minutes to understand this modelling, but the title of the section was attractive with that number. If you want to go deeper, you have to look at the rest of the sections: <a class="reference internal" href="../architecture/index.html#architecture"><span class="std std-ref">architecture details</span></a> explaining key concepts, a number of <a class="reference internal" href="../examples/index.html#examples"><span class="std std-ref">examples</span></a> and the <a class="reference internal" href="../api_reference/index.html#api-reference"><span class="std std-ref">API reference</span></a>.</p>
 <table class="docutils footnote" frame="void" id="f1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
@@ -318,10 +327,11 @@ In these types of events, the following attributes are recorded:</p>
 <h3><a href="../contents.html">Table Of Contents</a></h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">OVERVIEW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#acknowledge">Acknowledge</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">YAFS in 5 Minutes</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary of terms</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Basic Concepts</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic Concepts</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#network-topology">Network Topology</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#population-model">Population model</a></li>
@@ -352,14 +362,11 @@ In these types of events, the following attributes are recorded:</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -370,11 +377,11 @@ In these types of events, the following attributes are recorded:</p>
       &copy;2017, Isaac Lera, Carlos Guerrero.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="../_sources/introduction/basic.txt"
+      <a href="../_sources/introduction/basic.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
