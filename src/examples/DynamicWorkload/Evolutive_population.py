@@ -2,17 +2,14 @@
 from yafs.population import Population
 
 import random
+import networkx as nx
 
+class Population_Move(Population):
 
-class Pop_and_Failures(Population):
-
-    def __init__(self,srcs, **kwargs):
-       #TODO arreglar en otros casos
+    def __init__(self,srcs,node_dst, **kwargs):
         self.number_generators = srcs
-        self.nodes_removed = []
-        self.count_down = 20
-        self.limit = 200
-        super(Pop_and_Failures, self).__init__(**kwargs)
+        self.node_dst = node_dst
+        super(Population_Move, self).__init__(**kwargs)
 
     def initial_allocation(self, sim, app_name):
         #ASSIGNAMENT of SOURCE - GENERATORS - ACTUATORS
@@ -27,65 +24,36 @@ class Pop_and_Failures(Population):
 
         for ctrl in self.sink_control:
             module = ctrl["module"]
-            ids_coefficient = ctrl["ids"]
-            for id in ids_coefficient:
-                for number in range(ctrl["number"]):
-                    sim.deploy_sink(app_name, node=id[0], module=module)
-
-
-    def getProcessFromThatNode(self,sim,node_to_remove):
-        if node_to_remove in sim.alloc_DES.values():
-            someModuleDeployed = False
-            keys = []
-            # This node can have multiples DES processes on itself
-            for k, v in sim.alloc_DES.items():
-                if v == node_to_remove:
-                    keys.append(k)
-            # key = sim.alloc_DES.keys()[sim.alloc_DES.values().index(node_to_remove)]
-            for key in keys:
-                # Information
-                # print "\tNode %i - with a DES process: %i" % (node_to_remove, key)
-                # This assignamnet can be a source/sensor module:
-                if key in sim.alloc_source.keys():
-                    # print "\t\t a sensor: %s" % sim.alloc_source[key]["module"]
-                    ## Sources/Sensors modules are not removed
-                    return False,[],False
-                someModuleAssignament = sim.get_assigned_structured_modules_from_DES()
-                if key in someModuleAssignament.keys():
-                    # print "\t\t a module: %s" % someModuleAssignament[key]["module"]
-                    if self.count_down<3:
-                        return False, [], False
-                    else:
-                        self.count_down-=1
-                        someModuleDeployed = True
-
-            return True,keys,someModuleDeployed
-        else:
-            return True,[],False
+            best_device = ctrl["id"]
+            for number in range(ctrl["number"]):
+                sim.deploy_sink(app_name, node=best_device, module=module)
 
 
     def run(self, sim):
-        self.logger.debug("Activiting - Failure -  Removing a topology nodo == a network element, including edges")
-        if self.limit >0:
-            nodes =list(sim.topology.G.nodes())
-            #print sim.alloc_DES
-            is_removable = False
-            node_to_remove = -1
-            someModuleDeployed = False
-            while not is_removable: ## WARNING: In this case there is a possibility of an infinite loop
-                node_to_remove = random.choice(nodes)
-                is_removable,keys_DES,someModuleDeployed = self.getProcessFromThatNode(sim,node_to_remove)
+        self.logger.debug("Activiting - Population movement")
+        #para cada modulo generador desplegado en la topologia
+        #-- trazo el camino mas cercano hacia un modulo
+        #    -- muevo dicho generador hasta el siguiente path -1 del anterior trazado
+        for key in sim.alloc_source.keys():
+            node_src = sim.alloc_DES[key]
+            path = list(nx.shortest_path(sim.topology.G, source=node_src, target=self.node_dst))
+            if len(path)>2:
+                next_src_position = path[1]
+                print path,next_src_position
+                sim.alloc_DES[key] =  next_src_position
+            else:
+                None
+                #This source cannot move more
 
-            # print "Removing node: %i, Total nodes: %i" % (node_to_remove, len(nodes))
-            # print "\tStopping some DES processes: %s"%keys_DES
-            self.nodes_removed.append({"id":node_to_remove,"module":someModuleDeployed,"time":sim.env.now})
-            for key in keys_DES:
-                sim.stop_process(key)
 
-            # print "\tRemoving Node"
-            sim.topology.G.remove_node(node_to_remove)
 
-            self.limit -=1
-
+        #print "-" * 40
+        #print "DES\t| TOPO \t| Src.Mod \t| Modules"
+        #print "-" * 40
+        #for k in sim.alloc_DES:
+        #    print k, "\t|", self.alloc_DES[k], "\t|", self.alloc_source[k][
+        #        "module"] if k in self.alloc_source.keys() else "--", "\t\t|", fullAssignation[k][
+        #        "Module"] if k in fullAssignation.keys() else "--"
+        #print "-" * 40
 
 

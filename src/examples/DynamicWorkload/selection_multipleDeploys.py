@@ -35,7 +35,6 @@ class BroadPath(Selection):
 
     def __init__(self):
         self.most_near_calculator_to_client = {}
-        self.invalid_cache_value = -1
         super(BroadPath, self).__init__()
 
     def compute_most_near(self,node_src,alloc_DES,sim,DES_dst):
@@ -70,69 +69,8 @@ class BroadPath(Selection):
         #In this case, there is not a cached system.
         node_src = topology_src
 
-        # print "Node (Topo id): %s" %node_src
-        # print "Service DST: %s "%message.dst
         DES_dst = alloc_module[app_name][message.dst]
-        currentNodes = len(sim.topology.G.nodes())
-        # print "DES DST: %s" % DES_dst
-        if self.invalid_cache_value == currentNodes:  # Cache updated
-            # print "Cache updated"
-            if node_src not in self.most_near_calculator_to_client.keys():
-                self.most_near_calculator_to_client[node_src] = self.compute_most_near(
-                    node_src,alloc_DES, sim,DES_dst)
 
-            path,des = self.most_near_calculator_to_client[node_src]
+        path, des = self.compute_most_near(node_src,alloc_DES, sim,DES_dst)
 
-            # print "\t NEW DES_DST: %s" % DES_dst
-            # print "PATH ",path
-            # print "DES  ",des
-
-            return [path],[des]
-        else:
-            self.invalid_cache_value = currentNodes
-            # print "\t INVALIDATING CACHE  "*4
-            # print "\t NEW DES_DST: %s" %DES_dst
-            self.most_near_calculator_to_client = {}  # reset previous path-cached values
-
-            # This value is not in the cache
-            self.most_near_calculator_to_client[node_src] = self.compute_most_near(
-                node_src, alloc_DES, sim, DES_dst)
-
-            path, des = self.most_near_calculator_to_client[node_src]
-
-            # print "\t NEW DES_DST: %s" % DES_dst
-            # print "PATH2 ",path
-            # print "DES  ",des
-            return [path], [des]
-
-    def get_path_from_failure(self, sim,message, link, alloc_DES,alloc_module, traffic,ctime):
-        # print "Example of enrouting"
-        # print message.path # [86, 242, 160, 164, 130, 301, 281, 216]
-        # print message.dst_int  # 301
-        # print link #(130, 301) link is broken! 301 is unreacheble
-
-        idx = message.path.index(link[0])
-        if idx == len(message.path):
-            # The node who serves ... not possible case
-            return [],[]
-        else:
-            node_src = message.path[idx-1]
-            # print "SRC: ",node_src # 164
-
-            node_dst = message.path[len(message.path)-1]
-            #print "DST: ",node_dst #261
-            #print "INT: ",message.dst_int #301
-
-            path, des = self.get_path(sim,message.app_name,message,node_src,alloc_DES,alloc_module,traffic)
-
-            #print path # [[164, 130, 380, 110, 216]]
-            #print des # [40]
-
-            concPath = message.path[0:message.path.index(path[0][0])] + path[0]
-            # print concPath # [86, 242, 160, 164, 130, 380, 110, 216]
-            newINT = path[0][2]
-            # print newINT # 380
-
-            message.dst_int = newINT
-            return [concPath], des
-
+        return [path],[des]

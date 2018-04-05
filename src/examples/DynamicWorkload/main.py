@@ -18,8 +18,8 @@ from yafs.topology import Topology
 from yafs.placement import *
 from yafs.distribution import *
 
-from Evolutive_population import Pop_and_Failures
-from selection_multipleDeploys import  BroadPath
+from Evolutive_population import Population_Move
+from selection_multipleDeploys import  CloudPath_RR
 
 
 import itertools
@@ -79,6 +79,8 @@ def main(simulated_time):
     for item in top20_devices:
         print item
     print "-"*20
+
+    print "Best top centralized device: ",main_fog_device
     """
     APPLICATION
     """
@@ -98,12 +100,13 @@ def main(simulated_time):
     print number_generators
 
     #you can use whatever funciton to change the topology
-    dStart = deterministicDistributionStartPoint(0, 100, name="Deterministic")
-    dStart2 = exponentialDistributionStartPoint(500, 100.0, name="Deterministic")
-    pop = Pop_and_Failures(name="mttf-nodes",srcs = number_generators,activation_dist=dStart2 )
-    pop.set_sink_control({"ids": top20_devices, "number": 1, "module": app1.get_sink_modules()})
+    dStart = deterministicDistributionStartPoint(500, 400, name="Deterministic")
+    pop = Population_Move(name="mttf-nodes",srcs = number_generators,node_dst=main_fog_device,activation_dist=dStart)
+    pop.set_sink_control({"id": main_fog_device, "number": number_generators, "module": app1.get_sink_modules()})
 
-    dDistribution = deterministicDistribution(name="Deterministic", time=10)
+
+
+    dDistribution = deterministicDistribution(name="Deterministic", time=100)
     pop.set_src_control(
         {"number": 1, "message": app1.get_message("M.Action"), "distribution": dDistribution})
 
@@ -113,22 +116,18 @@ def main(simulated_time):
     """--
     SELECTOR algorithm
     """
-    selectorPath = BroadPath()
+    selectorPath = CloudPath_RR()
 
 
     """
     SIMULATION ENGINE
     """
-    s = Sim(t, default_results_path="Results_%s_exp" % (simulated_time))
+    s = Sim(t, default_results_path="Results_%s" % (simulated_time))
     s.deploy_app(app1, placement, pop, selectorPath)
 
     s.run(simulated_time,test_initial_deploy=False,show_progress_monitor=False)
     # s.draw_allocated_topology() # for debugging
-    print "Total nodes available in the  toopology %i" %len(s.topology.G.nodes())
-    print "Total edges available in the  toopology %i" %len(s.topology.G.edges())
-
-    print pop.nodes_removed
-
+    s.print_debug_assignaments()
 if __name__ == '__main__':
     import logging.config
     import os
