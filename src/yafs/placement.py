@@ -26,11 +26,10 @@ class Placement(object):
 
     """
 
-    def __init__(self,name,activation_dist=None,logger=None,**param):
+    def __init__(self,name,activation_dist=None,logger=None):
         self.logger = logger or logging.getLogger(__name__)
         self.name=name
         self.activation_dist = activation_dist
-        self.param = param
         self.scaleServices = []
 
 
@@ -42,7 +41,7 @@ class Placement(object):
         Returns:
             the next time to be activated
         """
-        return self.activation_dist(**self.param)
+        return self.activation_dist.next()
 
 
     def initial_allocation(self,sim,app_name):
@@ -148,4 +147,17 @@ class EdgePlacement(Placement):
                 idDES = sim.deploy_module(app_name,module, services[module],id_mobiles)
 
 
+
+
+class NoPlacementOfModules(Placement):
+
+    """
+    This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.
+
+    It only runs once, in the initialization.
+
+    """
+    def initial_allocation(self, sim, app_name):
+        #The are not modules to be allocated
+        None
 

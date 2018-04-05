@@ -12,7 +12,7 @@ The **highlights** points of YAFS are:
 * The **results** are stored in a raw format in a nosql database. The simpler the format, the easier it is to perform any type of statistics.
 
 
-YAFS is released under the MIT License.
+YAFS is released under the MIT License. However, we would like to know in which project or publication have you used or mentioned YAFS.
 
 **Please consider use this cite when you use YAFS**:
 
@@ -59,7 +59,7 @@ concepts, a number of [examples](https://yafs.readthedocs.io/en/latest/examples/
 For more help, contact with the authors or You must dig through the [source code](https://github.com/acsicuib/YAFS)
 
 
-Acknowledge
------------
+Acknowledgment
+--------------
 
-Authors acknowledge financial support through project ORDCOT TIN2017-88547-P (AEI/FEDER, UE)
+Authors acknowledge financial support through grant project ORDCOT with number TIN2017-88547-P (AEI/FEDER, UE)

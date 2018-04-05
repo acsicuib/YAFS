@@ -15,6 +15,7 @@ from tqdm import tqdm
 from yafs.topology import Topology
 from yafs.application import Application
 from yafs.metrics import Metrics
+from yafs.distribution import *
 import utils
 
 import numpy as np
@@ -78,7 +79,7 @@ class Sim:
         #self.db = TinyDB(name_register)
         self.metrics = Metrics(default_results_path=default_results_path)
 
-
+        self.unreachabled_links = 0
 
         "Contains the database where all events are recorded"
 
@@ -179,17 +180,22 @@ class Sim:
 
         #print "HERE ",paths
 
-        self.logger.debug("(#DES:%i)\t--- SENDING Message:\t%s: PATH:%s  DES:%s" % (idDES, message.name,paths,DES_dst))
+        if DES_dst == [None]:
+            self.logger.warning(
+                "(#DES:%i)\t--- Unreacheable DST:\t%s: PATH:%s " % (idDES, message.name, paths))
+        else:
 
-        # print "MESSAGES"
-        #May be, the selector of path decides broadcasting multiples paths
-        for idx,path in enumerate(paths):
-            msg = copy.copy(message)
-            msg.path = copy.copy(path)
-            msg.app_name = app_name
-            msg.idDES = DES_dst[idx]
-            # print "\t",msg.path
-            self.network_ctrl_pipe.put(msg)
+            self.logger.debug("(#DES:%i)\t--- SENDING Message:\t%s: PATH:%s  DES:%s" % (idDES, message.name,paths,DES_dst))
+
+            # print "MESSAGES"
+            #May be, the selector of path decides broadcasting multiples paths
+            for idx,path in enumerate(paths):
+                msg = copy.copy(message)
+                msg.path = copy.copy(path)
+                msg.app_name = app_name
+                msg.idDES = DES_dst[idx]
+                # print "\t",msg.path
+                self.network_ctrl_pipe.put(msg)
 
     def __network_process(self):
         """
@@ -237,29 +243,50 @@ class Sim:
                     #last_used = self.last_busy_time[link]
 
                 size_bits = message.bytes * 8
-                transmit = size_bits / (self.topology.get_edge(link)[Topology.LINK_BW] * 1000000.0)  # MBITS!
-                propagation = self.topology.get_edge(link)[Topology.LINK_PR]
-                latency_msg_link = transmit + propagation
+                try:
+                    transmit = size_bits / (self.topology.get_edge(link)[Topology.LINK_BW] * 1000000.0)  # MBITS!
+                    propagation = self.topology.get_edge(link)[Topology.LINK_PR]
+                    latency_msg_link = transmit + propagation
 
-                #print "-link: %s -- lat: %d" %(link,latency_msg_link)
+                    #print "-link: %s -- lat: %d" %(link,latency_msg_link)
 
-                # update link metrics
-                self.metrics.insert_link(
-                    {"type": self.LINK_METRIC,"src":link[0],"dst":link[1],"app":message.app_name,"latency":latency_msg_link,"message": message.name,"ctime":self.env.now,"size":message.bytes,"buffer":self.network_pump})#"path":message.path})
+                    # update link metrics
+                    self.metrics.insert_link(
+                        {"type": self.LINK_METRIC,"src":link[0],"dst":link[1],"app":message.app_name,"latency":latency_msg_link,"message": message.name,"ctime":self.env.now,"size":message.bytes,"buffer":self.network_pump})#"path":message.path})
 
-                # We compute the future latency considering the current utilization of the link
-                if last_used < self.env.now:
-                    shift_time = 0.0
-                    last_used = latency_msg_link + self.env.now  # future arrival time
-                else:
-                    shift_time = last_used - self.env.now
-                    last_used = self.env.now + shift_time + latency_msg_link
+                    # We compute the future latency considering the current utilization of the link
+                    if last_used < self.env.now:
+                        shift_time = 0.0
+                        last_used = latency_msg_link + self.env.now  # future arrival time
+                    else:
+                        shift_time = last_used - self.env.now
+                        last_used = self.env.now + shift_time + latency_msg_link
 
-                # print "Send next WakeUp : ", last_used
-                # print "-" * 30
+                    # print "Send next WakeUp : ", last_used
+                    # print "-" * 30
 
-                self.last_busy_time[link] = last_used
-                self.env.process(self.__wait_message(message, latency_msg_link, shift_time))
+                    self.last_busy_time[link] = last_used
+                    self.env.process(self.__wait_message(message, latency_msg_link, shift_time))
+                except:
+                    #This fact is produced when a node or edge the topology is changed or disappeared
+                    self.logger.warning("The initial path assigned is unreachabled. Link: (%i,%i). Routing a new one. "%(link[0],link[1]))
+
+                    paths, DES_dst = self.selector_path[message.app_name].get_path_from_failure(self, message, link, self.alloc_DES,self.alloc_module, self.last_busy_time,self.env.now)
+
+                    if DES_dst == [] and paths==[]:
+                        #Message communication ending:
+                        #The message have arrived to the destination node but it is unavailable.
+                        None
+                        self.logger.debug("\t No path given. Message is lost")
+                    else:
+
+                        message.path = copy.copy(paths[0])
+                        message.idDES = DES_dst[0]
+                        self.logger.debug("(\t New path given. Message is enrouting again.")
+                        # print "\t",msg.path
+                        self.network_ctrl_pipe.put(message)
+
+
 
     def __wait_message(self, msg, latency, shift_time):
         """
@@ -321,92 +348,96 @@ class Sim:
             population.run(self)
         self.logger.debug("STOP_Process - Population Algorithm\t#DES:%i" % myId)
 
-    def __add_source_population(self, idDES, name_app, message, next_event, param):
+    def __add_source_population(self, idDES, name_app, message, distribution):
         """
         A DES-process who controls the invocation of several Pure Source Modules
         """
         self.logger.debug("Added_Process - Module Pure Source\t#DES:%i" % idDES)
         while not self.stop and self.des_process_running[idDES]:
-            yield self.env.timeout(next_event(**param))
+            yield self.env.timeout(distribution.next())
             self.logger.debug("(App:%s#DES:%i)\tModule - Generating Message: %s \t(T:%d)" % (name_app, idDES, message.name,self.env.now))
 
             msg = copy.copy(message)
             msg.timestamp = self.env.now
-
 
             self.__send_message(name_app, msg, idDES, self.SOURCE_METRIC)
 
         self.logger.debug("STOP_Process - Module Pure Source\t#DES:%i" % idDES)
 
     def __update_node_metrics(self, app, module, message, des, type):
-        """
-        It computes the service time in processing a message and record this event
-        """
-        if module in self.apps[app].get_sink_modules():
+        try:
+
             """
-            The module is a SINK (Actuactor)
+            It computes the service time in processing a message and record this event
             """
-            id_node  = self.alloc_DES[des]
-            time_service = 0
-        else:
+            if module in self.apps[app].get_sink_modules():
+                """
+                The module is a SINK (Actuactor)
+                """
+                id_node  = self.alloc_DES[des]
+                time_service = 0
+            else:
+                """
+                The module is a processing module
+                """
+                id_node = self.alloc_DES[des]
+
+                att_node = self.topology.get_nodes_att()[id_node]
+                time_service = message.inst / float(att_node["IPT"])
+
+                # self.logger.debug("TS[%s] - DES: %i - %d"%(module,des,time_service))
+
             """
-            The module is a processing module
+            it records the entity.id who sends this message
             """
-            id_node = self.alloc_DES[des]
+            # if not message.path:
+            #     from_id_source = id_node  # same src like dst
+            # else:
+            #     from_id_source = message.path[0]
 
-            att_node = self.topology.get_nodes_att()[id_node]
-            time_service = message.inst / float(att_node["IPT"])
-
-            # self.logger.debug("TS[%s] - DES: %i - %d"%(module,des,time_service))
-
-        """
-        it records the entity.id who sends this message
-        """
-        # if not message.path:
-        #     from_id_source = id_node  # same src like dst
-        # else:
-        #     from_id_source = message.path[0]
-
-        # print "-"*50
-        # print "Module: ",module
-        # print "DES ",des
-        # print "ID MODULE: ",id_node
-        # print "Message.name ",message.name
-        # print "Message.path ",message.path
-        # print "Message src ",message.src
-        # print "Message dst ",message.dst
-        # print "Message idDEs ",message.idDES
+            # print "-"*50
+            # print "Module: ",module
+            # print "DES ",des
+            # print "ID MODULE: ",id_node
+            # print "Message.name ",message.name
+            # print "Message.path ",message.path
+            # print "Message src ",message.src
+            # print "Message dst ",message.dst
+            # print "Message idDEs ",message.idDES
 
 
 
-        # print "DES.src ",message.path[0] ######>>>>>  ESTO ES TOPO SOURCE
-        # print "TOPO.src ", int(self.alloc_DES[message.path[0]])
-        # print "TOPO.dst ", int(self.alloc_DES[des])
-        # print "-" * 50
-        key = -1
-        for k in self.alloc_DES:
-            if self.alloc_DES[k] == message.path[0]:
-                key = k
-                break
+            # print "DES.src ",message.path[0] ######>>>>>  ESTO ES TOPO SOURCE
+            # print "TOPO.src ", int(self.alloc_DES[message.path[0]])
+            # print "TOPO.dst ", int(self.alloc_DES[des])
+            # print "-" * 50
+            key = -1
+            for k in self.alloc_DES:
+                if self.alloc_DES[k] == message.path[0]:
+                    key = k
+                    break
 
 
-        # print "DES.src ",key
-        # ### CORRECTO:
-        # print "TOPO.src ", int(message.path[0])
-        # print "TOPO.dst ", id_node
-        # print "DES.dst ", des
+            # print "DES.src ",key
+            # ### CORRECTO:
+            # print "TOPO.src ", int(message.path[0])
+            # print "TOPO.dst ", id_node
+            # print "DES.dst ", des
 
-        self.metrics.insert(
-            {"type": type, "app": app, "module": module, "message": message.name,
-             "DES.src": key, "DES.dst":des,"module.src": message.src,
-             "TOPO.src": message.path[0], "TOPO.dst": id_node,
+            self.metrics.insert(
+                {"type": type, "app": app, "module": module, "message": message.name,
+                 "DES.src": key, "DES.dst":des,"module.src": message.src,
+                 "TOPO.src": message.path[0], "TOPO.dst": id_node,
 
-             "service": time_service, "time_in": self.env.now,
-             "time_out": time_service + self.env.now, "time_emit": float(message.timestamp),
-             "time_reception": float(message.timestamp_rec)
+                 "service": time_service, "time_in": self.env.now,
+                 "time_out": time_service + self.env.now, "time_emit": float(message.timestamp),
+                 "time_reception": float(message.timestamp_rec)
 
-             })
-        return time_service
+                 })
+            return time_service
+        except:
+            self.logger.warning("This module has been removed previously to the arrival time of this message. DES: %i"%des)
+            return 0
 
     """
     MEJORAR - ASOCIAR UN PROCESO QUE LOS CONTROLES®.
@@ -435,13 +466,13 @@ class Sim:
 
         self.logger.debug("STOP_Process - Down entity Creation\t#DES%i" % myId)
 
-    def __add_source_module(self, idDES, app_name, module, message, next_event, **param):
+    def __add_source_module(self, idDES, app_name, module, message, distribution, **param):
         """
         It generates a DES process associated to a compute module for the generation of messages
         """
         self.logger.debug("Added_Process - Module Source: %s\t#DES:%i" % (module, idDES))
         while (not self.stop) and self.des_process_running[idDES]:
-            yield self.env.timeout(next_event(**param))
+            yield self.env.timeout(distribution.next())
             self.logger.debug(
                 "(App:%s#DES:%i#%s)\tModule - Generating Message:\t%s" % (app_name, idDES, module, message.name))
             msg = copy.copy(message)
@@ -549,7 +580,7 @@ class Sim:
         self.logger.debug("STOP_Process - Module Pure Sink: %s\t#DES:%i" % (module, ides))
 
 
-    def __add_stop_monitor(self, name, function, next_event,show_progress_monitor, **param):
+    def __add_stop_monitor(self, name, function, distribution,show_progress_monitor, **param):
         """
         Add a DES process for Stop/Progress bar monitor
         """
@@ -558,19 +589,19 @@ class Sim:
         if show_progress_monitor:
             self.pbar = tqdm(total=self.until)
         while not self.stop:
-            yield self.env.timeout(next_event(**param))
+            yield self.env.timeout(distribution.next())
             function(show_progress_monitor,**param)
         self.logger.debug("STOP_Process - Internal Monitor: %s\t#DES:%i" % (name, myId))
 
 
-    def __add_monitor(self, name, function, next_event, **param):
+    def __add_monitor(self, name, function, distribution, **param):
         """
         Add a DES process for user purpose
         """
         myId = self.__get_id_process()
         self.logger.debug("Added_Process - Internal Monitor: %s\t#DES:%i" % (name, myId))
         while not self.stop:
-            yield self.env.timeout(next_event(**param))
+            yield self.env.timeout(distribution.next())
             function(**param)
         self.logger.debug("STOP_Process - Internal Monitor: %s\t#DES:%i" % (name, myId))
 
@@ -595,6 +626,12 @@ class Sim:
                     self.pbar.close()
                 self.logger.info("! Stop simulation at time: %f !" % self.env.now)
 
+
+    def __update_internal_structures_from_DES_remove(self, DES):
+        self.alloc_DES.pop(DES, None)
+        for app in self.alloc_module:
+            for module in self.alloc_module[app]:
+                self.alloc_module[app][module].remove(DES)
 
 
     """
@@ -630,7 +667,7 @@ class Sim:
         elif event_type == EVENT_DOWN_ENTITY:
             self.env.process(self.__add_down_node_process( next_event_dist, **args))
 
-    def deploy_source(self, app_name, id_node, msg, distribution, param):
+    def deploy_source(self, app_name, id_node, msg, distribution):
         """
         Add a DES process for deploy pure source modules (sensors)
         This function its used by (:mod:`Population`) algorithm
@@ -651,14 +688,14 @@ class Sim:
         """
         idDES = self.__get_id_process()
         self.des_process_running[idDES] = True
-        self.env.process(self.__add_source_population(idDES, app_name, msg, distribution, param))
+        self.env.process(self.__add_source_population(idDES, app_name, msg, distribution))
         self.alloc_DES[idDES] = id_node
         self.alloc_source[idDES] = {"id":id_node,"app":app_name,"module":msg.src}
         return idDES
 
 
 
-    def __deploy_source_module(self, app_name, module, id_node, msg, distribution, param):
+    def __deploy_source_module(self, app_name, module, id_node, msg, distribution):
         """
         Add a DES process for deploy  source modules
         This function its used by (:mod:`Population`) algorithm
@@ -679,7 +716,7 @@ class Sim:
         """
         idDES = self.__get_id_process()
         self.des_process_running[idDES] = True
-        self.env.process(self.__add_source_module(idDES, app_name, module,msg, distribution, **param))
+        self.env.process(self.__add_source_module(idDES, app_name, module,msg, distribution))
         self.alloc_DES[idDES] = id_node
         return idDES
 
@@ -743,6 +780,7 @@ class Sim:
         self.env.process(self.__add_sink_module(idDES,app_name, module))
 
 
+
     def stop_process(self, id):
         """
         All pure source modules (sensors) are controlled by this boolean.
@@ -751,7 +789,10 @@ class Sim:
         Args:
             id.source (int): the identifier of the DES process.
         """
+        self.__update_internal_structures_from_DES_remove(id)
         self.des_process_running[id] = False
+
+
 
     def deploy_app(self, app, placement, population, selector):
         """
@@ -823,7 +864,7 @@ class Sim:
                 """
                 for id_topology in ids:
                     id_DES.append(self.__deploy_source_module(app_name, module, distribution=service["dist"],
-                                                     msg=service["message_out"], param=service["param"],
+                                                     msg=service["message_out"],
                                                      id_node=id_topology))
             else:
                 """
@@ -847,6 +888,14 @@ class Sim:
         entities = self.get_alloc_entities()
         utils.draw_topology(self.topology,entities)
 
+    def get_assigned_structured_modules_from_DES(self):
+        fullAssignation = {}
+        for app in self.alloc_module:
+            for module in self.alloc_module[app]:
+                deployed = self.alloc_module[app][module]
+                for des in deployed:
+                    fullAssignation[des] = {"DES": self.alloc_DES[des], "module": module}
+        return fullAssignation
 
 
     def print_debug_assignaments(self):
@@ -896,7 +945,9 @@ class Sim:
         A internal DES process to stop the simulation,
         *Simpy.run.until* wait to all pipers are empty. So, hundreds of messages should be service... We force with the stop
         """
-        self.env.process(self.__add_stop_monitor("Stop_Control_Monitor",self.__ctrl_progress_monitor,utils.deterministicDistribution,show_progress_monitor,time_shift=200))
+        time_shift = 200
+        distribution = deterministicDistribution(name="Deterministic", time=time_shift)
+        self.env.process(self.__add_stop_monitor("Stop_Control_Monitor",self.__ctrl_progress_monitor,distribution,show_progress_monitor,time_shift=time_shift))
 
 
 

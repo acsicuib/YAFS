@@ -8,9 +8,9 @@ class SimpleDynamicChanges(Population):
 
     Extends: :mod: Population
     """
-    def __init__(self, *args, **kwargs):
-        super(SimpleDynamicChanges, self).__init__(*args, **kwargs)
-        self.run_times = 2
+    def __init__(self, run_times, **kwargs):
+        self.run_times = run_times
+        super(SimpleDynamicChanges, self).__init__(**kwargs)
 
 
     def initial_allocation(self,sim,app_name):
@@ -32,9 +32,8 @@ class SimpleDynamicChanges(Population):
                 if entity["model"] == ctrl["model"]:
                     msg = ctrl["message"]
                     dst = ctrl["distribution"]
-                    param = ctrl["param"]
                     for number in range(ctrl["number"]):
-                        idsrc = sim.deploy_source(app_name,id_node=id_entity,msg=msg,distribution=dst,param=param)
+                        idsrc = sim.deploy_source(app_name,id_node=id_entity,msg=msg,distribution=dst)
                         # the idsrc can be used to control the deactivation of the process in a dynamic behaviour
 
             # end for src control

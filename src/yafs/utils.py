@@ -8,21 +8,25 @@ import random
 import numpy as np
 #DISTRIBUTIONS
 
-def next_time_uniform_dist(min,max):
-    #Ensure that return value is non negative number and bigger than 0
-    return random.randint(min,max)
-
-def next_time_exponential_dist(lambd):
-    return random.expovariate(1 / lambd)
-
-def next_time_periodic(time_shift):
-    return time_shift
-
-def deterministicDistribution(time_shift):
-    return time_shift
-
+# def next_time_uniform_dist(min,max):
+#     #Ensure that return value is non negative number and bigger than 0
+#     return random.randint(min,max)
+#
+# def next_time_exponential_dist(lambd):
+#     return random.expovariate(1 / lambd)
+#
+# def next_time_periodic(time_shift):
+#     return time_shift
+#
+# def deterministicDistribution(time_shift):
+#     return time_shift
+#
 def fractional_selectivity(threshold):
     return random.random() <= threshold
+#
+#
+# def start_undeterminedDistribution(start,time_shift):
+#     return start
 
 
 ###########

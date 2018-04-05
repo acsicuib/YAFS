@@ -25,11 +25,10 @@ class Population(object):
         param (dict): the parameters of the *activation_dist*
 
     """
-    def __init__(self, name, activation_dist=None, logger=None, **param):
+    def __init__(self, name, activation_dist=None, logger=None):
         self.logger = logger or logging.getLogger(__name__)
         self.name = name
         self.activation_dist = activation_dist
-        self.param = param
 
         # self.id_process = -1
         self.src_control = []
@@ -46,7 +45,7 @@ class Population(object):
         Returns:
             the next time to be activated in the simulation
         """
-        return self.activation_dist(**self.param)
+        return self.activation_dist.next()
 
 
     def set_src_control(self,values):
@@ -104,9 +103,8 @@ class Statical(Population):
                 if entity["model"] == ctrl["model"]:
                     msg = ctrl["message"]
                     dst = ctrl["distribution"]
-                    param = ctrl["param"]
                     for number in range(ctrl["number"]):
-                        idsrc = sim.deploy_source(app_name,id_node=id_entity,msg=msg,distribution=dst,param=param)
+                        idsrc = sim.deploy_source(app_name,id_node=id_entity,msg=msg,distribution=dst)
                         # the idsrc can be used to control the deactivation of the process in a dynamic behaviour
 
             #end for src control

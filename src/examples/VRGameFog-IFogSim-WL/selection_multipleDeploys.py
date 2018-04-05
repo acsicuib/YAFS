@@ -25,21 +25,21 @@ class CloudPath_RR(Selection):
         bestDES = []
 
         if message.name == "M.Sensor" or message.name == "M.Player_Game_State":  # both messages are adressed to modules deployed in cloud
-            for ix, des in enumerate(DES_dst):
-                if self.rr[message.dst] == ix:
-                    dst_node = alloc_DES[des]
-                    path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dst_node))
-                    bestPath = [path]
-                    bestDES = [des]
-                    self.rr[message.dst] = (self.rr[message.dst] + 1) % len(DES_dst)
-                    return bestPath, bestDES
+            next_DES_dst = DES_dst[self.rr[message.dst]]
+            dst_node = alloc_DES[next_DES_dst]
+
+            path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dst_node))
+            bestPath = [path]
+            bestDES = [next_DES_dst]
+            self.rr[message.dst] = (self.rr[message.dst] + 1) % len(DES_dst)
+            return bestPath, bestDES
 
         if message.name == "M.Concentration":
             DES_dst = [message.last_idDes[0]]
 
         best_path = []
         best_DES = []
-        min_path = int("inf")
+        min_path = float("inf")
         for des in DES_dst:
             dst_node = alloc_DES[des]
             path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dst_node))  ###
@@ -77,7 +77,7 @@ class BroadPath(Selection):
         #By Placement policy we know that:
         value = {"model": "d-"}
         topoDST = sim.topology.find_IDs(value)
-        min_path = int("inf")
+        minLenPath = float('inf')
         minPath = []
         for dev in topoDST:
             path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dev))
@@ -148,7 +148,7 @@ class BroadPath(Selection):
 
         best_path = []
         best_DES = []
-        min_path = int("inf")
+        min_path = float("inf")
         for des in DES_dst:
             dst_node = alloc_DES[des]
             path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dst_node)) ###

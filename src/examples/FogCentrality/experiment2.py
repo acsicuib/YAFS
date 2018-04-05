@@ -9,8 +9,8 @@
 from yafs.core import Sim
 from yafs.application import Application,Message
 from yafs.topology import  Topology
-from yafs.utils import *
-
+from yafs.distribution import deterministicDistribution
+from yafs.utils import fractional_selectivity
 
 from CentricityPlacement import NoPlacementOfModules
 from CentricityPopulation import Statical
@@ -18,6 +18,7 @@ from CentricitySelection import First_ShortestPath
 import networkx as nx
 import numpy as np
 import pandas as pd
+import random
 
 RANDOM_SEED = 1
 
@@ -56,7 +57,7 @@ def create_json_topology():
 
     entities = []
     for nid in nodes.keys():
-        value = {"id": nid, "type": Entity.ENTITY_FOG, "model": "F", "IPT": 1, "RAM": 1, "COST": 1}
+        value = {"id": nid, "model": "F", "IPT": 1, "RAM": 1, "COST": 1}
         entities.append(value)
 
     topology_json = {"entity": entities, "link": links}
@@ -334,9 +335,11 @@ def main():
                             pops[idx].set_sink_control({"id": [cloud_device], "number": 1, "module": apps[idx].get_sink_modules()})
                             # print "\t", "SOURCE"
                             # In addition, a source includes a distribution function:
+
+                            dDistribution = deterministicDistribution(name="Deterministic", time=idWL[1])
                             pops[idx].set_src_control(
                                 {"id": sensor_workload_types[idx], "number": 1, "message": apps[idx].get_message("m-st"),
-                                 "distribution": deterministicDistribution, "param": {"time_shift": idWL[1]}})
+                                 "distribution": dDistribution})
 
                     else:
                         #Computing best device for each WL-type and each centrality function
@@ -371,9 +374,9 @@ def main():
 
 
                             pops[idx].set_sink_control({"id":[dev],"number":1,"module":apps[idx].get_sink_modules()})
-
+                            dDistribution = deterministicDistribution(name="Deterministic", time=idWL[1])
                             #In addition, a source includes a distribution function:
-                            pops[idx].set_src_control({"id": sensor_workload_types[idx], "number":1,"message": apps[idx].get_message("m-st"), "distribution": deterministicDistribution,"param": {"time_shift": idWL[1]}})
+                            pops[idx].set_src_control({"id": sensor_workload_types[idx], "number":1,"message": apps[idx].get_message("m-st"), "distribution": dDistribution})
 
                     """
                     SIMULATION ENGINE
@@ -384,8 +387,6 @@ def main():
                         s.deploy_app(app, placement, pops[idx], selectorPath)
 
                     s.run(stop_time,test_initial_deploy=False,show_progress_monitor=False)
-                    s.metrics.store_results("results/results_exp_%s_%s_%s"%(key_topo,size,f))
-                    print "%s : %i "%(f,s.metrics.bytes_transmitted())
 
                 #end for algorithms
             #end for communities size
@@ -400,7 +401,7 @@ def main():
     #end try
 
     except:
-        print "Algun error se genero"
+        print "Some error??"
 
 if __name__ == '__main__':
     import logging.config

@@ -24,7 +24,7 @@ class Stats:
         values = self.df.groupby("DES.dst").time_service.agg("sum")
         return values[id_entity] / total_time
 
-    def __compute_times_df(self):
+    def compute_times_df(self):
         self.df["time_latency"] = self.df["time_reception"] - self.df["time_emit"]
         self.df["time_wait"] = self.df["time_in"] - self.df["time_reception"]  #
         self.df["time_service"] = self.df["time_out"] - self.df["time_in"]
@@ -33,7 +33,7 @@ class Stats:
 
     def times(self,time,value="mean"):
         if "time_response" not in self.df.columns:
-            self.__compute_times_df()
+            self.compute_times_df()
         return self.df.groupby("message").agg({time:value})
 
 
@@ -43,7 +43,7 @@ class Stats:
         No hay chequeo de la existencia del loop: user responsability
         """
         if "time_response" not in self.df.columns:
-            self.__compute_times_df()
+            self.compute_times_df()
 
         resp_msg = self.df.groupby("message").agg({"time_total_response": ["mean","count"]}) #Its not necessary to have "count"
         resp_msg.columns = ['_'.join(col).strip() for col in resp_msg.columns.values]
@@ -67,7 +67,7 @@ class Stats:
         if by == Metrics.WATT_SERVICE:
             # Tiempo de actividad / runeo
             if "time_response" not in self.df.columns:  # cached
-                self.__compute_times_df()
+                self.compute_times_df()
 
             nodes = self.df.groupby("TOPO.dst").agg({"time_service": "sum"})
             for id_node in nodes.index:

@@ -20,9 +20,8 @@ class Statical(Population):
             if "id" in ctrl.keys():
                 msg = ctrl["message"]
                 dst = ctrl["distribution"]
-                param = ctrl["param"]
                 for idx in ctrl["id"]:
-                    idsrc = sim.deploy_source(app_name, id_node=idx, msg=msg, distribution=dst, param=param)
+                    idsrc = sim.deploy_source(app_name, id_node=idx, msg=msg, distribution=dst)
 
 
         #end assignments
