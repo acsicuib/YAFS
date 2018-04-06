@@ -1,6 +1,14 @@
 Changelog for YAFS
 ==================
 
+0.2  - 2018-04-06
+-------------------
+
+- Several fixings in yafs structure
+- Some bugs fixed
+- 5 extensive examples
+
+
 0.1  - 2017-11-21
 -------------------
 

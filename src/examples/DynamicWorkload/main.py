@@ -71,16 +71,13 @@ def main(simulated_time):
 
     sorted_clustMeasure = sorted(centrality.items(), key=operator.itemgetter(1), reverse=True)
 
-    top20_devices =  sorted_clustMeasure[:20]
+    top20_devices =  sorted_clustMeasure[0:20]
     main_fog_device = copy.copy(top20_devices[0][0])
 
     print "-" * 20
-    print "Top 20 centralised nodes:"
-    for item in top20_devices:
-        print item
+    print "Best top centralized device: ",main_fog_device
     print "-"*20
 
-    print "Best top centralized device: ",main_fog_device
     """
     APPLICATION
     """
@@ -97,7 +94,7 @@ def main(simulated_time):
     POPULATION algorithm
     """
     number_generators = int(len(t.G)*0.1)
-    print number_generators
+    print "Number of generators %i"%number_generators
 
     #you can use whatever funciton to change the topology
     dStart = deterministicDistributionStartPoint(500, 400, name="Deterministic")
@@ -126,8 +123,13 @@ def main(simulated_time):
     s.deploy_app(app1, placement, pop, selectorPath)
 
     s.run(simulated_time,test_initial_deploy=False,show_progress_monitor=False)
+
+    print pop.list_src
+
     # s.draw_allocated_topology() # for debugging
     s.print_debug_assignaments()
+
+
 if __name__ == '__main__':
     import logging.config
     import os

@@ -37,14 +37,14 @@ class Population_Move(Population):
         for key in sim.alloc_source.keys():
             node_src = sim.alloc_DES[key]
             path = list(nx.shortest_path(sim.topology.G, source=node_src, target=self.node_dst))
+            print path
             if len(path)>2:
                 next_src_position = path[1]
-                print path,next_src_position
+                #print path,next_src_position
                 sim.alloc_DES[key] =  next_src_position
             else:
                 None
                 #This source cannot move more
-
 
 
         #print "-" * 40

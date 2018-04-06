@@ -23,7 +23,7 @@ dfl = s.df_link
 
 df["date"]=df.time_in.astype('datetime64[s]')
 df.index = df.date
-df = df.resample('10s').agg(dict(time_latency='mean'))
+df = df.resample('100s').agg(dict(time_latency='mean'))
 
 timeLatency = df.time_latency.values
 ticks = range(len(timeLatency))
