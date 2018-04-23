@@ -28,8 +28,6 @@ df = df.resample('100s').agg(dict(time_latency='mean'))
 timeLatency = df.time_latency.values
 ticks = range(len(timeLatency))
 
-
-
 #OK
         ### Latency Time and Allocation replicas
 fig = plt.figure()

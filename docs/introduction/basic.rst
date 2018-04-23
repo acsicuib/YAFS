@@ -2,13 +2,13 @@
 Basic Concepts
 ==============
 
-In order to run a YAFS simulation you should define the following elements -we have used  tutorial/main1.py code- :x
+For running a simulation, you must define the following elements (we have used a basic example to explain them tutorial/main1.py) :
 
 ----------------
 Network Topology
 ----------------
 
-A topology consists of a set of nodes and links. The nodes are elements of the network that serve as a link between other elements and have the ability to execute or host the application.
+Firstly, the definition of a topology. A topology consists of a set of nodes and links. The nodes are elements of the network that serve as a link between other elements and have the ability to execute or host the application.
 
 That is, a node has associated computing characteristics:
 
@@ -22,10 +22,9 @@ A link has associated these performance characteristics:
 
 * **BW** Channel Bandwidth: in Bytes
 * **PR** Channel Propagation speed
-* **Latency** is dynamically computed using: Message.size.bits / BW + PR
+* The **Latency** is dynamically computed using: Message.size.bits / (BW + PR)
 
-
-A network can be created using a json file or through more complex algorithms (see :ref:`architecture details <architecture>`).
+A network can be created using a dictionary structure (or json file) or through some implemented algorithms from specific libraries compatibles with Networkx (see :ref:`architecture details <architecture>`).
 
 In the definition of your devices, nodes,  you can include your custom tags.
 
@@ -57,7 +56,7 @@ In the definition of your devices, nodes,  you can include your custom tags.
 -----------
 Application
 -----------
-The applicaiton follows the DDF model, in which an application is modeled as directed graph, the vertices of the directed acyclic graph (DAG) representing modules that perform processing on incoming data and edge denoting data dependencies among modules.
+Secondly, the application follows the DDF model, in which an application is modeled as directed graph. The vertices of the directed acyclic graph (DAG) representing modules that perform processing on incoming data and edge denoting data dependencies among modules.
 
 An application is set by a group of modules. A module can create messages (a pure source / sensor), a modul can consume messages (a pure sink  / actuator ) and other modules can do both tasks.
 
