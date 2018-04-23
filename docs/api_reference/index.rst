@@ -19,5 +19,7 @@ components.
    yafs.population
    yafs.placement
    yafs.selection
+   yafs.distribution
+   yafs.stats
+   yafs.metrics
    yafs.utils
-   

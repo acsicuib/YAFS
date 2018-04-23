@@ -10,3 +10,9 @@
 
 .. autoclass:: ClusterPlacement
     :members:
+
+.. autoclass:: EdgePlacement
+    :members:
+
+.. autoclass:: NoPlacementOfModules
+    :members:

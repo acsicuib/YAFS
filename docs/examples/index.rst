@@ -4,7 +4,7 @@
 Examples
 ========
 
-TODO
+Tutorial example is at 50% of progress.
 
 
 .. toctree::
