@@ -66,11 +66,10 @@
 <span class="sd">        param (dict): the parameters of the *activation_dist*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">activation_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">activation_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">activation_dist</span> <span class="o">=</span> <span class="n">activation_dist</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
 
         <span class="c1"># self.id_process = -1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">src_control</span> <span class="o">=</span> <span class="p">[]</span>
@@ -87,7 +86,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            the next time to be activated in the simulation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation_dist</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation_dist</span><span class="o">.</span><span class="n">next</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Population.set_src_control"><a class="viewcode-back" href="../../api_reference/yafs.population.html#yafs.population.Population.set_src_control">[docs]</a>    <span class="k">def</span> <span class="nf">set_src_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">values</span><span class="p">):</span>
@@ -145,9 +144,8 @@
                 <span class="k">if</span> <span class="n">entity</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ctrl</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]:</span>
                     <span class="n">msg</span> <span class="o">=</span> <span class="n">ctrl</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span>
                     <span class="n">dst</span> <span class="o">=</span> <span class="n">ctrl</span><span class="p">[</span><span class="s2">&quot;distribution&quot;</span><span class="p">]</span>
-                    <span class="n">param</span> <span class="o">=</span> <span class="n">ctrl</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ctrl</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]):</span>
-                        <span class="n">idsrc</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_source</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">id_node</span><span class="o">=</span><span class="n">id_entity</span><span class="p">,</span><span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span><span class="n">distribution</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span><span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">)</span></div>
+                        <span class="n">idsrc</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_source</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">id_node</span><span class="o">=</span><span class="n">id_entity</span><span class="p">,</span><span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span><span class="n">distribution</span><span class="o">=</span><span class="n">dst</span><span class="p">)</span></div>
                         <span class="c1"># the idsrc can be used to control the deactivation of the process in a dynamic behaviour</span>
 
             <span class="c1">#end for src control</span>

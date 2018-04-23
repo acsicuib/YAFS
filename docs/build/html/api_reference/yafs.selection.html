@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="yafs.utils" href="yafs.utils.html" />
+    <link rel="next" title="yafs.distribution" href="yafs.distribution.html" />
     <link rel="prev" title="yafs.placement" href="yafs.placement.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -66,10 +66,42 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>a path among nodes</div></blockquote>
+<div><p>a path among nodes</p>
+<p>an identifier of the module</p>
+</div></blockquote>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">override required</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.selection.Selection.get_path_from_failure">
+<code class="descname">get_path_from_failure</code><span class="sig-paren">(</span><em>sim</em>, <em>message</em>, <em>link</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>ctime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection.get_path_from_failure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.Selection.get_path_from_failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is call when some link of a message path is broken or unavailable. A new one from that point should be calculated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sim</strong> – </li>
+<li><strong>message</strong> – </li>
+<li><strong>link</strong> – </li>
+<li><strong>alloc_DES</strong> – </li>
+<li><strong>alloc_module</strong> – </li>
+<li><strong>traffic</strong> – </li>
+<li><strong>ctime</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">both empty arrays implies that the message will not send to the destination.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">this function is optional</p>
 </div>
 </dd></dl>
 
@@ -110,6 +142,9 @@
 <li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">yafs.selection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.distribution.html"><code class="docutils literal"><span class="pre">yafs.distribution</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.stats.html"><code class="docutils literal"><span class="pre">yafs.stats</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.metrics.html"><code class="docutils literal"><span class="pre">yafs.metrics</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.utils.html"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
 </ul>
 </li>
@@ -121,7 +156,7 @@
   <li><a href="../contents.html">Documentation overview</a><ul>
   <li><a href="index.html">API REFERENCE</a><ul>
       <li>Previous: <a href="yafs.placement.html" title="previous chapter"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
-      <li>Next: <a href="yafs.utils.html" title="next chapter"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
+      <li>Next: <a href="yafs.distribution.html" title="next chapter"><code class="docutils literal"><span class="pre">yafs.distribution</span></code></a></li>
   </ul></li>
   </ul></li>
 </ul>

@@ -49,7 +49,7 @@
 </div></blockquote>
 <dl class="class">
 <dt id="yafs.placement.Placement">
-<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">Placement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em>, <em>**param</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.Placement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">Placement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.Placement" title="Permalink to this definition">¶</a></dt>
 <dd><p>A placement (or allocation) algorithm controls where to locate the service modules and their replicas in the different nodes of the topology, according to load criteria, or other objectives.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -101,7 +101,21 @@ app_name (String)</dd>
 
 <dl class="class">
 <dt id="yafs.placement.ClusterPlacement">
-<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">ClusterPlacement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em>, <em>**param</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#ClusterPlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.ClusterPlacement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">ClusterPlacement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#ClusterPlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.ClusterPlacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
+<p>It only runs once, in the initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.placement.EdgePlacement">
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">EdgePlacement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#EdgePlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.EdgePlacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
+<p>It only runs once, in the initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.placement.NoPlacementOfModules">
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">NoPlacementOfModules</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#NoPlacementOfModules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.NoPlacementOfModules" title="Permalink to this definition">¶</a></dt>
 <dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
 <p>It only runs once, in the initialization.</p>
 </dd></dl>
@@ -129,6 +143,9 @@ app_name (String)</dd>
 <li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.selection.html"><code class="docutils literal"><span class="pre">yafs.selection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.distribution.html"><code class="docutils literal"><span class="pre">yafs.distribution</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.stats.html"><code class="docutils literal"><span class="pre">yafs.stats</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.metrics.html"><code class="docutils literal"><span class="pre">yafs.metrics</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.utils.html"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
 </ul>
 </li>

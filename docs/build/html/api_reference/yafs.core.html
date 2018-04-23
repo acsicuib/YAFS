@@ -133,7 +133,7 @@ Args:</p>
 
 <dl class="method">
 <dt id="yafs.core.Sim.deploy_source">
-<code class="descname">deploy_source</code><span class="sig-paren">(</span><em>app_name</em>, <em>id_node</em>, <em>msg</em>, <em>distribution</em>, <em>param</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.deploy_source" title="Permalink to this definition">¶</a></dt>
+<code class="descname">deploy_source</code><span class="sig-paren">(</span><em>app_name</em>, <em>id_node</em>, <em>msg</em>, <em>distribution</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.deploy_source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a DES process for deploy pure source modules (sensors)
 This function its used by (<code class="xref py py-mod docutils literal"><span class="pre">Population</span></code>) algorithm</p>
 <dl class="docutils">
@@ -159,12 +159,6 @@ This function its used by (<code class="xref py py-mod docutils literal"><span c
 <dt id="yafs.core.Sim.env">
 <code class="descname">env</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.env" title="Permalink to this definition">¶</a></dt>
 <dd><p>the discrete-event simulator (aka DES)</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="yafs.core.Sim.metrics">
-<code class="descname">metrics</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.metrics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the database where all events are recorded</p>
 </dd></dl>
 
 <dl class="method">
@@ -206,6 +200,12 @@ Using this function (<code class="xref py py-mod docutils literal"><span class="
 </dl>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="yafs.core.Sim.unreachabled_links">
+<code class="descname">unreachabled_links</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.unreachabled_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the database where all events are recorded</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -231,6 +231,9 @@ Using this function (<code class="xref py py-mod docutils literal"><span class="
 <li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.selection.html"><code class="docutils literal"><span class="pre">yafs.selection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.distribution.html"><code class="docutils literal"><span class="pre">yafs.distribution</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.stats.html"><code class="docutils literal"><span class="pre">yafs.stats</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.metrics.html"><code class="docutils literal"><span class="pre">yafs.metrics</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.utils.html"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
 </ul>
 </li>

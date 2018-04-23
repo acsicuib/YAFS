@@ -83,6 +83,8 @@
 
 <span class="sd">            a path among nodes</span>
 
+<span class="sd">            an identifier of the module</span>
+
 <span class="sd">        .. attention:: override required</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -92,7 +94,30 @@
         <span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="sd">&quot;&quot;&quot; END Selection &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">path</span><span class="p">,</span><span class="n">ids</span></div></div>
+        <span class="k">return</span> <span class="n">path</span><span class="p">,</span><span class="n">ids</span></div>
+
+<div class="viewcode-block" id="Selection.get_path_from_failure"><a class="viewcode-back" href="../../api_reference/yafs.selection.html#yafs.selection.Selection.get_path_from_failure">[docs]</a>    <span class="k">def</span> <span class="nf">get_path_from_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">,</span> <span class="n">ctime</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is call when some link of a message path is broken or unavailable. A new one from that point should be calculated.</span>
+
+<span class="sd">        :param sim:</span>
+<span class="sd">        :param message:</span>
+<span class="sd">        :param link:</span>
+<span class="sd">        :param alloc_DES:</span>
+<span class="sd">        :param alloc_module:</span>
+<span class="sd">        :param traffic:</span>
+<span class="sd">        :param ctime:</span>
+<span class="sd">        :return:</span>
+<span class="sd">           both empty arrays implies that the message will not send to the destination.</span>
+
+<span class="sd">        .. attention:: this function is optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Define Selection &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="sd">&quot;&quot;&quot; END Selection &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">ids</span></div></div>
 
 <div class="viewcode-block" id="OneRandomPath"><a class="viewcode-back" href="../../api_reference/yafs.selection.html#yafs.selection.OneRandomPath">[docs]</a><span class="k">class</span> <span class="nc">OneRandomPath</span><span class="p">(</span><span class="n">Selection</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -127,12 +152,15 @@
         <span class="c1">#Among all possible path we choose the smallest</span>
         <span class="n">bestPath</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">bestDES</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">print</span> <span class="n">DES_dst</span>
         <span class="k">for</span> <span class="n">des</span> <span class="ow">in</span> <span class="n">DES_dst</span><span class="p">:</span>
             <span class="n">dst_node</span> <span class="o">=</span> <span class="n">alloc_DES</span><span class="p">[</span><span class="n">des</span><span class="p">]</span>
             <span class="c1"># print &quot;DES Node %i &quot; %dst_node</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">node_src</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">dst_node</span><span class="p">)))</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">node_src</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">dst_node</span><span class="p">))</span>
             <span class="n">bestPath</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>
             <span class="n">bestDES</span>  <span class="o">=</span> <span class="p">[</span><span class="n">des</span><span class="p">]</span>
+            <span class="nb">print</span> <span class="n">path</span>
 
 
         <span class="k">return</span> <span class="n">bestPath</span><span class="p">,</span><span class="n">bestDES</span></div>

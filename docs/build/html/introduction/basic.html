@@ -42,10 +42,10 @@
             
   <div class="section" id="basic-concepts">
 <h1>Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this headline">¶</a></h1>
-<p>In order to run a YAFS simulation you should define the following elements -we have used  tutorial/main1.py code- :x</p>
+<p>For running a simulation, you must define the following elements (we have used a basic example to explain them tutorial/main1.py) :</p>
 <div class="section" id="network-topology">
 <h2>Network Topology<a class="headerlink" href="#network-topology" title="Permalink to this headline">¶</a></h2>
-<p>A topology consists of a set of nodes and links. The nodes are elements of the network that serve as a link between other elements and have the ability to execute or host the application.</p>
+<p>Firstly, the definition of a topology. A topology consists of a set of nodes and links. The nodes are elements of the network that serve as a link between other elements and have the ability to execute or host the application.</p>
 <p>That is, a node has associated computing characteristics:</p>
 <ul class="simple">
 <li><strong>IPT</strong> Instructions per simulation time. It is equivalent to IPS but it is the user how fix the unit time (i.e. seconds, milliseconds, etc.). Time simulation units is set by the user.</li>
@@ -56,9 +56,9 @@
 <ul class="simple">
 <li><strong>BW</strong> Channel Bandwidth: in Bytes</li>
 <li><strong>PR</strong> Channel Propagation speed</li>
-<li><strong>Latency</strong> is dynamically computed using: Message.size.bits / BW + PR</li>
+<li>The <strong>Latency</strong> is dynamically computed using: Message.size.bits / (BW + PR)</li>
 </ul>
-<p>A network can be created using a json file or through more complex algorithms (see <a class="reference internal" href="../architecture/index.html#architecture"><span class="std std-ref">architecture details</span></a>).</p>
+<p>A network can be created using a dictionary structure (or json file) or through some implemented algorithms from specific libraries compatibles with Networkx (see <a class="reference internal" href="../architecture/index.html#architecture"><span class="std std-ref">architecture details</span></a>).</p>
 <p>In the definition of your devices, nodes,  you can include your custom tags.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yafs.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
 
@@ -86,7 +86,7 @@
 </div>
 <div class="section" id="application">
 <h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
-<p>The applicaiton follows the DDF model, in which an application is modeled as directed graph, the vertices of the directed acyclic graph (DAG) representing modules that perform processing on incoming data and edge denoting data dependencies among modules.</p>
+<p>Secondly, the application follows the DDF model, in which an application is modeled as directed graph. The vertices of the directed acyclic graph (DAG) representing modules that perform processing on incoming data and edge denoting data dependencies among modules.</p>
 <p>An application is set by a group of modules. A module can create messages (a pure source / sensor), a modul can consume messages (a pure sink  / actuator ) and other modules can do both tasks.</p>
 <p>The dependencies among modules are defined through messages.</p>
 <p>A <strong>message</strong> is the representation of a request between two modules. A message is set by an unique ID in the same application. It has a source and destiny module, a length of instructions, and a number of bytes. If the message arrive a pure sink this message does not require the last two attributes. In YAFS, it is possible to define <em>broadcast messages</em>.</p>
