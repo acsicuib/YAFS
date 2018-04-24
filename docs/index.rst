@@ -30,22 +30,19 @@
 OVERVIEW
 ========
 
-YAFS (Yet Another Fog Simulator) is designed to create simulations of `Fog Computing <https://en.wikipedia.org/wiki/Fog_computing>`_ ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ...
-A typical Fog architecture is an `IoT environments <https://en.wikipedia.org/wiki/Internet_of_things>`_.
+YAFS (Yet Another Fog Simulator) is a simulation library for Cloud, Edge or `Fog Computing <https://en.wikipedia.org/wiki/Fog_computing>`_ ecosystems enabling several analysis regarding with the allocation of resources, billing management, network design, and so on.
 
+It is a lightweight, robust and highly configurable simulator based on Simpy library (discrete event simulator) and Complex Network theory. YAFS is set by a reduced number of classes (only 7) thus we believe the learning curve is quite low compared
+to other similar simulators. This number of classes offer an absolute control to the user for the implementation of several customized policies and environment characteristics. We highlight the following points:
 
-It is a lightweight, robust and highly configurable simulator. The learning curve of the simulator is quite low compared
-to other similar simulators. The number of classes has been reduced by a simple and intuitive abstraction of the elements
-of the ecosystem offering absolute control to the user to implement the following real characteristics of these environments:
-
-* **Topology** The topology of a Fog ecosystem is represented by `Complex Networks <https://en.wikipedia.org/wiki/Complex_network>`_ theory. The user can decide whether wants to represent elements of a network (i.e. Gateways, Routers, ...) or directly abstracts the model so that the elements are entities that are capable of executing services. This second aspect offers the IoT application developer the possibility of focusing on the QoS of the services it implements. User attention should not be directed to network routing policies. In addition, Complex Networks theory provide useful topological features in order to control the deployment of services, the allocation of resources and network design considerations.
-* **Topology evolution** The topology of a FOG environment varies over time. New nodes and links emerge and fall, which affects the deployment of services.
-* **Request evolution**  Service requests in FOG environments is not always reduced to the same access points along the wholel simulation.  Requests can be generated from any point of the network following a temporary distribution.
+* **Topology** The infrastructure is modelled using `Complex Networks <https://en.wikipedia.org/wiki/Complex_network>`_ theory. Any element (network devices, cloud abstractions, software modules, workloads, etc.) are represented by nodes and the links represents the possible network connection between them. In addition, Complex Networks theory provides useful topological features in order to control the deployment of services, the allocation of resources, network design considerations and other customized user policies.
+* **Dynamic control** All process that the user can extend can be define dynamically, such as topology (i.e. new nodes, links failures, etc.), allocation policies, orchestration, etc.
+* **Request evolution**  Service requests in FOG environments is not always reduced to the same access points along the whole simulation.  Requests can be generated from any point of the network following a temporary distribution.
 * **Placement algorithm** Yet another classical module that decides how to assign module applications to the topology.
 * **Selection algorithm** In a network, routing can be controlled by network devices but with new Fog applications the applications can controlled these messages, it depends on the user abstraction level. It offers new analytical models for the adaptation of traffic.
+* **Customized distribution** User can generate events to control policies or whatever action in the simulator using customized distributions as for example a simple array of timestamps to deploy software modules.
 
-
-YAFS registers the main system events in a raw format. There is not hidden variables or *stranger things* where this data is stored. This data can be accessed from any point of the simulator so any module has access to the stats.
+YAFS gathers the main events in a raw format. There is not hidden variables or *stranger things* where this data is stored. This data can be accessed from any point of the simulator so any module has access to the stats.
 
 The documentation contains a :ref:`tutorial <intro>`, :ref:`architecture details <architecture>` explaining key concepts, a number of :ref:`examples <examples>` and the :ref:`API reference <api_reference>`.
 
