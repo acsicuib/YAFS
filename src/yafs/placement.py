@@ -65,6 +65,22 @@ class Placement(object):
         """
         self.logger.debug("Activiting - RUN - Placement")
 
+class JSONPlacement(Placement):
+    def __init__(self, json, **kwargs):
+        super(JSONPlacement, self).__init__(**kwargs)
+        self.data = json
+
+    def initial_allocation(self, sim, app_name):
+
+        for item in self.data["initialAllocation"]:
+            app_name = item["app"]
+            module = item["module_name"]
+            idtopo = item["id_resource"]
+
+            app = sim.apps[app_name]
+            services = app.services
+
+            idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
 
 
 class ClusterPlacement(Placement):

@@ -7,7 +7,6 @@ import random
 class Pop_and_Failures(Population):
 
     def __init__(self,srcs, **kwargs):
-       #TODO arreglar en otros casos
         self.number_generators = srcs
         self.nodes_removed = []
         self.count_down = 20

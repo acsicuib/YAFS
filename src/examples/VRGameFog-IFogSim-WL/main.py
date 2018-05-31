@@ -144,6 +144,8 @@ def main(simulated_time,depth,police):
 
     t = Topology()
     t_json = create_json_topology(numOfDepts,numOfMobilesPerDept)
+    print t_json
+    exit()
     t.load(t_json)
 
     t.write("network_%s.gexf"%depth)

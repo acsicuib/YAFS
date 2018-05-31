@@ -114,7 +114,7 @@ def main(simulated_time):
     POPULATION algorithm
     """
     #In ifogsim, during the creation of the application, the Sensors are assigned to the topology, in this case no. As mentioned, YAFS differentiates the adaptive sensors and their topological assignment.
-    #In their case, the use a statical assignment.
+    #In its case, they use a statical assignment.
     dDistribution = deterministicDistribution(name="Deterministic", time=100)
     pop = SimpleDynamicChanges(2,name="Dynamic",activation_dist=dDistribution)
 

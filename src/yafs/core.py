@@ -311,7 +311,7 @@ class Sim:
         nodes_att = self.topology.get_nodes_att()
         measures = {"node": {}, "link": {}}
         for key in nodes_att:
-            measures["node"][key] = {Topology.NODE_RAM: 0, Topology.NODE_IPT: 0, Topology.NODE_COST: nodes_att[key]["COST"]}
+            measures["node"][key] = {}
 
         for edge in self.topology.get_edges():
             measures["link"][edge] = {Topology.LINK_PR: self.topology.get_edge(edge)[self.topology.LINK_PR],
@@ -365,7 +365,7 @@ class Sim:
         self.logger.debug("STOP_Process - Module Pure Source\t#DES:%i" % idDES)
 
     def __update_node_metrics(self, app, module, message, des, type):
-        try:
+        # try:
 
             """
             It computes the service time in processing a message and record this event
@@ -435,9 +435,9 @@ class Sim:
 
                  })
             return time_service
-        except:
-            self.logger.warning("This module has been removed previously to the arrival time of this message. DES: %i"%des)
-            return 0
+        # except:
+        #     self.logger.warning("This module has been removed previously to the arrival time of this message. DES: %i"%des)
+        #     return 0
 
     """
     MEJORAR - ASOCIAR UN PROCESO QUE LOS CONTROLES®.
@@ -628,10 +628,13 @@ class Sim:
 
 
     def __update_internal_structures_from_DES_remove(self, DES):
-        self.alloc_DES.pop(DES, None)
-        for app in self.alloc_module:
-            for module in self.alloc_module[app]:
-                self.alloc_module[app][module].remove(DES)
+        try:
+            self.alloc_DES.pop(DES, None)
+            for app in self.alloc_module:
+                for module in self.alloc_module[app]:
+                    self.alloc_module[app][module].remove(DES)
+        except:
+            None
 
 
     """

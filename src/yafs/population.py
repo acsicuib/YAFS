@@ -7,7 +7,7 @@
 
 """
 import logging
-
+from yafs.distribution import deterministicDistribution
 class Population(object):
     """
     A population algorithm controls how the message generation of the sensor modules is associated in the nodes of the topology.
@@ -76,6 +76,30 @@ class Population(object):
         """
         self.logger.debug("Activiting - RUN - Population")
         """ User definition of the Population evolution """
+
+
+class JSONPopulation(Population):
+    def __init__(self, json, **kwargs):
+        super(JSONPopulation, self).__init__(**kwargs)
+        self.data = json
+
+    def initial_allocation(self, sim, app_name):
+            for item in self.data["sinks"]:
+                app_name = item["app"]
+                module = item["module_name"]
+                idtopo = item["id_resource"]
+                sim.deploy_sink(app_name, node=idtopo, module=module)
+
+            for item in self.data["sources"]:
+                app_name = item["app"]
+                idtopo = item["id_resource"]
+                time_dst = item["time_dst"]
+                app = sim.apps[app_name]
+                msg = app.get_message(item["message"])
+
+                dDistribution = deterministicDistribution(name="Deterministic", time=time_dst)
+
+                idsrc = sim.deploy_source(app_name, id_node=idtopo, msg=msg, distribution=dDistribution)
 
 
 class Statical(Population):

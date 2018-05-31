@@ -24,11 +24,6 @@ class Topology:
     NODE_IPT = "IPT"
     "Node feature: IPS . Instructions per Simulation Time "
 
-    NODE_RAM = "RAM"
-    "Node feature: RAM Capacity of a node"
-
-    NODE_COST = "COST"
-    "Node feature: Cost per unit time"
 
 
     def __init__(self, logger=None):
@@ -139,7 +134,7 @@ class Topology:
         nx.set_edge_attributes(self.G, values=attEdges)
         attNodes = {}
         for k in self.G.nodes():
-            attNodes[k] = {"IPT": 1, "RAM": 1, "COST": 1}
+            attNodes[k] = {"IPT": 1}
         nx.set_node_attributes(self.G, values=attNodes)
         for k in self.G.nodes():
             self.nodeAttributes[k] = self.G.node[k] #it has "id" att. TODO IMPROVE
