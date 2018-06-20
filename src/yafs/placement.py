@@ -83,6 +83,7 @@ class JSONPlacement(Placement):
             idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
 
 
+
 class ClusterPlacement(Placement):
     """
     This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.

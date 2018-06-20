@@ -13,9 +13,9 @@ class Metrics:
 
 
     def __init__(self, default_results_path=None):
-        columns_event = ["type", "app", "module", "message","DES.src","DES.dst","TOPO.src","TOPO.dst","module.src","service", "time_in","time_out",
+        columns_event = ["id","type", "app", "module", "message","DES.src","DES.dst","TOPO.src","TOPO.dst","module.src","service", "time_in","time_out",
                          "time_emit","time_reception"]
-        columns_link = ["type", "src", "dst", "app", "latency", "message", "ctime", "size","buffer"]
+        columns_link = ["id","type", "src", "dst", "app", "latency", "message", "ctime", "size","buffer"]
 
         path = "result"
         if  default_results_path is not None:
@@ -30,7 +30,7 @@ class Metrics:
 
     def insert(self,value):
 
-        self.__ff.writerow([value["type"],
+        self.__ff.writerow([value["id"],value["type"],
                     value["app"],
                     value["module"],
                     value["message"],
@@ -47,7 +47,7 @@ class Metrics:
                             ])
 
     def insert_link(self, value):
-        self.__ff_link.writerow([value["type"],
+        self.__ff_link.writerow([value["id"],value["type"],
                     value["src"],
                     value["dst"],
                     value["app"],

@@ -58,6 +58,9 @@ concepts, a number of [examples](https://yafs.readthedocs.io/en/latest/examples/
 
 For more help, contact with the authors or You must dig through the [source code](https://github.com/acsicuib/YAFS)
 
+Improvements
+------------
+- june / 20 / 2018 Messages from sources have an unique identifier that is copied in all the transmissions. We can trace each application invocation.
 
 Acknowledgment
 --------------

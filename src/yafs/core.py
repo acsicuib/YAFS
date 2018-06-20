@@ -62,6 +62,9 @@ class Sim:
         self.__idProcess = -1
         # an unique indentifier for each process in the DES
 
+        self.__idMessage = 0
+        # an unique indentifier for each message
+
         self.network_ctrl_pipe = simpy.Store(self.env)
         self.network_pump = 0
         # a shared resource that control the exchange of messagess in the topology
@@ -252,7 +255,7 @@ class Sim:
 
                     # update link metrics
                     self.metrics.insert_link(
-                        {"type": self.LINK_METRIC,"src":link[0],"dst":link[1],"app":message.app_name,"latency":latency_msg_link,"message": message.name,"ctime":self.env.now,"size":message.bytes,"buffer":self.network_pump})#"path":message.path})
+                        {"id":self.message.id,"type": self.LINK_METRIC,"src":link[0],"dst":link[1],"app":message.app_name,"latency":latency_msg_link,"message": message.name,"ctime":self.env.now,"size":message.bytes,"buffer":self.network_pump})#"path":message.path})
 
                     # We compute the future latency considering the current utilization of the link
                     if last_used < self.env.now:
@@ -348,6 +351,10 @@ class Sim:
             population.run(self)
         self.logger.debug("STOP_Process - Population Algorithm\t#DES:%i" % myId)
 
+    def __getIDMessage(self):
+        self.__idMessage +=1
+        return self.__idMessage
+
     def __add_source_population(self, idDES, name_app, message, distribution):
         """
         A DES-process who controls the invocation of several Pure Source Modules
@@ -359,6 +366,7 @@ class Sim:
 
             msg = copy.copy(message)
             msg.timestamp = self.env.now
+            msg.id = self.__getIDMessage()
 
             self.__send_message(name_app, msg, idDES, self.SOURCE_METRIC)
 
@@ -425,7 +433,7 @@ class Sim:
             # print "DES.dst ", des
 
             self.metrics.insert(
-                {"type": type, "app": app, "module": module, "message": message.name,
+                {"id":message.id,"type": type, "app": app, "module": module, "message": message.name,
                  "DES.src": key, "DES.dst":des,"module.src": message.src,
                  "TOPO.src": message.path[0], "TOPO.dst": id_node,
 
@@ -494,8 +502,18 @@ class Sim:
             msg = yield self.consumer_pipes["%s%s%i"%(app_name,module,ides)].get()
             # One pipe for each module name
 
+            m = self.apps[app_name].services[module]
+
+            # for ser in m:
+            #     if "message_in" in ser.keys():
+            #         try:
+            #             print "\t\t M_In: %s  -> M_Out: %s " % (ser["message_in"].name, ser["message_out"].name)
+            #         except:
+            #             print "\t\t M_In: %s  -> M_Out: [NOTHING] " % (ser["message_in"].name)
+
+            # print "Registers len: %i" %len(register_consumer_msg)
+            doBefore = False
             for register in register_consumer_msg:
-                # Only the first
                 if msg.name == register["message_in"].name:
                     # The message can be treated by this module
                     """
@@ -504,6 +522,7 @@ class Sim:
 
                     # print "Consumer Message: %d " % self.env.now
                     # print "MODULE DES: ",ides
+                    # print "id " + msg.id
                     # print "name " + msg.name
                     # print msg.path
                     # print msg.dst_int
@@ -512,12 +531,13 @@ class Sim:
                     #
                     # print "-" * 30
 
-                    type = self.NODE_METRIC
-                    # we update the type of register event
-                    service_time = self.__update_node_metrics(app_name, module, msg, ides, type)
-
-
-                    yield self.env.timeout(service_time)
+                    #The module only computes this type of message one time.
+                    #It records once
+                    if not doBefore:
+                        type = self.NODE_METRIC
+                        service_time = self.__update_node_metrics(app_name, module, msg, ides, type)
+                        yield self.env.timeout(service_time)
+                        doBefore = True
 
                     """
                     Transferring the message
@@ -528,7 +548,7 @@ class Sim:
                         """
                         self.logger.debug(
                             "(App:%s#DES:%i#%s)\tModule - Sink Message:\t%s" % (app_name, ides, module, msg.name))
-                        break
+                        continue
                     else:
                         if register["dist"](**register["param"]): ### THRESHOLD DISTRIBUTION to Accept the message from source
                             if not register["module_dest"]:
@@ -538,7 +558,7 @@ class Sim:
 
                                 msg_out = copy.copy(register["message_out"])
                                 msg_out.timestamp = self.env.now
-
+                                msg_out.id = msg.id
                                 msg_out.last_idDes = copy.copy(msg.last_idDes)
                                 msg_out.last_idDes.append(ides)
 
@@ -551,6 +571,8 @@ class Sim:
 
                                 msg_out = copy.copy(register["message_out"])
                                 msg_out.timestamp = self.env.now
+                                msg_out.last_idDes = copy.copy(msg.last_idDes)
+                                msg_out.id = msg.id
                                 msg_out.last_idDes = msg.last_idDes.append(ides)
                                 for idx, module_dst in enumerate(register["module_dest"]):
                                     if random.random() <= register["p"][idx]:
@@ -607,6 +629,8 @@ class Sim:
 
 
     def __add_consumer_service_pipe(self,app_name,module,idDES):
+        self.logger.debug("Creating PIPE: %s%s%i "%(app_name,module,idDES))
+
         self.consumer_pipes["%s%s%i"%(app_name,module,idDES)] = simpy.Store(self.env)
 
 
