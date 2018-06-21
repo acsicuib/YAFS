@@ -717,9 +717,6 @@ class Sim:
         self.des_process_running[idDES] = True
         self.env.process(self.__add_source_population(idDES, app_name, msg, distribution))
         self.alloc_DES[idDES] = id_node
-
-        print msg
-
         self.alloc_source[idDES] = {"id":id_node,"app":app_name,"module":msg.src,"name":msg.name}
         return idDES
 
