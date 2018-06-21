@@ -255,7 +255,7 @@ class Sim:
 
                     # update link metrics
                     self.metrics.insert_link(
-                        {"id":self.message.id,"type": self.LINK_METRIC,"src":link[0],"dst":link[1],"app":message.app_name,"latency":latency_msg_link,"message": message.name,"ctime":self.env.now,"size":message.bytes,"buffer":self.network_pump})#"path":message.path})
+                        {"id":message.id,"type": self.LINK_METRIC,"src":link[0],"dst":link[1],"app":message.app_name,"latency":latency_msg_link,"message": message.name,"ctime":self.env.now,"size":message.bytes,"buffer":self.network_pump})#"path":message.path})
 
                     # We compute the future latency considering the current utilization of the link
                     if last_used < self.env.now:
