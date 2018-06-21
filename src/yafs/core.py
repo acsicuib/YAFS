@@ -717,7 +717,10 @@ class Sim:
         self.des_process_running[idDES] = True
         self.env.process(self.__add_source_population(idDES, app_name, msg, distribution))
         self.alloc_DES[idDES] = id_node
-        self.alloc_source[idDES] = {"id":id_node,"app":app_name,"module":msg.src}
+
+        print msg
+
+        self.alloc_source[idDES] = {"id":id_node,"app":app_name,"module":msg.src,"name":msg.name}
         return idDES
 
 
@@ -941,7 +944,7 @@ class Sim:
         print "DES\t| TOPO \t| Src.Mod \t| Modules"
         print "-" * 40
         for k in self.alloc_DES:
-            print k,"\t|",self.alloc_DES[k],"\t|",self.alloc_source[k]["module"] if k in self.alloc_source.keys() else "--","\t\t|",fullAssignation[k]["Module"] if k in fullAssignation.keys() else "--"
+            print k,"\t|",self.alloc_DES[k],"\t|",self.alloc_source[k]["name"] if k in self.alloc_source.keys() else "--","\t\t|",fullAssignation[k]["Module"] if k in fullAssignation.keys() else "--"
         print "-" * 40
         # exit()
 

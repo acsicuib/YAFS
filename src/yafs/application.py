@@ -41,12 +41,12 @@ class Message:
         self.idDES = None
         self.broadcasting = broadcasting
         self.last_idDes = []
-        self.id = None
+        self.id = -1
 
     def __str__(self):
         print  "{--"
-        print "Name: %s (%i)" %(self.name,self.id)
-        print "From (src): %s  to (dst): %s" %(self.src,self.dst)
+        print " Name: %s (%s)" %(self.name,self.id)
+        print " From (src): %s  to (dst): %s" %(self.src,self.dst)
         print " --}"
         return ""
 
