@@ -244,9 +244,13 @@ class Sim:
 
                     #link = (message.dst_int, src_int)
                     #last_used = self.last_busy_time[link]
-
-                size_bits = message.bytes * 8
+                """
+                Computing message latency
+                """
+                size_bits = message.bytes
+                #size_bits = message.bytes * 8
                 try:
+                   # transmit = size_bits / (self.topology.get_edge(link)[Topology.LINK_BW] * 1000000.0)  # MBITS!
                     transmit = size_bits / (self.topology.get_edge(link)[Topology.LINK_BW] * 1000000.0)  # MBITS!
                     propagation = self.topology.get_edge(link)[Topology.LINK_PR]
                     latency_msg_link = transmit + propagation
@@ -412,18 +416,36 @@ class Sim:
             # print "Message src ",message.src
             # print "Message dst ",message.dst
             # print "Message idDEs ",message.idDES
-
-
-
             # print "DES.src ",message.path[0] ######>>>>>  ESTO ES TOPO SOURCE
             # print "TOPO.src ", int(self.alloc_DES[message.path[0]])
             # print "TOPO.dst ", int(self.alloc_DES[des])
             # print "-" * 50
+
+
+            # print "MODULE: ",self.alloc_module[app][module]
+            # tmp = []
+            # for it in self.alloc_module[app][module]:
+            #     tmp.append(self.alloc_DES[it])
+            # print "ALLOC:  ", tmp
+            # print "PATH 0: " ,message.path[0]
+            # print
+
+            # ATENTION. DES.SRC can be impossible to be found if there are two same modules deployed in the same node entity.
             key = -1
-            for k in self.alloc_DES:
+            key_possible = self.alloc_module[app][module]
+            for k in key_possible:
                 if self.alloc_DES[k] == message.path[0]:
+                    print k
                     key = k
                     break
+            if key<0:
+                #print "WARNING"
+                #May be the module is a source. In this case, we can not assume 100 the original entity of that message...
+                for k in self.alloc_source.keys():
+                    if self.alloc_source[k]['id'] == message.path[0]:
+                        print k
+
+
 
 
             # print "DES.src ",key
@@ -848,6 +870,7 @@ class Sim:
         self.placement_policy[placement.name]["apps"].append(app.name)
 
         # Add Population control to the App
+
         if not population.name in self.population_policy.keys():  # First Time
             self.population_policy[population.name] = {"population_policy": population, "apps": []}
             if population.activation_dist is not None:

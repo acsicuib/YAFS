@@ -60,6 +60,7 @@ For more help, contact with the authors or You must dig through the [source code
 
 Improvements
 ------------
+- june / 25 / 2018 Bug Fixed - The DES.src metric of the CSV results is fixed. Identifies the DES-process who sends the message
 - june / 20 / 2018 Messages from sources have an unique identifier that is copied in all the transmissions. We can trace each application invocation.
 
 Acknowledgment
