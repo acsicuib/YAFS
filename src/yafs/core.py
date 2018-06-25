@@ -435,7 +435,6 @@ class Sim:
             key_possible = self.alloc_module[app][module]
             for k in key_possible:
                 if self.alloc_DES[k] == message.path[0]:
-                    print k
                     key = k
                     break
             if key<0:
@@ -443,7 +442,8 @@ class Sim:
                 #May be the module is a source. In this case, we can not assume 100 the original entity of that message...
                 for k in self.alloc_source.keys():
                     if self.alloc_source[k]['id'] == message.path[0]:
-                        print k
+                        key = k
+                        break
 
 
 
