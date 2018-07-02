@@ -21,6 +21,7 @@ from yafs.stats import Stats
 from yafs.distribution import deterministicDistribution
 from yafs.utils import fractional_selectivity
 import time
+import numpy as np
 
 RANDOM_SEED = 1
 
@@ -87,6 +88,7 @@ def create_json_topology():
 def main(simulated_time):
 
     random.seed(RANDOM_SEED)
+    np.random.seed(RANDOM_SEED)
 
     """
     TOPOLOGY from a json

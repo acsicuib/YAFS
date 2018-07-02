@@ -25,7 +25,7 @@ from placement_Cluster_Edge import CloudPlacement,FogPlacement
 from yafs.distribution import deterministicDistribution
 from yafs.utils import fractional_selectivity
 import time
-
+import numpy as np
 RANDOM_SEED = 1
 
 def create_application():
@@ -132,7 +132,7 @@ def create_json_topology(numOfDepts,numOfMobilesPerDept):
 def main(simulated_time,depth,police):
 
     random.seed(RANDOM_SEED)
-
+    np.random.seed(RANDOM_SEED)
     """
     TOPOLOGY from a json
     """
@@ -144,17 +144,18 @@ def main(simulated_time,depth,police):
 
     t = Topology()
     t_json = create_json_topology(numOfDepts,numOfMobilesPerDept)
-    print t_json
-    exit()
+    #print t_json
     t.load(t_json)
 
-    t.write("network_%s.gexf"%depth)
+    #t.write("network_%s.gexf"%depth)
 
 
     """
     APPLICATION
     """
     app = create_application()
+    print app
+    exit()
 
     """
     PLACEMENT algorithm

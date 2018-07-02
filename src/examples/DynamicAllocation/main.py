@@ -47,7 +47,7 @@ def create_application(name):
 def main(simulated_time):
 
     random.seed(RANDOM_SEED)
-
+    np.random.seed(RANDOM_SEED)
     """
     TOPOLOGY from a json
     """

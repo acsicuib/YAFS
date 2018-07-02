@@ -172,7 +172,7 @@ def main(simulated_time):
         ]
     }
 
-    #There are not modules to place.
+
     placement = JSONPlacement(name="Placement",json=placementJson)
 
 
