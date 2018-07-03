@@ -178,27 +178,31 @@ class Sim:
         Kwargs:
             id_src (int) identifier of a pure source module
         """
-        # print message
-        paths,DES_dst = self.selector_path[app_name].get_path(self,app_name, message, self.alloc_DES[idDES], self.alloc_DES, self.alloc_module, self.last_busy_time)
+        #TODO IMPROVE asignation of topo = alloc_DES(IdDES) , It has to move to the get_path process
+        try:
+            paths,DES_dst = self.selector_path[app_name].get_path(self,app_name, message, self.alloc_DES[idDES], self.alloc_DES, self.alloc_module, self.last_busy_time)
 
-        #print "HERE ",paths
 
-        if DES_dst == [None]:
-            self.logger.warning(
-                "(#DES:%i)\t--- Unreacheable DST:\t%s: PATH:%s " % (idDES, message.name, paths))
-        else:
+             #print "HERE ",paths
 
-            self.logger.debug("(#DES:%i)\t--- SENDING Message:\t%s: PATH:%s  DES:%s" % (idDES, message.name,paths,DES_dst))
+            if DES_dst == [None]:
+                self.logger.warning(
+                    "(#DES:%i)\t--- Unreacheable DST:\t%s: PATH:%s " % (idDES, message.name, paths))
+            else:
 
-            # print "MESSAGES"
-            #May be, the selector of path decides broadcasting multiples paths
-            for idx,path in enumerate(paths):
-                msg = copy.copy(message)
-                msg.path = copy.copy(path)
-                msg.app_name = app_name
-                msg.idDES = DES_dst[idx]
-                # print "\t",msg.path
-                self.network_ctrl_pipe.put(msg)
+                self.logger.debug("(#DES:%i)\t--- SENDING Message:\t%s: PATH:%s  DES:%s" % (idDES, message.name,paths,DES_dst))
+
+                # print "MESSAGES"
+                #May be, the selector of path decides broadcasting multiples paths
+                for idx,path in enumerate(paths):
+                    msg = copy.copy(message)
+                    msg.path = copy.copy(path)
+                    msg.app_name = app_name
+                    msg.idDES = DES_dst[idx]
+                    # print "\t",msg.path
+                    self.network_ctrl_pipe.put(msg)
+        except KeyError:
+            self.logger.warning("(#DES:%i)\t--- Unreacheable DST:\t%s " % (idDES, message.name))
 
     def __network_process(self):
         """
@@ -366,105 +370,97 @@ class Sim:
         self.logger.debug("Added_Process - Module Pure Source\t#DES:%i" % idDES)
         while not self.stop and self.des_process_running[idDES]:
             yield self.env.timeout(distribution.next())
-            self.logger.debug("(App:%s#DES:%i)\tModule - Generating Message: %s \t(T:%d)" % (name_app, idDES, message.name,self.env.now))
+            if self.des_process_running[idDES]:
+                self.logger.debug("(App:%s#DES:%i)\tModule - Generating Message: %s \t(T:%d)" % (name_app, idDES, message.name,self.env.now))
 
-            msg = copy.copy(message)
-            msg.timestamp = self.env.now
-            msg.id = self.__getIDMessage()
+                msg = copy.copy(message)
+                msg.timestamp = self.env.now
+                msg.id = self.__getIDMessage()
 
-            self.__send_message(name_app, msg, idDES, self.SOURCE_METRIC)
+                self.__send_message(name_app, msg, idDES, self.SOURCE_METRIC)
 
         self.logger.debug("STOP_Process - Module Pure Source\t#DES:%i" % idDES)
 
     def __update_node_metrics(self, app, module, message, des, type):
         # try:
 
+        """
+        It computes the service time in processing a message and record this event
+        """
+        if module in self.apps[app].get_sink_modules():
             """
-            It computes the service time in processing a message and record this event
+            The module is a SINK (Actuactor)
             """
-            if module in self.apps[app].get_sink_modules():
-                """
-                The module is a SINK (Actuactor)
-                """
-                id_node  = self.alloc_DES[des]
-                time_service = 0
-            else:
-                """
-                The module is a processing module
-                """
-                id_node = self.alloc_DES[des]
-
-                att_node = self.topology.get_nodes_att()[id_node]
-                time_service = message.inst / float(att_node["IPT"])
-
-                # self.logger.debug("TS[%s] - DES: %i - %d"%(module,des,time_service))
-
+            id_node  = self.alloc_DES[des]
+            time_service = 0
+        else:
             """
-            it records the entity.id who sends this message
+            The module is a processing module
             """
-            # if not message.path:
-            #     from_id_source = id_node  # same src like dst
-            # else:
-            #     from_id_source = message.path[0]
+            id_node = self.alloc_DES[des]
 
-            # print "-"*50
-            # print "Module: ",module
-            # print "DES ",des
-            # print "ID MODULE: ",id_node
-            # print "Message.name ",message.name
-            # print "Message.path ",message.path
-            # print "Message src ",message.src
-            # print "Message dst ",message.dst
-            # print "Message idDEs ",message.idDES
-            # print "DES.src ",message.path[0] ######>>>>>  ESTO ES TOPO SOURCE
-            # print "TOPO.src ", int(self.alloc_DES[message.path[0]])
-            # print "TOPO.dst ", int(self.alloc_DES[des])
-            # print "-" * 50
+            att_node = self.topology.get_nodes_att()[id_node]
+            time_service = message.inst / float(att_node["IPT"])
 
+            # self.logger.debug("TS[%s] - DES: %i - %d"%(module,des,time_service))
 
-            # print "MODULE: ",self.alloc_module[app][module]
-            # tmp = []
-            # for it in self.alloc_module[app][module]:
-            #     tmp.append(self.alloc_DES[it])
-            # print "ALLOC:  ", tmp
-            # print "PATH 0: " ,message.path[0]
-            # print
+        """
+        it records the entity.id who sends this message
+        """
+        # if not message.path:
+        #     from_id_source = id_node  # same src like dst
+        # else:
+        #     from_id_source = message.path[0]
 
-            # ATENTION. DES.SRC can be impossible to be found if there are two same modules deployed in the same node entity.
-            key = -1
-            key_possible = self.alloc_module[app][module]
-            for k in key_possible:
-                if self.alloc_DES[k] == message.path[0]:
-                    key = k
-                    break
-            if key<0:
-                #print "WARNING"
-                #May be the module is a source. In this case, we can not assume 100 the original entity of that message...
-                for k in self.alloc_source.keys():
-                    if self.alloc_source[k]['id'] == message.path[0]:
-                        key = k
-                        break
+        # print "-"*50
+        # print "Module: ",module # module that receives the request (RtR)
+        # print "DES ",des # DES process who RtR
+        # print "ID MODULE: ",id_node  #Topology entity who RtR
+        # print "Message.name ",message.name # Message name
+        # print "Message.id ", message.id #Message generator id
+        # print "Message.path ",message.path #enrouting path
+        # print "Message src ",message.src #module source who send the request
+        # print "Message dst ",message.dst #module dst (the entity that RtR)
+        # print "Message idDEs ",message.idDES #DES intermediate process that process the request
+        # print "TOPO.src ", message.path[0] #entity that RtR
+        # print "TOPO.dst ", int(self.alloc_DES[des]) #DES process that RtR
+        #
+        #
+        # # print "MODULE: ",self.alloc_module[app][module]
+        # # tmp = []
+        # # for it in self.alloc_module[app][module]:
+        # #     tmp.append(self.alloc_DES[it])
+        # # print "ALLOC:  ", tmp
+        # # print "PATH 0: " ,message.path[0]
 
 
 
+        #WARNING. If there are more than two equal modules deployed in the same entity, it will not be possible to determine which process sent this package at this point. That information will have to be calculated by the trace of the message (message.id)
+        sourceDES = -1
+        try:
+            DES_possible = self.alloc_module[app][message.src]
+            for eDES in DES_possible:
+                if self.alloc_DES[eDES] == message.path[0]:
+                    sourceDES = eDES
+        except:
+            for k in self.alloc_source.keys():
+                if self.alloc_source[k]['id'] == message.path[0]:
+                    sourceDES = k
 
-            # print "DES.src ",key
-            # ### CORRECTO:
-            # print "TOPO.src ", int(message.path[0])
-            # print "TOPO.dst ", id_node
-            # print "DES.dst ", des
+        # print "Source DES ",sourceDES
+        # print "-" * 50
 
-            self.metrics.insert(
-                {"id":message.id,"type": type, "app": app, "module": module, "message": message.name,
-                 "DES.src": key, "DES.dst":des,"module.src": message.src,
-                 "TOPO.src": message.path[0], "TOPO.dst": id_node,
+        self.metrics.insert(
+            {"id":message.id,"type": type, "app": app, "module": module, "message": message.name,
+             "DES.src": sourceDES, "DES.dst":des,"module.src": message.src,
+             "TOPO.src": message.path[0], "TOPO.dst": id_node,
 
-                 "service": time_service, "time_in": self.env.now,
-                 "time_out": time_service + self.env.now, "time_emit": float(message.timestamp),
-                 "time_reception": float(message.timestamp_rec)
+             "service": time_service, "time_in": self.env.now,
+             "time_out": time_service + self.env.now, "time_emit": float(message.timestamp),
+             "time_reception": float(message.timestamp_rec)
 
-                 })
-            return time_service
+             })
+        return time_service
         # except:
         #     self.logger.warning("This module has been removed previously to the arrival time of this message. DES: %i"%des)
         #     return 0
@@ -503,14 +499,12 @@ class Sim:
         self.logger.debug("Added_Process - Module Source: %s\t#DES:%i" % (module, idDES))
         while (not self.stop) and self.des_process_running[idDES]:
             yield self.env.timeout(distribution.next())
-            self.logger.debug(
-                "(App:%s#DES:%i#%s)\tModule - Generating Message:\t%s" % (app_name, idDES, module, message.name))
-            msg = copy.copy(message)
-            msg.timestamp = self.env.now
-
-
-
-            self.__send_message(app_name, msg, idDES,self.SOURCE_METRIC)
+            if self.des_process_running[idDES]:
+                self.logger.debug(
+                    "(App:%s#DES:%i#%s)\tModule - Generating Message:\t%s" % (app_name, idDES, module, message.name))
+                msg = copy.copy(message)
+                msg.timestamp = self.env.now
+                self.__send_message(app_name, msg, idDES,self.SOURCE_METRIC)
 
         self.logger.debug("STOP_Process - Module Source: %s\t#DES:%i" % (module, idDES))
 
@@ -521,88 +515,90 @@ class Sim:
         """
         self.logger.debug("Added_Process - Module Consumer: %s\t#DES:%i" % (module, ides))
         while not self.stop and self.des_process_running[ides]:
-            msg = yield self.consumer_pipes["%s%s%i"%(app_name,module,ides)].get()
-            # One pipe for each module name
+            if self.des_process_running[ides]:
+                msg = yield self.consumer_pipes["%s%s%i"%(app_name,module,ides)].get()
+                # One pipe for each module name
 
-            m = self.apps[app_name].services[module]
+                m = self.apps[app_name].services[module]
 
-            # for ser in m:
-            #     if "message_in" in ser.keys():
-            #         try:
-            #             print "\t\t M_In: %s  -> M_Out: %s " % (ser["message_in"].name, ser["message_out"].name)
-            #         except:
-            #             print "\t\t M_In: %s  -> M_Out: [NOTHING] " % (ser["message_in"].name)
+                # for ser in m:
+                #     if "message_in" in ser.keys():
+                #         try:
+                #             print "\t\t M_In: %s  -> M_Out: %s " % (ser["message_in"].name, ser["message_out"].name)
+                #         except:
+                #             print "\t\t M_In: %s  -> M_Out: [NOTHING] " % (ser["message_in"].name)
 
-            # print "Registers len: %i" %len(register_consumer_msg)
-            doBefore = False
-            for register in register_consumer_msg:
-                if msg.name == register["message_in"].name:
-                    # The message can be treated by this module
-                    """
-                    Processing the message
-                    """
-
-                    # print "Consumer Message: %d " % self.env.now
-                    # print "MODULE DES: ",ides
-                    # print "id " + msg.id
-                    # print "name " + msg.name
-                    # print msg.path
-                    # print msg.dst_int
-                    # print msg.timestamp
-                    # print msg.dst
-                    #
-                    # print "-" * 30
-
-                    #The module only computes this type of message one time.
-                    #It records once
-                    if not doBefore:
-                        type = self.NODE_METRIC
-                        service_time = self.__update_node_metrics(app_name, module, msg, ides, type)
-                        yield self.env.timeout(service_time)
-                        doBefore = True
-
-                    """
-                    Transferring the message
-                    """
-                    if not register["message_out"]:
+                # print "Registers len: %i" %len(register_consumer_msg)
+                doBefore = False
+                for register in register_consumer_msg:
+                    if msg.name == register["message_in"].name:
+                        # The message can be treated by this module
                         """
-                        Sink behaviour (nothing to send)
+                        Processing the message
                         """
-                        self.logger.debug(
-                            "(App:%s#DES:%i#%s)\tModule - Sink Message:\t%s" % (app_name, ides, module, msg.name))
-                        continue
-                    else:
-                        if register["dist"](**register["param"]): ### THRESHOLD DISTRIBUTION to Accept the message from source
-                            if not register["module_dest"]:
-                                # it is not a broadcasting message
-                                self.logger.debug("(App:%s#DES:%i#%s)\tModule - Transmit Message:\t%s" % (
-                                    app_name, ides, module, register["message_out"].name))
 
-                                msg_out = copy.copy(register["message_out"])
-                                msg_out.timestamp = self.env.now
-                                msg_out.id = msg.id
-                                msg_out.last_idDes = copy.copy(msg.last_idDes)
-                                msg_out.last_idDes.append(ides)
+                        # print "Consumer Message: %d " % self.env.now
+                        # print "MODULE DES: ",ides
+                        # print "id " + msg.id
+                        # print "name " + msg.name
+                        # print msg.path
+                        # print msg.dst_int
+                        # print msg.timestamp
+                        # print msg.dst
+                        #
+                        # print "-" * 30
 
-                                self.__send_message(app_name, msg_out,ides, self.FORWARD_METRIC)
+                        #The module only computes this type of message one time.
+                        #It records once
+                        if not doBefore:
+                            type = self.NODE_METRIC
+                            service_time = self.__update_node_metrics(app_name, module, msg, ides, type)
+                            yield self.env.timeout(service_time)
+                            doBefore = True
+
+                        """
+                        Transferring the message
+                        """
+                        if not register["message_out"]:
+                            """
+                            Sink behaviour (nothing to send)
+                            """
+                            self.logger.debug(
+                                "(App:%s#DES:%i#%s)\tModule - Sink Message:\t%s" % (app_name, ides, module, msg.name))
+                            continue
+                        else:
+                            if register["dist"](**register["param"]): ### THRESHOLD DISTRIBUTION to Accept the message from source
+                                if not register["module_dest"]:
+                                    # it is not a broadcasting message
+                                    self.logger.debug("(App:%s#DES:%i#%s)\tModule - Transmit Message:\t%s" % (
+                                        app_name, ides, module, register["message_out"].name))
+
+                                    msg_out = copy.copy(register["message_out"])
+                                    msg_out.timestamp = self.env.now
+                                    msg_out.id = msg.id
+                                    msg_out.last_idDes = copy.copy(msg.last_idDes)
+                                    msg_out.last_idDes.append(ides)
+
+
+                                    self.__send_message(app_name, msg_out,ides, self.FORWARD_METRIC)
+
+                                else:
+                                    # it is a broadcasting message
+                                    self.logger.debug("(App:%s#DES:%i#%s)\tModule - Broadcasting Message:\t%s" % (
+                                        app_name, ides, module, register["message_out"].name))
+
+                                    msg_out = copy.copy(register["message_out"])
+                                    msg_out.timestamp = self.env.now
+                                    msg_out.last_idDes = copy.copy(msg.last_idDes)
+                                    msg_out.id = msg.id
+                                    msg_out.last_idDes = msg.last_idDes.append(ides)
+                                    for idx, module_dst in enumerate(register["module_dest"]):
+                                        if random.random() <= register["p"][idx]:
+                                            self.__send_message(app_name, msg_out, ides,self.FORWARD_METRIC)
 
                             else:
-                                # it is a broadcasting message
-                                self.logger.debug("(App:%s#DES:%i#%s)\tModule - Broadcasting Message:\t%s" % (
+                                self.logger.debug("(App:%s#DES:%i#%s)\tModule - Stopped Message:\t%s" % (
                                     app_name, ides, module, register["message_out"].name))
-
-                                msg_out = copy.copy(register["message_out"])
-                                msg_out.timestamp = self.env.now
-                                msg_out.last_idDes = copy.copy(msg.last_idDes)
-                                msg_out.id = msg.id
-                                msg_out.last_idDes = msg.last_idDes.append(ides)
-                                for idx, module_dst in enumerate(register["module_dest"]):
-                                    if random.random() <= register["p"][idx]:
-                                        self.__send_message(app_name, msg_out, ides,self.FORWARD_METRIC)
-
-                        else:
-                            self.logger.debug("(App:%s#DES:%i#%s)\tModule - Stopped Message:\t%s" % (
-                                app_name, ides, module, register["message_out"].name))
 
         self.logger.debug("STOP_Process - Module Consumer: %s\t#DES:%i" % (module, ides))
 
@@ -672,7 +668,9 @@ class Sim:
                     self.pbar.close()
                 self.logger.info("! Stop simulation at time: %f !" % self.env.now)
 
-
+    """
+    DEPRECATED
+    """
     def __update_internal_structures_from_DES_remove(self, DES):
         try:
             self.alloc_DES.pop(DES, None)
@@ -838,8 +836,17 @@ class Sim:
         Args:
             id.source (int): the identifier of the DES process.
         """
-        self.__update_internal_structures_from_DES_remove(id)
         self.des_process_running[id] = False
+
+    def start_process(self, id):
+        """
+        All pure source modules (sensors) are controlled by this boolean.
+        Using this function (:mod:`Population`) algorithm can start one source
+
+        Args:
+            id.source (int): the identifier of the DES process.
+        """
+        self.des_process_running[id] = True
 
 
 
@@ -933,6 +940,25 @@ class Sim:
 
         return id_DES
 
+    def remove_node(self, id_node_topology):
+        # Stopping related processes deployed in the module and clearing main structure: alloc_DES
+        des_tmp=[]
+        if id_node_topology in self.alloc_DES.values():
+            for k, v in self.alloc_DES.items():
+                if v == id_node_topology:
+                    des_tmp.append(k)
+                    self.stop_process(k)
+                    del self.alloc_DES[k]
+
+        # Clearing other related structures
+        for k, v in self.alloc_module.items():
+            for k2, v2 in self.alloc_module[k].items():
+                for item in des_tmp:
+                    if item in v2:
+                        v2.remove(item)
+
+        # Finally removing node from topology
+        self.topology.G.remove_node(id_node_topology)
 
     def draw_allocated_topology(self):
         entities = self.get_alloc_entities()

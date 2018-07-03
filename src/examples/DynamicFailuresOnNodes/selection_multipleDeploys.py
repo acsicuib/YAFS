@@ -56,7 +56,7 @@ class BroadPath(Selection):
                     bestDES = dev
 
             return minPath,bestDES
-        except nx.NetworkXNoPath:
+        except (nx.NetworkXNoPath, nx.NodeNotFound) as e:
             self.logger.warning("There is no path between two nodes: %s - %s "%(node_src,node_dst))
             print "Simulation ends?"
             return [],None
@@ -75,35 +75,24 @@ class BroadPath(Selection):
         DES_dst = alloc_module[app_name][message.dst]
         currentNodes = len(sim.topology.G.nodes())
         # print "DES DST: %s" % DES_dst
-        if self.invalid_cache_value == currentNodes:  # Cache updated
-            # print "Cache updated"
-            if node_src not in self.most_near_calculator_to_client.keys():
-                self.most_near_calculator_to_client[node_src] = self.compute_most_near(
-                    node_src,alloc_DES, sim,DES_dst)
+        if not self.invalid_cache_value == currentNodes:  # Cache updated
+            self.invalid_cache_value = currentNodes
+            self.most_near_calculator_to_client = {}
 
-            path,des = self.most_near_calculator_to_client[node_src]
+            # print "Cache updated"
+        if node_src not in self.most_near_calculator_to_client.keys():
+            self.most_near_calculator_to_client[node_src] = self.compute_most_near(
+                 node_src,alloc_DES, sim,DES_dst)
+
+        path,des = self.most_near_calculator_to_client[node_src]
 
             # print "\t NEW DES_DST: %s" % DES_dst
             # print "PATH ",path
             # print "DES  ",des
 
-            return [path],[des]
-        else:
-            self.invalid_cache_value = currentNodes
-            # print "\t INVALIDATING CACHE  "*4
-            # print "\t NEW DES_DST: %s" %DES_dst
-            self.most_near_calculator_to_client = {}  # reset previous path-cached values
+        return [path],[des]
 
-            # This value is not in the cache
-            self.most_near_calculator_to_client[node_src] = self.compute_most_near(
-                node_src, alloc_DES, sim, DES_dst)
 
-            path, des = self.most_near_calculator_to_client[node_src]
-
-            # print "\t NEW DES_DST: %s" % DES_dst
-            # print "PATH2 ",path
-            # print "DES  ",des
-            return [path], [des]
 
     def get_path_from_failure(self, sim,message, link, alloc_DES,alloc_module, traffic,ctime):
         # print "Example of enrouting"
@@ -124,15 +113,18 @@ class BroadPath(Selection):
             #print "INT: ",message.dst_int #301
 
             path, des = self.get_path(sim,message.app_name,message,node_src,alloc_DES,alloc_module,traffic)
+            if len(path[0]) > 0:
+                #print path # [[164, 130, 380, 110, 216]]
+                #print des # [40]
 
-            #print path # [[164, 130, 380, 110, 216]]
-            #print des # [40]
+                concPath = message.path[0:message.path.index(path[0][0])] + path[0]
+                # print concPath # [86, 242, 160, 164, 130, 380, 110, 216]
+                newINT = path[0][2]
+                # print newINT # 380
 
-            concPath = message.path[0:message.path.index(path[0][0])] + path[0]
-            # print concPath # [86, 242, 160, 164, 130, 380, 110, 216]
-            newINT = path[0][2]
-            # print newINT # 380
+                message.dst_int = newINT
+                return [concPath], des
+            else:
+                return [], []
 
-            message.dst_int = newINT
-            return [concPath], des
 
