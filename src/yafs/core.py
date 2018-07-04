@@ -199,7 +199,7 @@ class Sim:
                     msg.path = copy.copy(path)
                     msg.app_name = app_name
                     msg.idDES = DES_dst[idx]
-                    # print "\t",msg.path
+
                     self.network_ctrl_pipe.put(msg)
         except KeyError:
             self.logger.warning("(#DES:%i)\t--- Unreacheable DST:\t%s " % (idDES, message.name))
@@ -214,12 +214,13 @@ class Sim:
         self.last_busy_time = {} # dict(zip(edges, [0.0] * len(edges)))
         while not self.stop:
             message = yield self.network_ctrl_pipe.get()
+
             # print "NetworkProcess --- Current time %d " %self.env.now
             # print "name " + message.name
-            # print message.path
-            # print message.dst_int
-            # print message.timestamp
-            # print message.dst
+            # print "Path:",message.path
+            # print "DST_INT:",message.dst_int
+            # #print message.timestamp
+            # print "DST",message.dst
 
 
             # If same SRC and PATH or the message has achieved the penultimate node to reach the dst
@@ -231,7 +232,7 @@ class Sim:
                 self.consumer_pipes[pipe_id].put(message)
             else:
                 # The message is sent at first time or it sent more times.
-                if not message.dst_int:
+                if message.dst_int < 0:
                     src_int = message.path[0]
                     message.dst_int = message.path[1]
                 else:
@@ -239,6 +240,8 @@ class Sim:
                     message.dst_int = message.path[message.path.index(message.dst_int) + 1]
                 # arista set by (src_int,message.dst_int)
                 link = (src_int, message.dst_int)
+
+
                 # Links in the topology are bidirectional: (a,b) == (b,a)
                 try:
                     last_used = self.last_busy_time[link]
@@ -369,7 +372,8 @@ class Sim:
         """
         self.logger.debug("Added_Process - Module Pure Source\t#DES:%i" % idDES)
         while not self.stop and self.des_process_running[idDES]:
-            yield self.env.timeout(distribution.next())
+            nextTime = distribution.next()
+            yield self.env.timeout(nextTime)
             if self.des_process_running[idDES]:
                 self.logger.debug("(App:%s#DES:%i)\tModule - Generating Message: %s \t(T:%d)" % (name_app, idDES, message.name,self.env.now))
 
@@ -424,7 +428,7 @@ class Sim:
         # print "Message idDEs ",message.idDES #DES intermediate process that process the request
         # print "TOPO.src ", message.path[0] #entity that RtR
         # print "TOPO.dst ", int(self.alloc_DES[des]) #DES process that RtR
-        #
+
         #
         # # print "MODULE: ",self.alloc_module[app][module]
         # # tmp = []
@@ -539,8 +543,8 @@ class Sim:
 
                         # print "Consumer Message: %d " % self.env.now
                         # print "MODULE DES: ",ides
-                        # print "id " + msg.id
-                        # print "name " + msg.name
+                        # print "id ",msg.id
+                        # print "name ",msg.name
                         # print msg.path
                         # print msg.dst_int
                         # print msg.timestamp

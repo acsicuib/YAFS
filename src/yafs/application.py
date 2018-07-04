@@ -34,7 +34,7 @@ class Message:
 
         self.timestamp = 0
         self.path = []
-        self.dst_int = None
+        self.dst_int = -1
         self.app_name = None
         self.timestamp_rec = 0
 

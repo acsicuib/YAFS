@@ -79,7 +79,7 @@ class JSONPlacement(Placement):
 
             app = sim.apps[app_name]
             services = app.services
-
+            # print "APPPP  : ",app
             idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
 
 
