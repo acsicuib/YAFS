@@ -16,7 +16,7 @@ from yafs.topology import Topology
 from yafs.application import Application
 from yafs.metrics import Metrics
 from yafs.distribution import *
-import utils
+from yafs import utils
 
 import numpy as np
 
@@ -182,10 +182,7 @@ class Sim:
         try:
             paths,DES_dst = self.selector_path[app_name].get_path(self,app_name, message, self.alloc_DES[idDES], self.alloc_DES, self.alloc_module, self.last_busy_time)
 
-
-             #print "HERE ",paths
-
-            if DES_dst == [None]:
+            if DES_dst == [None] or DES_dst==[[]]:
                 self.logger.warning(
                     "(#DES:%i)\t--- Unreacheable DST:\t%s: PATH:%s " % (idDES, message.name, paths))
             else:
@@ -225,6 +222,7 @@ class Sim:
 
             # If same SRC and PATH or the message has achieved the penultimate node to reach the dst
             if not message.path or message.path[-1] == message.dst_int or len(message.path)==1:
+
                 pipe_id = "%s%s%i" %(message.app_name,message.dst,message.idDES)  # app_name + module_name (dst) + idDES
                 # Timestamp reception message in the module
                 message.timestamp_rec = self.env.now
@@ -992,7 +990,7 @@ class Sim:
 
         print "-"*40
         print "DES\t| TOPO \t| Src.Mod \t| Modules"
-        print "-" * 40
+        print ("-" * 40)
         for k in self.alloc_DES:
             print k,"\t|",self.alloc_DES[k],"\t|",self.alloc_source[k]["name"] if k in self.alloc_source.keys() else "--","\t\t|",fullAssignation[k]["Module"] if k in fullAssignation.keys() else "--"
         print "-" * 40
