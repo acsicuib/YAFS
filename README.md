@@ -25,7 +25,7 @@ YAFS is released under the MIT License. However, we would like to know in which 
 Installation
 ------------
 
-YAFS requires Python 2.7, PyPy 2.0 or above.
+YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 
 You can install YAFS easily via [pip](<http://pypi.python.org/pypi/pip>):
 
