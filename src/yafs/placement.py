@@ -80,7 +80,26 @@ class JSONPlacement(Placement):
             app = sim.apps[app_name]
             services = app.services
             # print "APPPP  : ",app
-            idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
+            if idtopo != 100:
+                idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
+
+
+
+class JSONPlacementOnCloud(Placement):
+    def __init__(self, json,idCloud, **kwargs):
+        super(JSONPlacementOnCloud, self).__init__(**kwargs)
+        self.data = json
+        self.idCloud = idCloud
+
+    def initial_allocation(self, sim, app_name):
+
+        for item in self.data["initialAllocation"]:
+            app_name = item["app"]
+            module = item["module_name"]
+
+            app = sim.apps[app_name]
+            services = app.services
+            idDES = sim.deploy_module(app_name, module, services[module],[self.idCloud])
 
 
 
@@ -154,7 +173,7 @@ class EdgePlacement(Placement):
 
         for module in services.keys():
 
-            print module
+            print (module)
 
             if "Coordinator" == module:
                 idDES = sim.deploy_module(app_name,module,services[module],id_cluster) #Deploy as many modules as elements in the array

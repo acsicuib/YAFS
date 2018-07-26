@@ -111,7 +111,7 @@ class First_ShortestPath(Selection):
         #Among all possible path we choose the smallest
         bestPath = []
         bestDES = []
-        print DES_dst
+        print (DES_dst)
         for des in DES_dst:
             dst_node = alloc_DES[des]
             # print "DES Node %i " %dst_node
@@ -119,7 +119,7 @@ class First_ShortestPath(Selection):
             path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dst_node))
             bestPath = [path]
             bestDES  = [des]
-            print path
+            print (path)
 
 
         return bestPath,bestDES

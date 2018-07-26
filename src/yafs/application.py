@@ -44,11 +44,11 @@ class Message:
         self.id = -1
 
     def __str__(self):
-        print  "{--"
-        print " Name: %s (%s)" %(self.name,self.id)
-        print " From (src): %s  to (dst): %s" %(self.src,self.dst)
-        print " --}"
-        return ""
+        print  ("{--")
+        print (" Name: %s (%s)" %(self.name,self.id))
+        print (" From (src): %s  to (dst): %s" %(self.src,self.dst))
+        print (" --}")
+        return ("")
 
 
 class Application:
@@ -81,20 +81,20 @@ class Application:
         self.data = {}
 
     def __str__(self):
-        print "___ APP. Name: %s" % self.name
-        print " __ Transmissions "
+        print ("___ APP. Name: %s" % self.name)
+        print (" __ Transmissions ")
         for m in self.messages.values():
-            print "\tModule: None : M_In: %s  -> M_Out: %s " %(m.src,m.dst)
+            print ("\tModule: None : M_In: %s  -> M_Out: %s " %(m.src,m.dst))
 
         for modulename in self.services.keys():
             m = self.services[modulename]
-            print "\t",modulename
+            print ("\t",modulename)
             for ser in m:
                 if "message_in" in ser.keys():
                     try:
-                            print "\t\t M_In: %s  -> M_Out: %s " % (ser["message_in"].name, ser["message_out"].name)
+                            print ("\t\t M_In: %s  -> M_Out: %s " % (ser["message_in"].name, ser["message_out"].name))
                     except:
-                            print "\t\t M_In: %s  -> M_Out: [NOTHING] " % (ser["message_in"].name)
+                            print ("\t\t M_In: %s  -> M_Out: [NOTHING] " % (ser["message_in"].name))
         return ""
 
     def set_modules(self,data):

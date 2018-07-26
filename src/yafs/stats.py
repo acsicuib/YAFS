@@ -103,50 +103,50 @@ class Stats:
     def showLoops(self,time_loops):
         results = self.average_loop_response(time_loops)
         for i, loop in enumerate(time_loops):
-            print "\t\t%i - %s :\t %f" % (i, str(loop), results[i])
+            print ("\t\t%i - %s :\t %f" % (i, str(loop), results[i]))
         return results
 
 
 
 
     def showResults(self, total_time, topology, time_loops=None):
-        print "\tSimulation Time: %0.2f" % total_time
+        print ("\tSimulation Time: %0.2f" % total_time)
 
         if time_loops is not None:
-            print "\tApplication loops delays:"
+            print ("\tApplication loops delays:")
             results = self.average_loop_response(time_loops)
             for i, loop in enumerate(time_loops):
-                print "\t\t%i - %s :\t %f" % (i, str(loop), results[i])
+                print ("\t\t%i - %s :\t %f" % (i, str(loop), results[i]))
 
-        print "\tEnergy Consumed (WATTS by UpTime):"
+        print ("\tEnergy Consumed (WATTS by UpTime):")
         values = self.get_watt(total_time, topology, Metrics.WATT_UPTIME)
         for node in values:
-            print "\t\t%i - %s :\t %.2f" % (node, values[node]["model"], values[node]["watt"])
+            print ("\t\t%i - %s :\t %.2f" % (node, values[node]["model"], values[node]["watt"]))
 
-        print "\tEnergy Consumed by Service (WATTS by Service Time):"
+        print ("\tEnergy Consumed by Service (WATTS by Service Time):")
         values = self.get_watt(total_time, topology, Metrics.WATT_SERVICE)
         for node in values:
-            print "\t\t%i - %s :\t %.2f" % (node, values[node]["model"], values[node]["watt"])
+            print ("\t\t%i - %s :\t %.2f" % (node, values[node]["model"], values[node]["watt"]))
 
-        print "\tCost of execution in cloud:"
+        print ("\tCost of execution in cloud:")
         total, values = self.get_cost_cloud(topology)
-        print "\t\t%.8f" % total
+        print ("\t\t%.8f" % total)
 
-        print "\tNetwork bytes transmitted:"
-        print "\t\t%.1f" % self.bytes_transmitted()
+        print ("\tNetwork bytes transmitted:")
+        print ("\t\t%.1f" % self.bytes_transmitted())
 
 
     def showResults2(self, total_time, time_loops=None):
-        print "\tSimulation Time: %0.2f" % total_time
+        print ("\tSimulation Time: %0.2f" % total_time)
 
         if time_loops is not None:
-            print "\tApplication loops delays:"
+            print ("\tApplication loops delays:")
             results = self.average_loop_response(time_loops)
             for i, loop in enumerate(time_loops):
-                print "\t\t%i - %s :\t %f" % (i, str(loop), results[i])
+                print ("\t\t%i - %s :\t %f" % (i, str(loop), results[i]))
 
-        print "\tNetwork bytes transmitted:"
-        print "\t\t%.1f" % self.bytes_transmitted()
+        print ("\tNetwork bytes transmitted:")
+        print ("\t\t%.1f" % self.bytes_transmitted())
 
 
     def average_messages_not_transmitted(self):
