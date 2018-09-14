@@ -17,7 +17,7 @@ from scipy import stats
 
 
 time = 1000000
-pathSimple ="exp_final3/"
+pathSimple ="case/"
 
 
 # =============================================================================
@@ -169,15 +169,15 @@ drAllILP = getAllR(drILP)
 # =============================================================================
 # FAILs CENTRALITY load
 # =============================================================================
-df2 = pd.read_csv(pathSimple+"Results_FAIL__%s.csv"%time)
-dtmp3 = df2[df2["module.src"]=="None"].groupby(['app','TOPO.src'])['id'].apply(list)
-drFAIL,timesFail = getRbyApp(df2,dtmp3)
-drAllFAIL = getAllR(drFAIL)
-
-df3 = pd.read_csv(pathSimple+"Results_FAIL_ILP_%s.csv"%time)
-dtmp4 = df3[df3["module.src"]=="None"].groupby(['app','TOPO.src'])['id'].apply(list)
-drILPFAIL,timesILPFail = getRbyApp(df3,dtmp4)
-drAllILPFAIL = getAllR(drILPFAIL)
+#df2 = pd.read_csv(pathSimple+"Results_FAIL__%s.csv"%time)
+#dtmp3 = df2[df2["module.src"]=="None"].groupby(['app','TOPO.src'])['id'].apply(list)
+#drFAIL,timesFail = getRbyApp(df2,dtmp3)
+#drAllFAIL = getAllR(drFAIL)
+#
+#df3 = pd.read_csv(pathSimple+"Results_FAIL_ILP_%s.csv"%time)
+#dtmp4 = df3[df3["module.src"]=="None"].groupby(['app','TOPO.src'])['id'].apply(list)
+#drILPFAIL,timesILPFail = getRbyApp(df3,dtmp4)
+#drAllILPFAIL = getAllR(drILPFAIL)
 
 
 # =============================================================================
@@ -200,51 +200,51 @@ drAllILPFAILR = getAllR(drILPFAILR)
 # =============================================================================
 
 deadline = {}
-for app in range(0,20):
-    print "-"*30
-    print "APP %i" %app
-    val1 = drAll[drAll["app"]==app]["r"].max().max()
-    val2 = drAllILP[drAllILP["app"]==app]["r"].max().max()
-    if val1 > val2:
-        print val1 
-        print "MAX. Partition"
-        deadline[app]=val1
-    else:
-        print val2
-        print "MAX. ILP"
-        deadline[app]=val2
-
-for k in range(0,20):
-    valMax = deadline[k]
-    valC = drAllFAIL[drAllFAIL["app"]==k]["r"].max() ## Array
-    valILP = drAllILPFAIL[drAllILPFAIL["app"]==k]["r"].max() ## Array
-    x = valC[~np.isnan(valC)]
-    y = valILP[~np.isnan(valILP)]
-    print "APP %i"%k
-    print "\tPartition Total over deadline= %i / %i"%(np.sum(x>valMax), len(valC) )
-    print "\tILP    Total over deadline= %i / %i"%(np.sum(y>valMax), len(valILP) )
-
+#for app in range(0,20):
+#    print "-"*30
+#    print "APP %i" %app
+#    val1 = drAll[drAll["app"]==app]["r"].max().max()
+#    val2 = drAllILP[drAllILP["app"]==app]["r"].max().max()
+#    if val1 > val2:
+#        print val1 
+#        print "MAX. Partition"
+#        deadline[app]=val1
+#    else:
+#        print val2
+#        print "MAX. ILP"
+#        deadline[app]=val2
+#
+#for k in range(0,20):
+#    valMax = deadline[k]
+#    valC = drAllFAIL[drAllFAIL["app"]==k]["r"].max() ## Array
+#    valILP = drAllILPFAIL[drAllILPFAIL["app"]==k]["r"].max() ## Array
+#    x = valC[~np.isnan(valC)]
+#    y = valILP[~np.isnan(valILP)]
+#    print "APP %i"%k
+#    print "\tPartition Total over deadline= %i / %i"%(np.sum(x>valMax), len(valC) )
+#    print "\tILP    Total over deadline= %i / %i"%(np.sum(y>valMax), len(valILP) )
+#
 
 
     
 # =============================================================================
-#  SHOWING TIMES(request) under QoS along the simulation
+#  PLOTS: TIMES(request) under QoS along the simulation
 # =============================================================================
 
 
-## De cada lista unificar todos los time_emit
-dFailsC = pd.DataFrame(index=np.array(timesFail).astype('datetime64[s]'))
-dFailsC["QTY"]=np.ones(len(timesFail))
-dFailsC = dFailsC.resample('500s').agg(dict(QTY='sum'))
-QTYFails = dFailsC.QTY.values
+## Centrality results
+#dFailsC = pd.DataFrame(index=np.array(timesFail).astype('datetime64[s]'))
+#dFailsC["QTY"]=np.ones(len(timesFail))
+#dFailsC = dFailsC.resample('500s').agg(dict(QTY='sum'))
+#QTYFails = dFailsC.QTY.values
+#
+#
+#dFailsILP = pd.DataFrame(index=np.array(timesILPFail).astype('datetime64[s]'))
+#dFailsILP["QTY"]=np.ones(len(timesILPFail))
+#dFailsILP = dFailsILP.resample('500s').agg(dict(QTY='sum'))
+#QTYFailsILP = dFailsILP.QTY.values
 
-
-dFailsILP = pd.DataFrame(index=np.array(timesILPFail).astype('datetime64[s]'))
-dFailsILP["QTY"]=np.ones(len(timesILPFail))
-dFailsILP = dFailsILP.resample('500s').agg(dict(QTY='sum'))
-QTYFailsILP = dFailsILP.QTY.values
-
-##Random
+## Random results
 
 dFailsCR = pd.DataFrame(index=np.array(timesFailR).astype('datetime64[s]'))
 dFailsCR["QTY"]=np.ones(len(timesFailR))
@@ -274,8 +274,8 @@ ticks = range(len(QTYC))
 ticksV = np.array(ticks)*10
 
 ## Unifiend length with 0 at the end
-QTYFails = np.concatenate((QTYFails,np.zeros(len(QTYC)-len(QTYFails))))
-QTYFailsILP = np.concatenate((QTYFailsILP,np.zeros(len(QTYC)-len(QTYFailsILP))))
+#QTYFails = np.concatenate((QTYFails,np.zeros(len(QTYC)-len(QTYFails))))
+#QTYFailsILP = np.concatenate((QTYFailsILP,np.zeros(len(QTYC)-len(QTYFailsILP))))
 QTYFailsCR = np.concatenate((QTYFailsCR,np.zeros(len(QTYC)-len(QTYFailsCR))))
 QTYFailsILPR = np.concatenate((QTYFailsILPR,np.zeros(len(QTYC)-len(QTYFailsILPR))))
 
@@ -289,14 +289,15 @@ ax.plot(ticks, QTYFailsCR, color='#5ab4ac',alpha=0.5)
 ax.plot(ticks, QTYFailsILPR,color='#d8b365',alpha=0.5)
 ax.set_xlabel("Simulation time", fontsize=24)
 ax.set_ylabel("QoS satisfaction \n (num. of requests)", fontsize=24)
-plt.legend(('Total num. of requests','Partition','ILP'),loc="upper right")
+ax.tick_params(labelsize=16)
+plt.legend(('Total num. of requests','Partition','ILP'),loc="upper right",fontsize=24)
 plt.tight_layout()
-plt.savefig('QSR-Random-esp2.pdf', format='pdf', dpi=600)
+plt.savefig('QSR-Random.pdf', format='pdf', dpi=600)
 plt.show()
 
 
 # =============================================================================
-# Boxplot matriz
+# Boxplot matriz of each app - gtw/user
 # =============================================================================
 
 def drawBoxPlot_Both_USER_ax(app,dr,drILP,ax):
@@ -310,24 +311,25 @@ def drawBoxPlot_Both_USER_ax(app,dr,drILP,ax):
     ax.get_xaxis().set_ticks(xrange(0, len(ticks) * 2, 2))
     ax.set_xticklabels(ticks)
     ax.set_xlim(-2, len(ticks)*2)
-    ax.set_title('App %i'%(app+1))
     ax.plot([], c='#5ab4ac', label="Partition")
     ax.plot([], c='#d8b365', label="ILP") 
     
 
-fig, axlist = plt.subplots(nrows=4, ncols=5, figsize=(16, 16))
+fig, axlist = plt.subplots(nrows=4, ncols=5, figsize=(14, 10))
 for idx,ax in enumerate(axlist.flatten()):
     drawBoxPlot_Both_USER_ax(idx,dr,drILP,ax)
 
 fig.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)
-fig.subplots_adjust(hspace=0.2,wspace=0.35)
-axlist.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(-1.10, -0.23), ncol=4,fontsize=16 )
+fig.subplots_adjust(hspace=0.4,wspace=0.35)
+axlist.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(-0.85, -0.43), ncol=4,fontsize=16 )
 
-axlist[3][2].set_xlabel('Users (Gateways id.)',fontsize=24)
+axlist[3][2].set_xlabel('IoT devices (Gateways id.)',fontsize=24)
 axlist[1][0].set_ylabel('Response time (ms)',fontsize=24)
 axlist[1][0].yaxis.set_label_coords(-0.4, 0)
 plt.savefig('Boxplot.pdf', format='pdf', dpi=600)
 plt.show()
+
+
 
 ### TEST CODE:
 
@@ -366,17 +368,17 @@ plt.show()
  
 #drawBoxPlot_User_App(dr,2)
 #drawBoxPlot_User_App(drILP,2)
-for app in range(0,20):
-    drawBoxPlot_Both_USER(app,dr,drILP)
-    
-    
-    
-drawBoxPlot_Both_USER(0,dr,drILP)
-drawBoxPlot_Both_USER(6,dr,drILP)
-drawBoxPlot_Both_USER(12,dr,drILP)    
-#drawBoxPlot_Both_USER(36,dr,drILP)
-
-
-drawBoxPlot_App(drAll,drAllILP)
-drawBoxPlot_App(drAll,drAllFAIL,"Partition","PartitionFAILs")
+#for app in range(0,20):
+#    drawBoxPlot_Both_USER(app,dr,drILP)
+#    
+#    
+#    
+#drawBoxPlot_Both_USER(0,dr,drILP)
+#drawBoxPlot_Both_USER(6,dr,drILP)
+#drawBoxPlot_Both_USER(12,dr,drILP)    
+##drawBoxPlot_Both_USER(36,dr,drILP)
+#
+#
+#drawBoxPlot_App(drAll,drAllILP)
+#drawBoxPlot_App(drAll,drAllFAIL,"Partition","PartitionFAILs")
 #drawBoxPlot_App(drAllILP,drAllCloud,"ILP","CLOUD")

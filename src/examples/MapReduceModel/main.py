@@ -1,7 +1,5 @@
 """
-
-    This example
-
+    This example...
     @author: Isaac Lera & Carlos Guerrero
 
 """
@@ -20,7 +18,7 @@ from selection_multipleDeploys import DeviceSpeedAwareRouting
 from jsonPopulation import JSONPopulation
 
 import time
-
+import networkx as nx
 RANDOM_SEED = 1
 
 def create_applications_from_json(data):
@@ -29,7 +27,10 @@ def create_applications_from_json(data):
         a = Application(name=app["name"])
         modules = [{"None":{"Type":Application.TYPE_SOURCE}}]
         for module in app["module"]:
-            modules.append({module["name"]: {"RAM": module["RAM"], "Type": Application.TYPE_MODULE}})
+            if "RAM" in module.keys():
+                modules.append({module["name"]: {"RAM": module["RAM"], "Type": Application.TYPE_MODULE}})
+            else:
+                modules.append({module["name"]: {"RAM": 1, "Type": Application.TYPE_MODULE}})
         a.set_modules(modules)
 
         ms = {}
@@ -42,12 +43,16 @@ def create_applications_from_json(data):
         #print "Total mensajes creados %i" %len(ms.keys())
         for idx, message in enumerate(app["transmission"]):
             if "message_out" in message.keys():
-                a.add_service_module(message["module"],ms[message["message_in"]], ms[message["message_out"]], fractional_selectivity, threshold=1.0)
+                value_treshld = 1.0
+                if "fractional" in message.keys():
+                    value_treshld = message["fractional"]
+                a.add_service_module(message["module"],ms[message["message_in"]], ms[message["message_out"]], fractional_selectivity, threshold=value_treshld)
             else:
                 a.add_service_module(message["module"], ms[message["message_in"]])
 
         applications[app["name"]]=a
 
+    #a.add_service_module("Client", m_egg, m_sensor, fractional_selectivity, threshold=0.9)
     return applications
 
 
@@ -109,6 +114,12 @@ def main(simulated_time,experimento,ilpPath):
     t = Topology()
     dataNetwork = json.load(open(experimento+'networkDefinition.json'))
     t.load(dataNetwork)
+
+    attNodes = {}
+    for k in t.G.nodes():
+        attNodes[k] = {"IPT": 1}
+    nx.set_node_attributes(t.G, values=attNodes)
+
     t.write("network.gexf")
 
     """
@@ -154,25 +165,25 @@ def main(simulated_time,experimento,ilpPath):
     """
 
     stop_time = simulated_time
-    s = Sim(t, default_results_path=experimento + "Results_RND_FAIL_%s_%i" % (ilpPath, stop_time))
-    # s = Sim(t, default_results_path=experimento + "Results_RND_FAIL_%s_%i" % (ilpPath, stop_time))
+    s = Sim(t, default_results_path=experimento + "Results_%s_%i" % (ilpPath, stop_time))
+
 
     """
     Failure process
     """
-    time_shift = 10000
-    distribution = deterministicDistributionStartPoint(name="Deterministic", time=time_shift,start=10000)
-    failurefilelog = open(experimento+"Failure_%s_%i.csv" % (ilpPath,stop_time),"w")
-    failurefilelog.write("node, module, time\n")
-    idCloud = t.find_IDs({"type": "CLOUD"})[0] #[0] -> In this study there is only one CLOUD DEVICE
-    centrality = np.load(pathExperimento+"centrality.npy")
-    randomValues = np.load(pathExperimento+"random.npy")
-    # s.deploy_monitor("Failure Generation", failureControl, distribution,sim=s,filelog=failurefilelog,ids=centrality)
-    s.deploy_monitor("Failure Generation", failureControl, distribution,sim=s,filelog=failurefilelog,ids=randomValues)
+    # time_shift = 10000
+    # distribution = deterministicDistributionStartPoint(name="Deterministic", time=time_shift,start=10000)
+    # failurefilelog = open(experimento+"Failure_%s_%i.csv" % (ilpPath,stop_time),"w")
+    # failurefilelog.write("node, module, time\n")
+    # idCloud = t.find_IDs({"type": "CLOUD"})[0] #[0] -> In this study there is only one CLOUD DEVICE
+    # centrality = np.load(pathExperimento+"centrality.npy")
+    # randomValues = np.load(pathExperimento+"random.npy")
+    # # s.deploy_monitor("Failure Generation", failureControl, distribution,sim=s,filelog=failurefilelog,ids=centrality)
+    # s.deploy_monitor("Failure Generation", failureControl, distribution,sim=s,filelog=failurefilelog,ids=randomValues)
 
     #For each deployment the user - population have to contain only its specific sources
     for aName in apps.keys():
-        print "Deploying app: ",aName
+        #print "Deploying app: ",aName
         pop_app = JSONPopulation(name="Statical_%s"%aName,json={})
         data = []
         for element in pop.data["sources"]:
@@ -191,25 +202,23 @@ def main(simulated_time,experimento,ilpPath):
     # print selectorPath.cache.values()
 
 
-    failurefilelog.close()
+    # failurefilelog.close()
 
     # #CHECKS
     #print s.topology.G.nodes
-    #s.print_debug_assignaments()
+    # s.print_debug_assignaments()
 
 if __name__ == '__main__':
     import logging.config
     import os
-    pathExperimento = "case/"
+    pathExperimento = "exp/"
 
 
     logging.config.fileConfig(os.getcwd()+'/logging.ini')
 
     start_time = time.time()
     print "Running Partition"
-    main(simulated_time=1000000,  experimento=pathExperimento,ilpPath='')
-    print "Running: ILP "
-    main(simulated_time=1000000,  experimento=pathExperimento, ilpPath='ILP')
+    main(simulated_time=100000,  experimento=pathExperimento,ilpPath='')
 
 
     print "Simulation Done"
