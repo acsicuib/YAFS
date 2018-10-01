@@ -89,8 +89,8 @@ def create_json_topology():
 
 # @profile
 def main(simulated_time):
-    np.random.seed(RANDOM_SEED)
-    random.seed(RANDOM_SEED)
+    # np.random.seed(RANDOM_SEED)
+    # random.seed(RANDOM_SEED)
 
     """
     TOPOLOGY from a json
