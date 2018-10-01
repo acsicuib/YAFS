@@ -1035,7 +1035,7 @@ class Sim:
 
 
 
-        self.print_debug_assignaments()
+        #self.print_debug_assignaments()
 
 
         """

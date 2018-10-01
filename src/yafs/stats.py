@@ -148,6 +148,12 @@ class Stats:
         print ("\tNetwork bytes transmitted:")
         print ("\t\t%.1f" % self.bytes_transmitted())
 
+    """ONLYE THE FIRST ONE : DEBUG"""
+    def valueLoop(self, total_time, time_loops=None):
+            if time_loops is not None:
+                results = self.average_loop_response(time_loops)
+                for i, loop in enumerate(time_loops):
+                    return results[i]
 
     def average_messages_not_transmitted(self):
         return np.mean(self.df_link.buffer)

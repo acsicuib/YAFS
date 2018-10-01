@@ -36,13 +36,16 @@ class deterministicDistributionStartPoint(Distribution):
         else:
             return self.time
 
+#TODO export SEED attribute in other Distributions
 class exponentialDistribution(Distribution):
-    def __init__(self,lambd, **kwargs):
+    def __init__(self,lambd,seed=1, **kwargs):
         self.lambd = lambd
         super(exponentialDistribution, self).__init__(**kwargs)
-
+        self.rnd = np.random.RandomState(seed)
     def next(self):
-        return int(np.random.exponential(self.lambd, size=1)[0])
+        #return int(np.random.exponential(self.lambd, size=1)[0])
+        return int(self.rnd.exponential(self.lambd, size=1)[0])
+
 
 class exponentialDistributionStartPoint(Distribution):
     def __init__(self,start,lambd, **kwargs):

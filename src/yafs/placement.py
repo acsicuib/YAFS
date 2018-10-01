@@ -73,15 +73,15 @@ class JSONPlacement(Placement):
     def initial_allocation(self, sim, app_name):
 
         for item in self.data["initialAllocation"]:
+            #print item
             app_name = item["app"]
             module = item["module_name"]
             idtopo = item["id_resource"]
 
             app = sim.apps[app_name]
             services = app.services
-            # print "APPPP  : ",app
-            if idtopo != 100:
-                idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
+            #print services[module]
+            idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
 
 
 
