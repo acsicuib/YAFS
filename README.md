@@ -54,7 +54,7 @@ The [YAFS tutorial](https://yafs.readthedocs.io/en/latest/introduction/index.htm
 point for you. You can also try out some of the [Examples](https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
 YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
 
-To run some folder project you can create a simple bash script, with the following lines (please update the path according with your system):
+To run some folder project you can create a simple bash script, with the following lines (please update the path according with your system) or you can use a python editor such as: Pycharm, Spyder, etc.
 
 ```bash
 export PYTHONPATH=$PYTHONPATH:/<your path>/YAFS/src/:src/examples/Tutorial/
