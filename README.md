@@ -20,11 +20,7 @@ YAFS is released under the MIT License. However, we would like to know in which 
     PENDING
 ```
 
-YAFS is used in the following projects:
 
-* Isaac Lera, Carlos Guerrero, Carlos Juiz. Comparing centrality indices for network usage optimization of data placement policies in fog devices. FMEC 2018: 115-122
-
-Please, send us your reference to publish it!
 
 Installation
 ------------
@@ -71,3 +67,13 @@ Acknowledgment
 --------------
 
 Authors acknowledge financial support through grant project ORDCOT with number TIN2017-88547-P (AEI/FEDER, UE)
+
+
+REFERENCES
+----------
+
+YAFS is used in the following projects:
+
+* Isaac Lera, Carlos Guerrero, Carlos Juiz. Comparing centrality indices for network usage optimization of data placement policies in fog devices. FMEC 2018: 115-122
+
+Please, send us your reference to publish it!
