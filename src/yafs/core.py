@@ -185,6 +185,7 @@ class Sim:
             if DES_dst == [None] or DES_dst==[[]]:
                 self.logger.warning(
                     "(#DES:%i)\t--- Unreacheable DST:\t%s: PATH:%s " % (idDES, message.name, paths))
+                self.print_debug_assignaments()
             else:
 
                 self.logger.debug("(#DES:%i)\t--- SENDING Message:\t%s: PATH:%s  DES:%s" % (idDES, message.name,paths,DES_dst))
@@ -912,6 +913,7 @@ class Sim:
 
         return alloc_entities
 
+
     def deploy_module(self,app_name,module, services,ids):
         register_consumer_msg = []
         id_DES =[]
@@ -940,6 +942,7 @@ class Sim:
                 register_consumer_msg.append(
                     {"message_in": service["message_in"], "message_out": service["message_out"],
                      "module_dest": service["module_dest"], "dist": service["dist"], "param": service["param"]})
+
 
         if len(register_consumer_msg) > 0:
             for id_topology in ids:
@@ -970,6 +973,14 @@ class Sim:
     def draw_allocated_topology(self):
         entities = self.get_alloc_entities()
         utils.draw_topology(self.topology,entities)
+
+
+    def get_DES_from_Service_In_Node(self, node, app_name, service):
+        deployed = self.alloc_module[app_name][service]
+        for des in deployed:
+            if self.alloc_DES[des] == node:
+                return des
+        return []
 
     def get_assigned_structured_modules_from_DES(self):
         fullAssignation = {}
@@ -1035,7 +1046,7 @@ class Sim:
 
 
 
-        #self.print_debug_assignaments()
+        self.print_debug_assignaments()
 
 
         """

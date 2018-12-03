@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 #python setup.py sdist upload
 setup(
     name='yafs',
-    version='0.2.0',
+    version='0.3.0',
     author='Isaac Lera, Carlos Guerrero',
     author_email='isaac.lera@uib.es, carlos.guerrero@ouib.es',
     description='Yet Another Fog Simulator for Python.',

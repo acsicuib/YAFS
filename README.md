@@ -27,13 +27,7 @@ Installation
 
 YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 
-You can install YAFS easily via [pip](<http://pypi.python.org/pypi/pip>):
-
-```bash
-    $ pip install yafs
-```
-
-You can also download and install YAFS manually:
+You can download and install YAFS manually:
 
 ```bash
     $ cd where/you/put/yafs/
@@ -47,6 +41,13 @@ Getting started
 The [YAFS tutorial](https://yafs.readthedocs.io/en/latest/introduction/index.html) is a good starting
 point for you. You can also try out some of the [Examples](https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
 YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
+
+To run some folder project you can create a simple bash script, with the following lines (please update the path according with your system):
+
+```bash
+export PYTHONPATH=$PYTHONPATH:/<your path>/YAFS/src/:src/examples/Tutorial/
+python src/examples/Tutorial/main1.py
+```
 
 
 Documentation and Help
