@@ -31,7 +31,20 @@ You can download and install YAFS manually:
 
 ```bash
     $ git clone https://github.com/acsicuib/YAFS
+
 ```
+
+To install third-libraries you can execute:
+```bash
+    python setup.py install
+```
+
+Dependencies are:
+* Simpy
+* Networkx
+* Numpy
+* Pandas
+* tqdm
 
 
 Getting started
