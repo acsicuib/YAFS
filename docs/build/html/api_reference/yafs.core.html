@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>yafs.core — Simulator engine &#8212; YAFS 0.1 documentation</title>
+    <title>yafs.core — Simulator engine &#8212; YAFS 0.3 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -180,6 +180,17 @@ This function its used by (<code class="xref py py-mod docutils literal"><span c
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>until (int): Defines a stop time. If None the simulation runs until some internal algorithm changes the var <em>yafs.core.sim.stop</em> to True</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.core.Sim.start_process">
+<code class="descname">start_process</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.start_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.start_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>All pure source modules (sensors) are controlled by this boolean.
+Using this function (<code class="xref py py-mod docutils literal"><span class="pre">Population</span></code>) algorithm can start one source</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id.source (int): the identifier of the DES process.</dd>
 </dl>
 </dd></dl>
 

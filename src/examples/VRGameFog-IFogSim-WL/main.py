@@ -26,7 +26,9 @@ from yafs.distribution import deterministicDistribution
 from yafs.utils import fractional_selectivity
 import time
 import numpy as np
-RANDOM_SEED = 1
+from yafs.stats import Stats
+
+
 
 def create_application():
     # APLICATION
@@ -131,8 +133,10 @@ def create_json_topology(numOfDepts,numOfMobilesPerDept):
 # @profile
 def main(simulated_time,depth,police):
 
-    random.seed(RANDOM_SEED)
-    np.random.seed(RANDOM_SEED)
+    #random.seed(RANDOM_SEED)
+    #np.random.seed(RANDOM_SEED)
+
+
     """
     TOPOLOGY from a json
     """
@@ -154,20 +158,19 @@ def main(simulated_time,depth,police):
     APPLICATION
     """
     app = create_application()
-    print app
-    exit()
+
 
     """
     PLACEMENT algorithm
     """
     #In this case: it will deploy all app.modules in the cloud
     if police == "cloud":
-        print "cloud"
+        #print "cloud"
         placement = CloudPlacement("onCloud")
         placement.scaleService(
             {"Calculator": numOfDepts * numOfMobilesPerDept, "Coordinator": 1})
     else:
-        print "EDGE"
+        #print "EDGE"
         placement = FogPlacement("onProxies")
         placement.scaleService(
             {"Calculator": numOfMobilesPerDept, "Coordinator": 1})
@@ -216,6 +219,8 @@ if __name__ == '__main__':
     import logging.config
     import os
 
+    time_loops = [["M.EGG", "M.Sensor", "M.Concentration"]]
+
     logging.config.fileConfig(os.getcwd()+'/logging.ini')
 
     parser = argparse.ArgumentParser()
@@ -225,13 +230,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.time:
-        stop_time =  1000
+        stop_time =  10000
     else:
         stop_time = int(args.time)
 
     start_time = time.time()
     if not args.depth:
-        dep  = 2
+        dep  = 16
     else:
         dep = int(args.depth)
 
@@ -241,6 +246,12 @@ if __name__ == '__main__':
         police = str(args.police)
 
     # police ="edge"
-    main(stop_time,dep,police)
+
+
+    for i in xrange(50):
+
+        main(stop_time,dep,police)
+        s = Stats(defaultPath="Results_%s_%s_%s" % (police, stop_time, dep))
+        print "%f," %(s.valueLoop(stop_time, time_loops=time_loops))
 
     print("\n--- %s seconds ---" % (time.time() - start_time))

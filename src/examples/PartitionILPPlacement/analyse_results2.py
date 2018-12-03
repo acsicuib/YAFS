@@ -9,16 +9,14 @@ Created on Thu Jul  5 12:02:41 2018
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from pandas import Series, date_range
-import matplotlib.pyplot as plt
-import numpy as np
-import json
 from scipy import stats
 
-
 time = 1000000
-pathSimple ="case/"
+pathSimple ="exp_final3/"
 
+# =============================================================================
+# ALERTA: PREPARA LOS RESULTADOS - LOS GRAFICOS SON GENERADOS en 2b
+# =============================================================================
 
 # =============================================================================
 # Computes the Response time by (App,User)
@@ -41,8 +39,8 @@ def getRbyApp(df,dtmp):
             
         #Requests with a inferior number of messages are filtered
         msg = np.array(messages)
-        mode = stats.mode(msg).mode[0] 
-        
+        mode = stats.mode(msg).mode[0]
+
         #Secondly, if each transmission has the same mode then the time is storaged
         invalid =0
         for i in ids:
@@ -269,116 +267,110 @@ dILP = dILP.resample('500s').agg(dict(QTY='sum'))
 QTYILP = dILP.QTY.values
 
 
+#####ALERTA
+np.save("exp_final3/QTYC.npy",QTYC)
+np.save("exp_final3/QTYFailsCR.npy",QTYFailsCR)
+np.save("exp_final3/QTYFailsILPR.npy",QTYFailsILPR)
+dr.to_pickle("exp_final3/dr.pkl")
+drILP.to_pickle("exp_final3/drILP.pkl")
 
-ticks = range(len(QTYC))
-ticksV = np.array(ticks)*10
-
-## Unifiend length with 0 at the end
-#QTYFails = np.concatenate((QTYFails,np.zeros(len(QTYC)-len(QTYFails))))
-#QTYFailsILP = np.concatenate((QTYFailsILP,np.zeros(len(QTYC)-len(QTYFailsILP))))
-QTYFailsCR = np.concatenate((QTYFailsCR,np.zeros(len(QTYC)-len(QTYFailsCR))))
-QTYFailsILPR = np.concatenate((QTYFailsILPR,np.zeros(len(QTYC)-len(QTYFailsILPR))))
-
-#fig, ax = plt.subplots(figsize=(16,8))
-fig, ax = plt.subplots(figsize=(24.0,8.0))
-#ax1.plot(ticks, QTYFails, '-',color='#a8b3a5')
-#ax1.plot(ticks, QTYFailsILP, '-',color='#d8b365')
-ax.plot(ticks, QTYC, '-',color='#fc8d59',alpha=0.5)
-#ax1.plot(ticks, QTYILP, '-') == Are near the same > partition
-ax.plot(ticks, QTYFailsCR, color='#5ab4ac',alpha=0.5)
-ax.plot(ticks, QTYFailsILPR,color='#d8b365',alpha=0.5)
-ax.set_xlabel("Simulation time", fontsize=24)
-ax.set_ylabel("QoS satisfaction \n (num. of requests)", fontsize=24)
-ax.tick_params(labelsize=16)
-plt.legend(('Total num. of requests','Partition','ILP'),loc="upper right",fontsize=24)
-plt.tight_layout()
-plt.savefig('QSR-Random.pdf', format='pdf', dpi=600)
-plt.show()
-
-
-# =============================================================================
-# Boxplot matriz of each app - gtw/user
-# =============================================================================
-
-def drawBoxPlot_Both_USER_ax(app,dr,drILP,ax):
-    data_a=dr[dr.app==app].r.values
-    data_b=drILP[drILP.app==app].r.values
-    ticks = list(np.sort(dr[dr.app==app].user.unique()))
-    bpl = ax.boxplot(data_a, positions=np.array(xrange(len(data_a)))*2.0-0.4, sym='', widths=0.6)
-    bpI = ax.boxplot(data_b, positions=np.array(xrange(len(data_b)))*2.0+0.4, sym='', widths=0.6)
-    set_box_color(bpl, '#5ab4ac')
-    set_box_color(bpI, '#d8b365')
-    ax.get_xaxis().set_ticks(xrange(0, len(ticks) * 2, 2))
-    ax.set_xticklabels(ticks)
-    ax.set_xlim(-2, len(ticks)*2)
-    ax.plot([], c='#5ab4ac', label="Partition")
-    ax.plot([], c='#d8b365', label="ILP") 
-    
-
-fig, axlist = plt.subplots(nrows=4, ncols=5, figsize=(14, 10))
-for idx,ax in enumerate(axlist.flatten()):
-    drawBoxPlot_Both_USER_ax(idx,dr,drILP,ax)
-
-fig.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)
-fig.subplots_adjust(hspace=0.4,wspace=0.35)
-axlist.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(-0.85, -0.43), ncol=4,fontsize=16 )
-
-axlist[3][2].set_xlabel('IoT devices (Gateways id.)',fontsize=24)
-axlist[1][0].set_ylabel('Response time (ms)',fontsize=24)
-axlist[1][0].yaxis.set_label_coords(-0.4, 0)
-plt.savefig('Boxplot.pdf', format='pdf', dpi=600)
-plt.show()
+   
+######
 
 
 
-### TEST CODE:
+#### GRAFICAS MOVIDAS A idem-2b.py
 
-
-#dfcloud= pd.read_csv( pathSimple+"Results_CLOUD_%s.csv"%time)
-#dtmp3 = dfcloud[dfcloud["module.src"]=="None"].groupby(['app','TOPO.src'])['id'].apply(list)
-#drCLOUD = getRbyApp(dfcloud,dtmp3)
-#drAllCloud = getAllR(drCLOUD)
-
-#np.sum(drFAIL.invalid-drILPFAIL.invalid)
-
-
-#drCLOUD.to_csv("DR_CLOUD_NoFailure.csv")
-
+#ticks = range(len(QTYC))
+#ticksV = np.array(ticks)*10
 #
-#if np.all(dr.m == drILP.m):
-#    print "OK"
-#if np.all(dr.m == drCLOUD.m):
-#    print "OK" 
-    
-#np.mean(drAll.iloc[0].r)
-#np.mean(drAllILP.iloc[0].r)
-#np.mean(drAllCloud.iloc[21].r)
-
-#for app in range(0,20):
-#    print "-"*30
-#    print "APP %i" %app
-#    print dr[dr["app"]==app][["avg","std"]]
+### Unifiend length with 0 at the end
+##QTYFails = np.concatenate((QTYFails,np.zeros(len(QTYC)-len(QTYFails))))
+##QTYFailsILP = np.concatenate((QTYFailsILP,np.zeros(len(QTYC)-len(QTYFailsILP))))
+#QTYFailsCR = np.concatenate((QTYFailsCR,np.zeros(len(QTYC)-len(QTYFailsCR))))
+#QTYFailsILPR = np.concatenate((QTYFailsILPR,np.zeros(len(QTYC)-len(QTYFailsILPR))))
 #
 #
-#for app in range(0,20):
-#    print "-"*30
-#    print "APP %i" %app
-#    print drILP[drILP["app"]==app][["avg","std"]]
+##fig, ax = plt.subplots(figsize=(16,8))
+#fig, ax = plt.subplots(figsize=(32.0,8.0))
+##ax1.plot(ticks, QTYFails, '-',color='#a8b3a5')
+##ax1.plot(ticks, QTYFailsILP, '-',color='#d8b365')
+#ax.plot(ticks, QTYC, '-',color='#756bb1',alpha=1.,linewidth=2)
+##ax1.plot(ticks, QTYILP, '-') == Are near the same > partition
+#ax.plot(ticks, QTYFailsCR, color='#a6bddb',alpha=1.,linewidth=2)
+#ax.plot(ticks, QTYFailsILPR,color='#e34a33',alpha=1.,linewidth=2)
+#
+#z = np.polyfit(ticks, QTYC, 10) 
+#p = np.poly1d(z) 
+##ax1 = ax.plot(ticks,p(ticks),"-",color='#FFFFFF',linewidth=4)
+#ax1 = ax.plot(ticks,p(ticks),":",color='#c1bcdc',linewidth=6,label="Total num. of requests",path_effects=[pe.Stroke(linewidth=8, foreground='purple'), pe.Normal()])
+#
+#idx = np.isfinite(QTYFailsCR) & np.isfinite(QTYFailsCR) #elementos con nan.>Error
+#z1 = np.polyfit(np.array(ticks)[idx], np.array(QTYFailsCR)[idx], 10)
+#p1 = np.poly1d(z1) 
+##ax2 = ax.plot(ticks,p1(ticks),"-",color='#FFFFFF',linewidth=4)
+#ax2 = ax.plot(ticks,p1(ticks),"-",color='#a6bddb',linewidth=6,label="Partition",path_effects=[pe.Stroke(linewidth=8, foreground='#4a78b5'), pe.Normal()])
+#              
+#idx = np.isfinite(QTYFailsILPR) & np.isfinite(QTYFailsILPR)
+#z2 = np.polyfit(np.array(ticks)[idx], np.array(QTYFailsILPR)[idx], 10)
+#p2 = np.poly1d(z2) 
+##ax3 = ax.plot(ticks,p2(ticks),"-",color='#FFFFFF',linewidth=4)
+#ax3 = ax.plot(ticks,p2(ticks),"--",color='#f6c3bc',linewidth=6,label="ILP",path_effects=[pe.Stroke(linewidth=8, foreground='r'), pe.Normal()])
+# 
+#ax.set_xlabel("Simulation time", fontsize=28)
+#ax.set_ylabel("QoS satisfaction \n (num. of requests)", fontsize=28)
+#ax.tick_params(labelsize=20)
+#ax.set_xlim(-20,2020)
+##plt.legend([ax1,ax2,ax3],['Total num. of requests','Partition','ILP'],loc="upper right",fontsize=18)
+#plt.legend(loc="below left",fontsize=18)
+#plt.tight_layout()
+#plt.savefig('QSR-Random-32.pdf', format='pdf', dpi=600)
+#plt.show()
 
- 
-#drawBoxPlot_User_App(dr,2)
-#drawBoxPlot_User_App(drILP,2)
-#for app in range(0,20):
-#    drawBoxPlot_Both_USER(app,dr,drILP)
+
+
+#
+## =============================================================================
+## Boxplot matriz of each app - gtw/user
+## =============================================================================
+#
+#def drawBoxPlot_Both_USER_ax(app,dr,drILP,ax):
+#    data_a=dr[dr.app==app].r.values
+#    data_b=drILP[drILP.app==app].r.values
+#    ticks = list(np.sort(dr[dr.app==app].user.unique()))
+#    bpl = ax.boxplot(data_a, positions=np.array(xrange(len(data_a)))*2.0-0.4, sym='', widths=0.55,
+#                     whiskerprops = dict(linewidth=2),
+#                    boxprops = dict(linewidth=2),
+#                     capprops = dict(linewidth=2),
+#                    medianprops = dict(linewidth=2))
+#    bpI = ax.boxplot(data_b, positions=np.array(xrange(len(data_b)))*2.0+0.4, sym='', widths=0.55,
+#                        whiskerprops = dict(linewidth=2),
+#                    boxprops = dict(linewidth=2),
+#                     capprops = dict(linewidth=2),
+#                    medianprops = dict(linewidth=2))
+#    set_box_color(bpl, '#a6bddb')
+#    set_box_color(bpI, '#e34a33')
+#    ax.get_xaxis().set_ticks(xrange(0, len(ticks) * 2, 2))
+#    ax.set_xticklabels(ticks)
+#    ax.set_xlim(-2, len(ticks)*2)
+#    ax.plot([], c='#a6bddb', label="Partition",linewidth=3)
+#    ax.plot([], c='#e34a33', label="ILP",linewidth=3) 
 #    
-#    
-#    
-#drawBoxPlot_Both_USER(0,dr,drILP)
-#drawBoxPlot_Both_USER(6,dr,drILP)
-#drawBoxPlot_Both_USER(12,dr,drILP)    
-##drawBoxPlot_Both_USER(36,dr,drILP)
 #
+#fig, axlist = plt.subplots(nrows=4, ncols=5, figsize=(14, 10))
+#for idx,ax in enumerate(axlist.flatten()):
+#    drawBoxPlot_Both_USER_ax(idx,dr,drILP,ax)
 #
-#drawBoxPlot_App(drAll,drAllILP)
-#drawBoxPlot_App(drAll,drAllFAIL,"Partition","PartitionFAILs")
-#drawBoxPlot_App(drAllILP,drAllCloud,"ILP","CLOUD")
+#fig.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)
+#fig.subplots_adjust(hspace=0.4,wspace=0.35)
+#axlist.flatten()[-2].legend(loc='upper center', bbox_to_anchor=(-0.85, -0.43), ncol=4,fontsize=16 )
+#
+#axlist[3][2].set_xlabel('IoT devices (Gateways id.)',fontsize=14)
+#axlist[1][0].set_ylabel('Response time (ms)',fontsize=14)
+#axlist[1][0].yaxis.set_label_coords(-0.4, 0)
+#ax.tick_params(labelsize=12)
+#plt.savefig('Boxplot.pdf', format='pdf', dpi=600)
+#plt.show()
+#
+
+

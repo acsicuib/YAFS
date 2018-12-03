@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>yafs.application &#8212; YAFS 0.1 documentation</title>
+    <title>yafs.application &#8212; YAFS 0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -75,20 +75,21 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dst_int</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_rec</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">idDES</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broadcasting</span> <span class="o">=</span> <span class="n">broadcasting</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_idDes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span>  <span class="s2">&quot;{--&quot;</span>
-        <span class="nb">print</span> <span class="s2">&quot;Name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-        <span class="nb">print</span> <span class="s2">&quot;From (src): </span><span class="si">%s</span><span class="s2">  to (dst): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
-        <span class="nb">print</span> <span class="s2">&quot; --}&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+        <span class="nb">print</span>  <span class="p">(</span><span class="s2">&quot;{--&quot;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot; Name: </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot; From (src): </span><span class="si">%s</span><span class="s2">  to (dst): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot; --}&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Application"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application">[docs]</a><span class="k">class</span> <span class="nc">Application</span><span class="p">:</span>
@@ -120,6 +121,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">modules_sink</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
 
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;___ APP. Name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot; __ Transmissions &quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Module: None : M_In: </span><span class="si">%s</span><span class="s2">  -&gt; M_Out: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">src</span><span class="p">,</span><span class="n">m</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">modulename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="p">[</span><span class="n">modulename</span><span class="p">]</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">modulename</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ser</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;message_in&quot;</span> <span class="ow">in</span> <span class="n">ser</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">try</span><span class="p">:</span>
+                            <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> M_In: </span><span class="si">%s</span><span class="s2">  -&gt; M_Out: </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ser</span><span class="p">[</span><span class="s2">&quot;message_in&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ser</span><span class="p">[</span><span class="s2">&quot;message_out&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                    <span class="k">except</span><span class="p">:</span>
+                            <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> M_In: </span><span class="si">%s</span><span class="s2">  -&gt; M_Out: [NOTHING] &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ser</span><span class="p">[</span><span class="s2">&quot;message_in&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
 <div class="viewcode-block" id="Application.set_modules"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application.set_modules">[docs]</a>    <span class="k">def</span> <span class="nf">set_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

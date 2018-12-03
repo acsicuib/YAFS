@@ -104,7 +104,7 @@ def failureControl(sim,filelog,ids):
         sim.stop = True ## We stop the simulation
 
 
-def main(simulated_time,experimento,ilpPath):
+def main(simulated_time,experimento,file,study):
     random.seed(RANDOM_SEED)
     np.random.seed(RANDOM_SEED)
 
@@ -112,7 +112,7 @@ def main(simulated_time,experimento,ilpPath):
     TOPOLOGY from a json
     """
     t = Topology()
-    dataNetwork = json.load(open(experimento+'networkDefinition.json'))
+    dataNetwork = json.load(open(experimento+file+'-network.json'))
     t.load(dataNetwork)
 
     attNodes = {}
@@ -125,7 +125,7 @@ def main(simulated_time,experimento,ilpPath):
     """
     APPLICATION
     """
-    dataApp = json.load(open(experimento+'appDefinition.json'))
+    dataApp = json.load(open(experimento+file+'-app%s.json'%study))
     apps = create_applications_from_json(dataApp)
     #for app in apps:
     #  print apps[app]
@@ -133,7 +133,7 @@ def main(simulated_time,experimento,ilpPath):
     """
     PLACEMENT algorithm
     """
-    placementJson = json.load(open(experimento+'allocDefinition%s.json'%ilpPath))
+    placementJson = json.load(open(experimento+file+'-alloc%s.json'%study))
     placement = JSONPlacement(name="Placement",json=placementJson)
 
     ### Placement histogram
@@ -151,7 +151,7 @@ def main(simulated_time,experimento,ilpPath):
     """
     POPULATION algorithm
     """
-    dataPopulation = json.load(open(experimento+'usersDefinition.json'))
+    dataPopulation = json.load(open(experimento+file+'-users%s.json'%study))
     pop = JSONPopulation(name="Statical",json=dataPopulation)
 
 
@@ -165,7 +165,7 @@ def main(simulated_time,experimento,ilpPath):
     """
 
     stop_time = simulated_time
-    s = Sim(t, default_results_path=experimento + "Results_%s_%i" % (ilpPath, stop_time))
+    s = Sim(t, default_results_path=experimento + "Results_%s_%s_%i" % (file,study,stop_time))
 
 
     """
@@ -211,15 +211,39 @@ def main(simulated_time,experimento,ilpPath):
 if __name__ == '__main__':
     import logging.config
     import os
-    pathExperimento = "exp/"
 
+    pathExperimento = "files/"
 
-    logging.config.fileConfig(os.getcwd()+'/logging.ini')
+    study = ""
+    duration = 100000
+
+    #logging.config.fileConfig(os.getcwd()+'/logging.ini')
 
     start_time = time.time()
-    print "Running Partition"
-    main(simulated_time=100000,  experimento=pathExperimento,ilpPath='')
 
+    for f in xrange(10,110,10):
+        file = "f%in50"%f
+        print file
+        study = "Replica"
+        print "\tRunning %s"%study
+        main(simulated_time=duration,  experimento=pathExperimento,file=file,study=study)
+
+        study = "Single"
+        print "\tRunning %s" % study
+        main(simulated_time=duration, experimento=pathExperimento,file=file,study=study)
+
+    print "SEGUNDA PARTE"
+
+    for n in xrange(20,220,20):
+        file = "f100n%i"%n
+        print file
+        study = "Replica"
+        print "\tRunning %s" % study
+        main(simulated_time=duration, experimento=pathExperimento, file=file, study=study)
+
+        study = "Single"
+        print "\tRunning %s" % study
+        main(simulated_time=duration, experimento=pathExperimento, file=file, study=study)
 
     print "Simulation Done"
     print("\n--- %s seconds ---" % (time.time() - start_time))

@@ -75,8 +75,10 @@ plt.gcf().subplots_adjust(bottom=0.15)
 
 # fig.canvas.draw()
 ax.grid(True)
+
 plt.savefig('Grid.pdf', format='pdf', dpi=600)
 plt.show()
+
 
 
 

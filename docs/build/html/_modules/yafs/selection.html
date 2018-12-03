@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>yafs.selection &#8212; YAFS 0.1 documentation</title>
+    <title>yafs.selection &#8212; YAFS 0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -152,7 +152,7 @@
         <span class="c1">#Among all possible path we choose the smallest</span>
         <span class="n">bestPath</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">bestDES</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="nb">print</span> <span class="n">DES_dst</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="n">DES_dst</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">des</span> <span class="ow">in</span> <span class="n">DES_dst</span><span class="p">:</span>
             <span class="n">dst_node</span> <span class="o">=</span> <span class="n">alloc_DES</span><span class="p">[</span><span class="n">des</span><span class="p">]</span>
             <span class="c1"># print &quot;DES Node %i &quot; %dst_node</span>
@@ -160,7 +160,7 @@
             <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">node_src</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">dst_node</span><span class="p">))</span>
             <span class="n">bestPath</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>
             <span class="n">bestDES</span>  <span class="o">=</span> <span class="p">[</span><span class="n">des</span><span class="p">]</span>
-            <span class="nb">print</span> <span class="n">path</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
 
         <span class="k">return</span> <span class="n">bestPath</span><span class="p">,</span><span class="n">bestDES</span></div>

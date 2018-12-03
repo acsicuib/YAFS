@@ -51,11 +51,14 @@ YAFS is released under the MIT License.
 
 Installation
 ^^^^^^^^^^^^
-The most simple way to install yafs library is using pip installer.
 
-.. code-block:: python
+YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 
-   sudo pip install yafs
+You can download and install YAFS manually:
+
+.. code-block:: bash
+
+    git clone https://github.com/acsicuib/YAFS
 
 
 

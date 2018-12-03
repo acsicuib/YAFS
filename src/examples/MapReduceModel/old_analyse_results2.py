@@ -18,7 +18,7 @@ import collections
 import networkx as nx
 
 time = 10000
-path ="exp/Results__%i"%time
+path ="exp1/Results__%i"%time
 
 #T1+T2
 # Number of messages from sensors to replicas
@@ -72,7 +72,7 @@ print "Total avg. latency (replicas->cloud): %f" %grm.mean().latency
 print "Computing latency sources -> replica (MIN and MAX Path) each app"
 PATH = collections.namedtuple('PATH', 'src dst len')
 #LOADING NETWORK 
-data = json.load(open('exp/networkDefinition.json'))
+data = json.load(open('exp1/networkDefinition.json'))
 G = nx.Graph()
 for edge in data["link"]:
     G.add_edge(edge["s"], edge["d"])

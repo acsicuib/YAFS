@@ -30,8 +30,7 @@ YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 You can download and install YAFS manually:
 
 ```bash
-    $ cd where/you/put/yafs/
-    $ python setup.py install
+    $ git clone https://github.com/acsicuib/YAFS
 ```
 
 

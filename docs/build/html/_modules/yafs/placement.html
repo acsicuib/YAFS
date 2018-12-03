@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>yafs.placement &#8212; YAFS 0.1 documentation</title>
+    <title>yafs.placement &#8212; YAFS 0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -106,6 +106,42 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Activiting - RUN - Placement&quot;</span><span class="p">)</span></div></div>
 
+<span class="k">class</span> <span class="nc">JSONPlacement</span><span class="p">(</span><span class="n">Placement</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONPlacement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span>
+
+    <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initialAllocation&quot;</span><span class="p">]:</span>
+            <span class="c1">#print item</span>
+            <span class="n">app_name</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;module_name&quot;</span><span class="p">]</span>
+            <span class="n">idtopo</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;id_resource&quot;</span><span class="p">]</span>
+
+            <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
+            <span class="c1">#print services[module]</span>
+            <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],[</span><span class="n">idtopo</span><span class="p">])</span>
+
+
+
+<span class="k">class</span> <span class="nc">JSONPlacementOnCloud</span><span class="p">(</span><span class="n">Placement</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span><span class="n">idCloud</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JSONPlacementOnCloud</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idCloud</span> <span class="o">=</span> <span class="n">idCloud</span>
+
+    <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initialAllocation&quot;</span><span class="p">]:</span>
+            <span class="n">app_name</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;module_name&quot;</span><span class="p">]</span>
+
+            <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
+            <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
+            <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],[</span><span class="bp">self</span><span class="o">.</span><span class="n">idCloud</span><span class="p">])</span>
+
 
 
 <div class="viewcode-block" id="ClusterPlacement"><a class="viewcode-back" href="../../api_reference/yafs.placement.html#yafs.placement.ClusterPlacement">[docs]</a><span class="k">class</span> <span class="nc">ClusterPlacement</span><span class="p">(</span><span class="n">Placement</span><span class="p">):</span>
@@ -178,7 +214,7 @@
 
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">services</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 
-            <span class="nb">print</span> <span class="n">module</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">module</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="s2">&quot;Coordinator&quot;</span> <span class="o">==</span> <span class="n">module</span><span class="p">:</span>
                 <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span><span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],</span><span class="n">id_cluster</span><span class="p">)</span> <span class="c1">#Deploy as many modules as elements in the array</span>
