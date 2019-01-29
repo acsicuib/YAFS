@@ -62,6 +62,30 @@ python src/examples/Tutorial/main1.py
 ```
 
 
+A SUPER TIP
+-----------
+We know, we try to implement a wonderful tutorial but our time is limited. Thus, we can introduce this simple tip to create custom process in the simulator.
+
+In your main.py function, you can declare a custom strategy with a deterministic distribution, and you can include the parameters that you want, i.e. the simulator class, and the routingPath.
+
+```python
+dStart = deterministicDistributionStartPoint(400, 100, name="Deterministic")
+evol= CustomStrategy()
+s.deploy_monitor("EvolutionOfServices",evol,dStart,**{"sim":s,"routing":selectorPath})
+```
+And finally you define the CustomStrategy() class:
+```python
+class CustomStrategy():
+
+    def __call__(self, sim,routing):
+        sim.print_debug_assignaments()
+        routing.print_control_services()
+        routing.my_var = False
+        //or whatever you want
+
+```
+
+
 Documentation and Help
 ----------------------
 
