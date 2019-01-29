@@ -895,7 +895,12 @@ class Sim:
         # Add Selection control to the App
         self.selector_path[app.name] = selector
 
+
     def get_alloc_entities(self):
+        """ It returns a dictionary of deployed services
+        key : id-node
+        value: a list of deployed services
+        """
         alloc_entities = {}
         for key in self.topology.nodeAttributes.keys():
             alloc_entities[key] = []
@@ -949,6 +954,25 @@ class Sim:
                 id_DES.append(self.__deploy_module(app_name, module, id_topology, register_consumer_msg))
 
         return id_DES
+
+
+    def remove_module(self, app_name,service_name, idtopo):
+        """ removes all modules deployed in a node
+        modules with the same name = service_name
+        from app_name
+        deployed in id_topo
+        """
+        all_des = []
+        for k, v in self.alloc_DES.items():
+            if v == idtopo:
+                all_des.append(k)
+
+        # Clearing related structures
+        for des in self.alloc_module[app_name][service_name]:
+            if des in all_des:
+                self.alloc_module[app_name][service_name].remove(des)
+                self.stop_process(des)
+                del self.alloc_DES[des]
 
     def remove_node(self, id_node_topology):
         # Stopping related processes deployed in the module and clearing main structure: alloc_DES
