@@ -956,7 +956,7 @@ class Sim:
         return id_DES
 
 
-    def remove_module(self, app_name,service_name, idtopo):
+    def undeploy_module(self, app_name,service_name, idtopo):
         """ removes all modules deployed in a node
         modules with the same name = service_name
         from app_name
