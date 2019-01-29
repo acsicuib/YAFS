@@ -64,7 +64,7 @@ python src/examples/Tutorial/main1.py
 
 A "SUPER" TIP
 -------------
-We try to implement a wonderful tutorial but our time is limited. Thus, we can introduce this simple tip to create custom strategy in the simulation.
+We try to implement a wonderful tutorial but our time is limited. Thus, we can introduce this simple tip to create a custom strategy in the simulation.
 
 For example, in your main.py function, you can declare a custom strategy with a deterministic distribution, and you can include the parameters that you want, i.e. the simulator class, and the routingPath.
 
@@ -83,7 +83,7 @@ class CustomStrategy():
         sim.print_debug_assignaments()
         routing.print_control_services()
         routing.my_var = False
-        //or whatever you want
+        #or whatever you want
 
 ```
 
