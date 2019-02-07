@@ -1057,7 +1057,7 @@ class Sim:
         Creating initial deploy of services
         """
         for place in self.placement_policy.itervalues():
-	    	for app_name in place["apps"]:
+			for app_name in place["apps"]:
             	place["placement_policy"].initial_allocation(self, app_name)  # internally consideres the apps in charge
 
         """
