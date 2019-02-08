@@ -38,12 +38,14 @@ class deterministicDistributionStartPoint(Distribution):
 
 class exponentialDistribution(Distribution):
     def __init__(self,lambd,seed=1, **kwargs):
-        self.lambd = lambd
         super(exponentialDistribution, self).__init__(**kwargs)
+        self.l = lambd
         self.rnd = np.random.RandomState(seed)
 
     def next(self):
-        return int(self.rnd.exponential(self.lambd, size=1)[0])
+        value = int(self.rnd.exponential(self.l, size=1)[0])
+        if value==0: return 1
+        return value
 
 
 
