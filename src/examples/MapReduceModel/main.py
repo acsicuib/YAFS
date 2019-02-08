@@ -4,13 +4,16 @@
 
 """
 import json
-
+import argparse
 from yafs.core import Sim
 from yafs.application import Application,Message
 from yafs.topology import Topology
 from yafs.placement import JSONPlacement,JSONPlacementOnCloud
 from yafs.distribution import *
 import numpy as np
+import logging.config
+import os
+
 
 from yafs.utils import fractional_selectivity
 
@@ -104,14 +107,17 @@ def failureControl(sim,filelog,ids):
         sim.stop = True ## We stop the simulation
 
 
-def main(simulated_time,experimento,file,study):
-    random.seed(RANDOM_SEED)
-    np.random.seed(RANDOM_SEED)
+def main(simulated_time,experimento,file,study,it):
+
+    random.seed(it)
+    np.random.seed(it)
 
     """
     TOPOLOGY from a json
     """
     t = Topology()
+
+
     dataNetwork = json.load(open(experimento+file+'-network.json'))
     t.load(dataNetwork)
 
@@ -120,12 +126,18 @@ def main(simulated_time,experimento,file,study):
         attNodes[k] = {"IPT": 1}
     nx.set_node_attributes(t.G, values=attNodes)
 
-    t.write("network.gexf")
+    # t.write("network.gexf")
 
     """
     APPLICATION
     """
-    dataApp = json.load(open(experimento+file+'-app%s.json'%study))
+    studyApp = study
+    if study=="FstrRep":
+        studyApp="Replica"
+    elif study == "Cloud":
+        studyApp="Single"
+
+    dataApp = json.load(open(experimento+file+'-app%s.json'%studyApp))
     apps = create_applications_from_json(dataApp)
     #for app in apps:
     #  print apps[app]
@@ -151,7 +163,15 @@ def main(simulated_time,experimento,file,study):
     """
     POPULATION algorithm
     """
-    dataPopulation = json.load(open(experimento+file+'-users%s.json'%study))
+
+    studyUser = study
+    if study == "FstrRep":
+        studyUser = "Replica"
+    elif study == "Cloud":
+        studyUser = "Single"
+
+
+    dataPopulation = json.load(open(experimento+file+'-users%s.json'%studyUser))
     pop = JSONPopulation(name="Statical",json=dataPopulation)
 
 
@@ -165,7 +185,7 @@ def main(simulated_time,experimento,file,study):
     """
 
     stop_time = simulated_time
-    s = Sim(t, default_results_path=experimento + "Results_%s_%s_%i" % (file,study,stop_time))
+    s = Sim(t, default_results_path=experimento + "Results_%i_%s_%s_%i" % (it,file,study,stop_time))
 
 
     """
@@ -209,43 +229,88 @@ def main(simulated_time,experimento,file,study):
     # s.print_debug_assignaments()
 
 if __name__ == '__main__':
-    import logging.config
-    import os
+    """Main function"""
 
-    pathExperimento = "files/"
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument(
+        '--work-dir',
+        type=str,
+        default="",
+        help='Working directory')
+
+    parser.add_argument(
+        '--simulations',
+        type=int,
+        default=1,
+        help='Number of simulations')
+
+    parser.add_argument(
+        '--duration',
+        type=int,
+        default=100000,
+        help='Simulation time')
+
+    args, pipeline_args = parser.parse_known_args()
+
+    nSimulations = args.simulations
+    pathExperimento = args.work_dir
+    duration = args.duration
+
+
 
     study = ""
-    duration = 100000
 
     #logging.config.fileConfig(os.getcwd()+'/logging.ini')
 
-    start_time = time.time()
+    for i in range(nSimulations):
 
-    for f in xrange(10,110,10):
-        file = "f%in50"%f
-        print file
-        study = "Replica"
-        print "\tRunning %s"%study
-        main(simulated_time=duration,  experimento=pathExperimento,file=file,study=study)
+        start_time = time.time()
 
-        study = "Single"
-        print "\tRunning %s" % study
-        main(simulated_time=duration, experimento=pathExperimento,file=file,study=study)
+        for f in xrange(10, 110, 10):
+            file = "f%in50" % f
+            print file
 
-    print "SEGUNDA PARTE"
+            study = "Replica"
+            print "\tRunning %s" % study
+            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
 
-    for n in xrange(20,220,20):
-        file = "f100n%i"%n
-        print file
-        study = "Replica"
-        print "\tRunning %s" % study
-        main(simulated_time=duration, experimento=pathExperimento, file=file, study=study)
+            study = "Single"
+            print "\tRunning %s" % study
+            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
 
-        study = "Single"
-        print "\tRunning %s" % study
-        main(simulated_time=duration, experimento=pathExperimento, file=file, study=study)
+            study = "FstrRep"
+            print "\tRunning %s" % study
+            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
 
-    print "Simulation Done"
-    print("\n--- %s seconds ---" % (time.time() - start_time))
+            study = "Cloud"
+            print "\tRunning %s" % study
+            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
+
+        print "SEGUNDA PARTE"
+
+        for n in xrange(20, 220, 20):
+            file = "f100n%i" % n
+            print file
+
+            study = "Replica"
+            print "\tRunning %s" % study
+            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
+
+            study = "Single"
+            print "\tRunning %s" % study
+            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
+
+            study = "FstrRep"
+            print "\tRunning %s" % study
+            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
+
+            study = "Cloud"
+            print "\tRunning %s" % study
+            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
+
+        print "Simulation Done"
+        print("\n--- %s seconds ---" % (time.time() - start_time))
 
 

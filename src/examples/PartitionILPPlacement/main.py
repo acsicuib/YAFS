@@ -207,6 +207,7 @@ if __name__ == '__main__':
     # pathExperimento = "exp_rev/"
     pathExperimento = "/home/uib/src/YAFS/src/examples/PartitionILPPlacement/exp_rev/"
 
+    timeSimulation = 10000
     print os.getcwd()
     # logging.config.fileConfig(os.getcwd()+'/logging.ini')
     for i in range(50):

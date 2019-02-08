@@ -23,12 +23,12 @@ CLOUDPR = 99
 PERCENTATGEOFGATEWAYS = 0.2
 
 # EDGE CONFIGURATION
-func_PROPAGATIONTIME = "random.randint(10,90)" #it is change by the tier node value
-func_BANDWITDH = "random.randint(100,1000)"
+func_PROPAGATIONTIME = "random.randint(5,20)" #it is change by the tier node value
+func_BANDWITDH = "random.randint(10,20)"
 
 # NODE CONFIG
 func_NODERESOURECES = "random.randint(1,1)" #random distribution for the resources of the fog devices
-func_NODESPEED = "random.randint(50,1000)" #random distribution for the speed of the fog devices
+func_NODESPEED = "random.randint(20,60)" #random distribution for the speed of the fog devices
 
 func_POWERmax = "random.randint(400,1000)"
 func_POWERmin = "random.randint(50,300)"
