@@ -32,7 +32,7 @@ def performResults(df,dfl,pathNetwork,f,exp,it):
 
     totalmessages = len(dfl)
     # print "Total number of perfomed transmissions : %i" %totalmessages
-    f.write("totalMSG;%s;%i\n"%(exp,totalmessages))
+    f.write("totalMSG;%i;%s;%i\n"%(it,exp,totalmessages))
     totalMessagesSRCREP = dfl["message"].str.contains("M.USER.APP").sum()
     
     # print "Total Message  between sources -> replicas: %i" %totalMessagesSRCREP
@@ -226,7 +226,7 @@ parser.add_argument(
 args, pipeline_args = parser.parse_known_args()
 
 nSimulations = args.simulations
-pathExperimento = args.work_dir
+pathExperimento = args.work_dir+""
 duration = args.duration
 
 
