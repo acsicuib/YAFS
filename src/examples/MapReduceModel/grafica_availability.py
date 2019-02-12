@@ -5,6 +5,10 @@ Created on Wed Sep 19 11:44:17 2018
 
 @author: isaaclera
 """
+import matplotlib
+matplotlib.use('agg')
+
+
 import csv
 
 def autolabel2(rects,hshift,a,b):
@@ -73,28 +77,28 @@ for variableSizeOf in ['-n','-f']:
 #                print row
                 if row[0]==metric_: 
                     serie_,files_,nodes_ = row[1].split("-")
-                    if serie_=='rep':
+                    if serie_=='Replica':
                         if variableSizeOf=='-f':
                             if int(files_[1:]) in range(10,101,10):
                                 replicaValue[int(files_[1:])]=int(row[2])
                         if variableSizeOf=='-n':
                             if int(nodes_[1:]) in range(20,201,20):
                                 replicaValue[int(nodes_[1:])]=int(row[2])
-                    if serie_=='sin':
+                    if serie_=='Single':
                         if variableSizeOf=='-f':
                             if int(files_[1:]) in range(10,101,10):
                                 singleValue[int(files_[1:])]=int(row[2])
                         if variableSizeOf=='-n':
                             if int(nodes_[1:]) in range(20,201,20):
                                 singleValue[int(nodes_[1:])]=int(row[2])
-                    if serie_=='cld':
+                    if serie_=='Cloud':
                         if variableSizeOf=='-f':
                             if int(files_[1:]) in range(10,101,10):
                                 cloudValue[int(files_[1:])]=int(row[2])
                         if variableSizeOf=='-n':
                             if int(nodes_[1:]) in range(20,201,20):
                                 cloudValue[int(nodes_[1:])]=int(row[2])
-                    if serie_=='rnd':
+                    if serie_=='FstrRep':
                         if variableSizeOf=='-f':
                             if int(files_[1:]) in range(10,101,10):
                                 rndValue[int(files_[1:])]=int(row[2])
@@ -170,10 +174,10 @@ for variableSizeOf in ['-n','-f']:
         #ax.set_xticklabels( ('2011-Jan-4', '2011-Jan-5', '2011-Jan-6') )
         ax.set_xticklabels( ticksvals )
         
-        if metric_ == 'availabilityCloudReads' and variableSizeOf=='-n':
-            ax.legend( (rects1[0], rects2[0], rects3[0], rects4[0], rects5[0]), ('replica-aware', 'single-file','cloud','random', 'total number of files'), fontsize=18, loc='lower right' )
+        if metric_ == 'availabilityCloudReads' and variableSizeOf=='-n':        
+            ax.legend( (rects1[0], rects2[0], rects3[0], rects4[0], rects5[0]), ('replica-aware', 'single-file','only-cloud-file','fogstore', 'total number of files'), fontsize=18, loc='lower right' )
         else:
-            ax.legend( (rects1[0], rects2[0], rects3[0], rects4[0], rects5[0]), ('replica-aware', 'single-file', 'cloud','random','total number of files'), fontsize=18, loc='upper left'  )
+            ax.legend( (rects1[0], rects2[0], rects3[0], rects4[0], rects5[0]), ('replica-aware', 'single-file','only-cloud-file','fogstore', 'total number of files'), fontsize=18, loc='upper left'  )
         
         
         ax.grid()

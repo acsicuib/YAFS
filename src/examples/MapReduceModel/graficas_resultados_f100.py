@@ -5,6 +5,10 @@ Created on Wed Sep 19 11:44:17 2018
 
 @author: isaaclera
 """
+import matplotlib
+matplotlib.use('agg')
+
+
 import pandas as pd  
 import numpy as np
 import matplotlib.pyplot as plt
@@ -191,7 +195,7 @@ for metric in metrics:
     
     ax.grid()
             
-    plt.savefig(pathExperimento+"figures/metric_%s-n.pdf"%metric)
+    plt.savefig(pathExperimento+"/metric_%s-n.pdf"%metric)
     plt.show()
         
     
@@ -301,7 +305,7 @@ ax.set_xticklabels( ticksvals )
     
 ax.legend( (rects1[0], rects2[0],rects3[0],rects4[0],rects5[0],rects6[0]), ('replica-aware min', 'replica-aware max','single-file','only-cloud','fogstore min','fogstore max'), fontsize=16,  loc='lower right',ncol=6,framealpha=0.95)
 ax.grid()        
-plt.savefig(pathExperimento+"figures/metric_latminmax-n.pdf")
+plt.savefig(pathExperimento+"metric_latminmax-n.pdf")
 plt.show()
 
 #N = 6 #bars: two series: s1 , s2

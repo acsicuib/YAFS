@@ -5,9 +5,12 @@ Created on Wed Sep 19 11:44:17 2018
 
 @author: isaaclera
 """
-import pandas as pd  
+import matplotlib
+matplotlib.use('agg')
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
 from collections import defaultdict
 from matplotlib.ticker import ScalarFormatter
 
@@ -210,7 +213,7 @@ for metric in metrics:
 #        
 
             
-    plt.savefig(pathExperimento+"figures/metric_%s-f.pdf"%metric)
+    plt.savefig(pathExperimento+"metric_%s-f.pdf"%metric)
     plt.show()
         
     
@@ -322,7 +325,7 @@ ax.legend( (rects1[0], rects2[0],rects3[0],rects4[0],rects5[0],rects6[0]), ('rep
 ax.grid()
 
         
-plt.savefig(pathExperimento+"figures/metric_latminmax-f.pdf")
+plt.savefig(pathExperimento+"metric_latminmax-f.pdf")
 plt.show()
 
 #

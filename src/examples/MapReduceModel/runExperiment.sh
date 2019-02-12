@@ -147,12 +147,12 @@ run python ${WORK_DIR_BASE}/testingCentralities.py \
 
 echo ''
 
-# # STEP 1 - Generation JSON Structures
+# # STEP 2 - Generation JSON Structures
 # echo '>> MOVING JSON data'
 # run mv ${WORK_DIR}jsonmodel\*.json ${WORK_DIR}
 # echo ''
 
-# Extract the data files
+# 2 Extract the data files
 echo '>> Launching Simulation'
 run python ${WD}main.py  \
    --work-dir ${WORK_DIR} \
@@ -160,7 +160,7 @@ run python ${WD}main.py  \
    --simulations $SIMULATIONS
 echo ''
 
-# Preprocess the datasets
+# 3Preprocess the datasets
 echo '>> Analysing results N50'
 run python ${WD}analyse_results_n50.py  \
    --work-dir $WORK_DIR \
@@ -168,32 +168,47 @@ run python ${WD}analyse_results_n50.py  \
    --simulations $SIMULATIONS
 echo ''
 
-echo '>> Analysing results F100'
+echo '>> 4 Analysing results F100'
 run python ${WD}analyse_results_f100.py  \
    --work-dir $WORK_DIR \
    --duration $TIME \
    --simulations $SIMULATIONS
 echo ''
 
-echo '>> Generating  graphs F100'
+#step 5
+echo '>> 5 Generating  graphs F100'
 run python ${WD}graficas_resultados_f100.py  \
    --work-dir $WORK_DIR \
 echo ''
 
+
+#step 6
 echo '>> Generating  graphs N50'
 run python ${WD}graficas_resultados_n50.py  \
    --work-dir $WORK_DIR \
 echo ''
 
+#ste 7
 echo '>> Generating  graphs availability'
 run python ${WD}grafica_availability.py  \
    --work-dir $WORK_DIR \
 echo ''
 
-# echo '>> Moving (by default --filter csv)'
-# run python /home/uib/src/toDropbox.py  \
-#    --work-dir $WORK_DIR 
-# echo ''
+#step 8
+echo '>> Moving (by default --filter csv)'
+run python /home/uib/src/toDropbox.py  \
+    --work-dir $WORK_DIR \
+    --code $CODE 
+echo ''
+
+#step 9
+echo '>> Moving (by default all.pdf files)'
+run python /home/uib/src/toDropbox.py  \
+    --work-dir $WORK_DIR \
+    --code $CODE \
+    --filter '*.pdf'
+echo ''
+
 
 # echo '>> Moving availability (by default --filter csv)'
 # run python /home/uib/src/toDropbox.py  \
