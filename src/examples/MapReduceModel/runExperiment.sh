@@ -1,24 +1,12 @@
 #!/bin/bash
 
 
-# Invocation example:
-# + The code is the name of the project folder (acronym from centrality, userlocation, wei...
-#./aMapReduce.sh --step all --duration 100000 --simulations 1 --code edpt0 --centrality eigenvector --userlocation dispersed --edgeweight propagation --topology twolevel
+# This scripts runs the phases of the experiment (generation of scenario, simulation, analysis and graphs generation) in a local server
 
+# A trap function of error commands.
+# It uses telegram-send library to notify the progress
 
-# Parse command line arguments
-WORK_DIR_BASE=/home/uib/src/YAFS/allocationConfigurable
-WORK_DIR=/home/uib/src/YAFS/allocationConfigurable
-SIMULATIONS=1
-TIME=100000
-WD=/home/uib/src/YAFS/src/examples/MapReduceModel/
-STEP=all
-COUNTERSTEP=1
-CODE=etpd
-export PYTHONPATH=$PYTHONPATH:/home/uib/src/YAFS/src/:src/examples/MapReduceModel/
-
-
-set -eE 
+set -eE
 trap 'printerr' ERR
 function printerr(){
  local lc="$BASH_COMMAND" rc=$? ln=${BASH_LINENO[$i]}
@@ -27,19 +15,42 @@ function printerr(){
 }
 
 
+# Please update the paths according with your configuration
 
-# set -o errtrace
-# trap 'printerr' errtrace
-# function printerr(){
-#   telegram-send "Error en configuracion: $(CODE)"  
-# }
+# Invocation example:
+# + The code is the name of the project folder (acronym from centrality, userlocation, wei...
+# + The step arg. avoid the initial steps, if step = 3, it avoids 1 and 2 "run" commands.
+#./runExperiment.sh --step all --duration 100000 --simulations 1 --code edpt0 --centrality eigenvector --userlocation dispersed --edgeweight propagation --topology twolevel
 
-# export PYTHONPATH=$PYTHONPATH:/home/uib/src/YAFS/src/:src/examples/MapReduceModel/
 
+
+export PYTHONPATH=$PYTHONPATH:/home/uib/src/YAFS/src/:src/examples/MapReduceModel/
+
+WORK_DIR_BASE=/home/uib/src/YAFS/allocationConfigurable
+WORK_DIR=/home/uib/src/YAFS/allocationConfigurable
+WD=/home/uib/src/YAFS/src/examples/MapReduceModel/
+
+
+#Default values
+SIMULATIONS=1
+TIME=100000
+
+
+STEP=all
+COUNTERSTEP=1
+CODE=etpd
 CENTRALITY=""
 USERLOCATION=""
 EDGEWEIGHT=""
 TOPOLOGY=""
+
+
+
+
+
+
+
+# Parse command line arguments
 
 while [[ $# -gt 0 ]]; do
   case $1 in
