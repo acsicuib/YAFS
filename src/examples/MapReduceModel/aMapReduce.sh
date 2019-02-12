@@ -189,8 +189,8 @@ echo ''
 #    --work-dir $WORK_DIRjsonmodel
 # echo ''
 
-echo '>> Sending info: Telegram'
-telegram-send "Finalizado MapReduceModel"  
+echo '>> Sending the last telegram'
+telegram-send "The end"
 echo ''
 
 
