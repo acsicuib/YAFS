@@ -15,11 +15,11 @@ function printerr(){
 }
 
 
-# Please update the paths according with your configuration
+# Update paths according with your configuration
 
 # Invocation example:
 # + The code is the name of the project folder (acronym from centrality, userlocation, wei...
-# + The step arg. avoid the initial steps, if step = 3, it avoids 1 and 2 "run" commands.
+# + The step arg. avoid the initial steps. So, if step == 3, it avoids 1 and 2 "run" commands.
 #./runExperiment.sh --step all --duration 100000 --simulations 1 --code edpt0 --centrality eigenvector --userlocation dispersed --edgeweight propagation --topology twolevel
 
 
