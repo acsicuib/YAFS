@@ -86,6 +86,9 @@ def performResults(df,dfl,pathNetwork,f,exp,it):
                      except IndexError:
                          print "NO MAX"
                          value = 0
+                     except AttributeError:
+                        print "NO MAX"
+                        value = 0
                      totalRmax.append(value)
                     
 #                     print "APP: ",previousAPP
@@ -117,6 +120,9 @@ def performResults(df,dfl,pathNetwork,f,exp,it):
                     except IndexError:
                          print "NO MAX"
                          value = 0
+                    except AttributeError:
+                        print "NO MAX"
+                        value = 0
                     totalRmax.append(value)
                     
           
@@ -151,6 +157,9 @@ def performResults(df,dfl,pathNetwork,f,exp,it):
                  idMax = dtmp[previousAPP][maxpath.src][maxpath.dst].values[0]
                  value = dmsg[dmsg["id"].isin(idMax)].groupby(['id']).agg({"latency":np.sum}).mean().values[0] 
              except IndexError:
+                 print "NO MAX"
+                 value = 0
+             except AttributeError:
                  print "NO MAX"
                  value = 0
              totalRmax.append(value)
@@ -206,12 +215,10 @@ args, pipeline_args = parser.parse_known_args()
 nSimulations = args.simulations
 pathExperimento = args.work_dir+""
 duration = args.duration
-
-
 fcsv = open(pathExperimento+"resultsParte_f100.csv","w")
 
 for i in range(nSimulations):
-    for n in xrange(20,220,20):
+    for n in xrange(100,301,20):
         exps = "rep-f100-n%i"%n
         print "\tRunning %s"%exps
 
@@ -233,13 +240,13 @@ for i in range(nSimulations):
         dfl = pd.read_csv(path + "_link.csv")
         performResults(df,dfl,pathNetwork,fcsv,exps,i)
 
-        model = "Cloud"
-        exps = "cloud-f100-n%i" % n
-        print "\tRunning %s" % exps
-        path = pathExperimento + "Results_%i_%s_%s_%s" % (i,exp, model, duration)
-        df = pd.read_csv(path + ".csv")
-        dfl = pd.read_csv(path + "_link.csv")
-        performResults(df, dfl, pathNetwork, fcsv, exps,i)
+        # model = "Cloud"
+        # exps = "cloud-f100-n%i" % n
+        # print "\tRunning %s" % exps
+        # path = pathExperimento + "Results_%i_%s_%s_%s" % (i,exp, model, duration)
+        # df = pd.read_csv(path + ".csv")
+        # dfl = pd.read_csv(path + "_link.csv")
+        # performResults(df, dfl, pathNetwork, fcsv, exps,i)
 
         model = "FstrRep"
         exps = "Fstrrep-f100-n%i" % n
@@ -253,3 +260,4 @@ for i in range(nSimulations):
 #df["totalResponse"] = df.time_out - df.time_emit
 #df["latency"]= df.time_reception - df.time_emit
 fcsv.close()
+

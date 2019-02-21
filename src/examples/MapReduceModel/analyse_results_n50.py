@@ -229,15 +229,14 @@ nSimulations = args.simulations
 pathExperimento = args.work_dir+""
 duration = args.duration
 
-
-fcsv = open(pathExperimento+"resultsParte_n50.csv","w")
+fcsv = open(pathExperimento+"resultsParte_n200.csv","w")
 
 
 for i in range(nSimulations):
-    for f in xrange(10,105,10):
-        exps = "rep-f%i-n50"%f
+    for f in xrange(100,201,10):
+        exps = "rep-f%i-n200"%f
         print "\tRunning %s"%exps
-        exp = "f%in50"%f
+        exp = "f%in200"%f
         model = "Replica"
         pathNetwork = pathExperimento + "%s-network.json" % exp
 
@@ -248,23 +247,23 @@ for i in range(nSimulations):
 
 
         model = "Single"
-        exps = "sin-f%i-n50"%f
+        exps = "sin-f%i-n200"%f
         print "\tRunning %s"%exps
         path =pathExperimento+"Results_%i_%s_%s_%s"%(i,exp,model,duration)
         df = pd.read_csv(path + ".csv")
         dfl = pd.read_csv(path + "_link.csv")
         performResults(df,dfl,pathNetwork,fcsv,exps,i)
-
-        model = "Cloud"
-        exps = "cloud-f%i-n50" % f
-        print "\tRunning %s" % exps
-        path = pathExperimento + "Results_%i_%s_%s_%s" % (i,exp, model, duration)
-        df = pd.read_csv(path + ".csv")
-        dfl = pd.read_csv(path + "_link.csv")
-        performResults(df, dfl, pathNetwork, fcsv, exps,i)
+        #
+        # model = "Cloud"
+        # exps = "cloud-f%i-n200" % f
+        # print "\tRunning %s" % exps
+        # path = pathExperimento + "Results_%i_%s_%s_%s" % (i,exp, model, duration)
+        # df = pd.read_csv(path + ".csv")
+        # dfl = pd.read_csv(path + "_link.csv")
+        # performResults(df, dfl, pathNetwork, fcsv, exps,i)
 
         model = "FstrRep"
-        exps = "Fstrrep-f%i-n50" % f
+        exps = "Fstrrep-f%i-n200" % f
         print "\tRunning %s" % exps
         path = pathExperimento + "Results_%i_%s_%s_%s" % (i,exp, model, duration)
         df = pd.read_csv(path + ".csv")

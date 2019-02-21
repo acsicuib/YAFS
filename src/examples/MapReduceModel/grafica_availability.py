@@ -69,8 +69,10 @@ for variableSizeOf in ['-n','-f']:
 #        if variableSizeOf=='-n':
 #            filename_  = './jsonmodel/results2bueno.csv'
 #         filename_  = './'+folder_+'/results.csv'
-            
-            
+
+        fn = range(100,201,10)
+        nn = range(100,301,20)
+
         with open(filename_) as File:  
             reader = csv.reader(File,delimiter=';')
             for row in reader:
@@ -79,31 +81,31 @@ for variableSizeOf in ['-n','-f']:
                     serie_,files_,nodes_ = row[1].split("-")
                     if serie_=='Replica':
                         if variableSizeOf=='-f':
-                            if int(files_[1:]) in range(10,101,10):
+                            if int(files_[1:]) in fn:
                                 replicaValue[int(files_[1:])]=int(row[2])
                         if variableSizeOf=='-n':
-                            if int(nodes_[1:]) in range(20,201,20):
+                            if int(nodes_[1:]) in nn:
                                 replicaValue[int(nodes_[1:])]=int(row[2])
                     if serie_=='Single':
                         if variableSizeOf=='-f':
-                            if int(files_[1:]) in range(10,101,10):
+                            if int(files_[1:]) in fn:
                                 singleValue[int(files_[1:])]=int(row[2])
                         if variableSizeOf=='-n':
-                            if int(nodes_[1:]) in range(20,201,20):
+                            if int(nodes_[1:]) in nn:
                                 singleValue[int(nodes_[1:])]=int(row[2])
                     if serie_=='Cloud':
                         if variableSizeOf=='-f':
-                            if int(files_[1:]) in range(10,101,10):
+                            if int(files_[1:]) in fn:
                                 cloudValue[int(files_[1:])]=int(row[2])
                         if variableSizeOf=='-n':
-                            if int(nodes_[1:]) in range(20,201,20):
+                            if int(nodes_[1:]) in nn:
                                 cloudValue[int(nodes_[1:])]=int(row[2])
                     if serie_=='FstrRep':
                         if variableSizeOf=='-f':
-                            if int(files_[1:]) in range(10,101,10):
+                            if int(files_[1:]) in fn:
                                 rndValue[int(files_[1:])]=int(row[2])
                         if variableSizeOf=='-n':
-                            if int(nodes_[1:]) in range(20,201,20):
+                            if int(nodes_[1:]) in nn:
                                 rndValue[int(nodes_[1:])]=int(row[2])
 
         

@@ -172,7 +172,7 @@ def main(simulated_time,experimento,file,study,it):
 
 
     dataPopulation = json.load(open(experimento+file+'-users%s.json'%studyUser))
-    pop = JSONPopulation(name="Statical",json=dataPopulation)
+    pop = JSONPopulation(name="Statical",json=dataPopulation,it=it)
 
 
     """
@@ -268,8 +268,11 @@ if __name__ == '__main__':
 
         start_time = time.time()
 
-        for f in xrange(10, 110, 10):
-            file = "f%in50" % f
+        # for f in xrange(10, 110, 10):
+        for f in xrange(100, 201, 10):
+            # file = "f%in50" % f
+            file = "f%in200" % f
+
             print file
 
             study = "Replica"
@@ -284,14 +287,16 @@ if __name__ == '__main__':
             print "\tRunning %s" % study
             main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
 
-            study = "Cloud"
-            print "\tRunning %s" % study
-            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
+          #  study = "Cloud"
+          #  print "\tRunning %s" % study
+          #  main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
 
         print "SEGUNDA PARTE"
 
-        for n in xrange(20, 220, 20):
+        for n in xrange(100, 301, 20):
+        # for n in xrange(20, 220, 20):
             file = "f100n%i" % n
+            # file = "f100n%i" % n
             print file
 
             study = "Replica"
@@ -306,9 +311,9 @@ if __name__ == '__main__':
             print "\tRunning %s" % study
             main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
 
-            study = "Cloud"
-            print "\tRunning %s" % study
-            main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
+           # study = "Cloud"
+           # print "\tRunning %s" % study
+           # main(simulated_time=duration, experimento=pathExperimento, file=file, study=study,it=i)
 
         print "Simulation Done"
         print("\n--- %s seconds ---" % (time.time() - start_time))

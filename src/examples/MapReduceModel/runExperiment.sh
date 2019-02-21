@@ -43,6 +43,7 @@ CENTRALITY=""
 USERLOCATION=""
 EDGEWEIGHT=""
 TOPOLOGY=""
+CLOUDLOCATION=""
 
 
 
@@ -88,6 +89,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --topology)
       TOPOLOGY=$2
+      shift
+      ;;
+    --cloudlocation)
+      CLOUDLOCATION=$2
       shift
       ;;
     *)
@@ -143,8 +148,8 @@ run python ${WORK_DIR_BASE}/testingCentralities.py \
    --centrality $CENTRALITY \
    --userlocation $USERLOCATION \
    --edgeweight $EDGEWEIGHT \
-   --topology $TOPOLOGY 
-
+   --topology $TOPOLOGY \
+   --cloudlocation $CLOUDLOCATION
 echo ''
 
 # # STEP 2 - Generation JSON Structures
@@ -176,32 +181,40 @@ run python ${WD}analyse_results_f100.py  \
 echo ''
 
 #step 5
+echo '>> Moving (by default --filter csv)'
+run python /home/uib/src/toDropbox.py  \
+    --work-dir $WORK_DIR \
+    --code $CODE
+
+#step 6
+run python /home/uib/src/toDropboxCarlos.py  \
+    --work-dir $WORK_DIR \
+    --code $CODE 
+echo ''
+
+#step 7
 echo '>> 5 Generating  graphs F100'
 run python ${WD}graficas_resultados_f100.py  \
    --work-dir $WORK_DIR \
+   --simulations $SIMULATIONS
 echo ''
 
 
-#step 6
+#step 8
 echo '>> Generating  graphs N50'
 run python ${WD}graficas_resultados_n50.py  \
    --work-dir $WORK_DIR \
+   --simulations $SIMULATIONS
 echo ''
 
-#ste 7
+#ste 9
 echo '>> Generating  graphs availability'
 run python ${WD}grafica_availability.py  \
    --work-dir $WORK_DIR \
 echo ''
 
-#step 8
-echo '>> Moving (by default --filter csv)'
-run python /home/uib/src/toDropbox.py  \
-    --work-dir $WORK_DIR \
-    --code $CODE 
-echo ''
 
-#step 9
+#step 10
 echo '>> Moving (by default all.pdf files)'
 run python /home/uib/src/toDropbox.py  \
     --work-dir $WORK_DIR \
@@ -209,11 +222,28 @@ run python /home/uib/src/toDropbox.py  \
     --filter '*.pdf'
 echo ''
 
+#step 11
+run python /home/uib/src/toDropboxCarlos.py  \
+    --work-dir $WORK_DIR \
+    --code $CODE \
+    --filter '*.pdf'
+echo ''
+#step 12
+run python /home/uib/src/toDropbox.py  \
+    --work-dir $WORK_DIR \
+    --code $CODE \
+    --filter 'aceleracion*'
+echo ''
+#step 13
+run python /home/uib/src/toDropboxCarlos.py  \
+    --work-dir $WORK_DIR \
+    --code $CODE \
+    --filter 'aceleracion*'
+echo ''
 
-# echo '>> Moving availability (by default --filter csv)'
-# run python /home/uib/src/toDropbox.py  \
-#    --work-dir $WORK_DIRjsonmodel
-# echo ''
+
+
+
 
 echo '>> Sending the last telegram'
 telegram-send "The end"
