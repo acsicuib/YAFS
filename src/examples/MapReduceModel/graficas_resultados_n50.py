@@ -146,21 +146,13 @@ for metric in metrics:
         s4[it] = df[(df.t=="Fstrrep") & (df[1]==it)].loc[metric][3]
         
         if metric == "totalLATrepclo":
-            s1b[it] = df[df.t=="rep"].loc["totalLATrepcloSTD"][3]
-            s2b[it] = df[df.t=="rep"].loc["totalLATrepcloSTD"][3]
-            s4b[it] = df[df.t=="rep"].loc["totalLATrepcloSTD"][3]
-
-
-
-
+            s1b[it] = df[(df.t=="rep")& (df[1]==it)].loc["totalLATrepcloSTD"][3]
+            s2b[it] = df[(df.t=="sin")& (df[1]==it)].loc["totalLATrepcloSTD"][3]
+            s4b[it] = df[(df.t=="Fstrrep")& (df[1]==it)].loc["totalLATrepcloSTD"][3]
         
 #        s1b[it] =  df[(df.t=="rep") & (df[1]==it)].loc["totalLATminSTD"][3]
 #        s2b[it] = df[(df.t=="rep") & (df[1]==it)].loc["totalLATmaxSTD"][3]
 #        s4b[it] =  df[(df.t=="Fstrrep") & (df[1]==it)].loc["totalLATmax"][3]
-    
-
-
-
 
     
     ss1,ss2,ss3,ss4 = defaultdict(list),defaultdict(list),defaultdict(list),defaultdict(list)
@@ -261,7 +253,7 @@ for metric in metrics:
 
     rects2 = ax.bar(ind+width*2, s2m,yerr=s2std, width=width, color=colors[2])
 
-
+    maxDD =0.0 #TODO alert
     if maxDD ==0.0:
         ax.set_xlabel('# files for the experiment',size=22)            
     else:                        
@@ -435,6 +427,7 @@ rects5 = ax.bar(ind+width*2, s5m, yerr=s5std, width=width, color='#b5e3bd')
 rects6 = ax.bar(ind+width*3, s6m, yerr=s6std, width=width, color=colors[4])
 rects3 = ax.bar(ind+width*4, s3m, yerr=s3std, width=width, color='#1A7AF8')
     
+maxDD=0
 if maxDD ==0.0:
         ax.set_xlabel('# files for the experiment',size=22)            
 else:                        

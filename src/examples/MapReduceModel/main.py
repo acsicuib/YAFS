@@ -204,7 +204,7 @@ def main(simulated_time,experimento,file,study,it):
     #For each deployment the user - population have to contain only its specific sources
     for aName in apps.keys():
         #print "Deploying app: ",aName
-        pop_app = JSONPopulation(name="Statical_%s"%aName,json={})
+        pop_app = JSONPopulation(name="Statical_%s"%aName,json={},it=it)
         data = []
         for element in pop.data["sources"]:
             if element['app'] == aName:

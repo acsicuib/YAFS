@@ -49,7 +49,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '--work-dir',
     type=str,
-    default="exp/",
+    default="exp22/",
     help='Working directory')
 
 parser.add_argument(
@@ -111,11 +111,15 @@ dr["ffiles"]=[100]*11
 dr["nnodes"]=fn
 for metric in metrics:
     s1,s2,s3,s4 = {},{},{},{}
+    s1b,s2b,s3b,s4b = {},{},{},{}
     ylabel = info_metrics[metric]
     
     print "METRICA %s --- %s" %(metric,ylabel)
+
     
-    for it in range(nSimulations):
+#    for it in range(nSimulations):
+    if True:
+        it = 2
         #LOAD OF VALUES
         df = pd.read_csv(pathResults,sep=";",index_col=0,header=-1)
         df["t"],df["f"],df["n"] = df[2].str.split("-").str
@@ -130,25 +134,43 @@ for metric in metrics:
         s2[it] =  df[(df.t=="sin") & (df[1]==it)].loc[metric][3]
         s4[it] = df[(df.t=="Fstrrep") & (df[1]==it)].loc[metric][3]
         
-    
+        if metric == "totalLATrepclo":
+            s1b[it] = df[(df.t=="rep")& (df[1]==it)].loc["totalLATrepcloSTD"][3]
+            s2b[it] = df[(df.t=="sin")& (df[1]==it)].loc["totalLATrepcloSTD"][3]
+            s4b[it] = df[(df.t=="Fstrrep")& (df[1]==it)].loc["totalLATrepcloSTD"][3]
+       
+        
     ss1,ss2,ss3,ss4 = defaultdict(list),defaultdict(list),defaultdict(list),defaultdict(list)
+    ss1b,ss2b,ss3b,ss4b = defaultdict(list),defaultdict(list),defaultdict(list),defaultdict(list)
     s1m,s1std = np.array([]),np.array([])
     s2m,s2std = np.array([]),np.array([])
-    s3m,s3std = np.array([]),np.array([])
+#    s3m,s3std = np.array([]),np.array([])
     s4m,s4std = np.array([]),np.array([])
+#    s1m,s1std = np.array([]),np.array([])
+#    s2m,s2std = np.array([]),np.array([])
+#    s3m,s3std = np.array([]),np.array([])
+#    s4m,s4std = np.array([]),np.array([])
     maxDD = -1;
     for value in range(len(fn)):
-        for it in range(nSimulations):    
+
+#        for it in range(nSimulations): 
+        if True:
+            it = 2        
+            
+            
             ss1[value].append(s1[it][value])
             ss2[value].append(s2[it][value]) 
 #            ss3[value].append(s3[it][value]) 
             ss4[value].append(s4[it][value]) 
-  
+            if metric == "totalLATrepclo":
+                ss1b[value].append(s1b[it][value])
+                ss2b[value].append(s2b[it][value])
+                ss4b[value].append(s4b[it][value])   
 
         s1m = np.append(s1m,np.array(ss1[value]).mean())
         s2m =np.append(s2m,np.array(ss2[value]).mean())
         s4m =np.append(s4m,np.array(ss4[value]).mean())
-         
+
         if metric == "totalLATrepclo":
             #CASO A - usar STD de varias simulaciones
 #            s1std = np.append(s1std,np.array(ss1b[value]).mean())
@@ -167,9 +189,10 @@ for metric in metrics:
             s2std = np.append(s2std,np.array(ss2[value]).std())
             s4std = np.append(s4std,np.array(ss4[value]).std())
             
+            
     maxi =  max(s1std.max(),s2std.max(),s4std.max())  
     if maxi > maxDD:
-         maxDD = maxi
+       maxDD = maxi
             
     dr[metric]=s4m/s1m
     
@@ -185,10 +208,10 @@ for metric in metrics:
     ticksvals = fn
 
 
-    s1std = 0
-    s2std = 0
-    s3std = 0
-    s4std = 0
+#    s1std = 0
+#    s2std = 0
+#    s3std = 0
+#    s4std = 0
 
     rects1 = ax.bar(ind, s1m,yerr=s1std, width=width, color="#F85A3E")
 
@@ -210,7 +233,7 @@ for metric in metrics:
 #    else:
 #        rects2 = ax.bar(ind+width*2, s2m,yerr=s2std, width=width, color="#1A7AF8") # single-file
                         
-                        
+    maxDD = 0.0                  
     if maxDD ==0.0:
         ax.set_xlabel('# devices for the experiment',size=22)            
     else:                        
@@ -236,7 +259,7 @@ for metric in metrics:
 #        
 #    
                 
-    if metric == "totalMSG" or metric == "totalMSGsrcrep" or metric == "totalLATrepclo":
+    if metric == "totalMSG" or metric == "totalMSGsrcrep" :#or metric == "totalLATrepclo":
         ax.legend( (rects1[0], rects13[0],  rects4[0], rects41[0],rects2[0]), ('replica-aware', 'replica-aware (avg. per replica)','fogstore','fogstore (avg. per replica)','single-file'), fontsize=16, ncol=2   ) #loc='lower right'
 #    elif :
 #        ax.legend( (rects1[0], rects2[0]), ('replica-aware', 'single-file','cloud','random'), fontsize=18)
@@ -267,6 +290,7 @@ width = 0.14       # the width of the bars
 fn = range(100,301,20)
 ylabel = "latency (ms)"
 s1,s2,s3,s4,s5,s6 = {},{},{},{},{},{}
+s1b,s2b,s3b,s4b,s5b,s6b = {},{},{},{},{},{}
 
 s1m, s1std = np.array([]), np.array([])
 s2m, s2std = np.array([]), np.array([])
@@ -329,7 +353,10 @@ maxDD = -1;
 for value in range(len(fn)):
     print value
     for it in range(nSimulations):    
+        print it
         ss1[value].append(s1[it][value])
+        print ss1
+        
         ss2[value].append(s2[it][value]) 
         ss3[value].append(s3[it][value]) 
 #        ss4[value].append(s4[it][value])
@@ -410,7 +437,7 @@ rects3 = ax.bar(ind+width*4, s3m, yerr=s3std, width=width, color='#1A7AF8')
                 
 #ax.set_xlabel('# devices for the experiment',size=22)     
               
-                  
+maxDD = 0                  
 if maxDD ==0.0:
         ax.set_xlabel('# devices for the experiment',size=22)            
 else:                        
