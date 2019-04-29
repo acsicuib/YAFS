@@ -62,9 +62,10 @@ python src/examples/Tutorial/main1.py
 ```
 
 
-A "SUPER" TIP
--------------
+A "SUPER" TIP: creating custom strategies
+-----------------------------------------
 We try to implement a wonderful tutorial but our time is limited. Thus, we can introduce this simple tip to create a custom strategy in the simulation.
+This example defines a **dynamical** strategy since along the simulation can altered other strategies or even the topology, the applications, or whatever thing that you wish to modify.
 
 For example, in your main.py function, you can declare a custom strategy with a deterministic distribution, and you can include the parameters that you want, i.e. the simulator class, and the routingPath.
 
@@ -86,6 +87,7 @@ class CustomStrategy():
         #or whatever you want
 
 ```
+**Note**: the sim variable is type of core.py, it means, it contains all the variables and strategies: topology, placements, applications, etc.
 
 
 Documentation and Help
