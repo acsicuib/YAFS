@@ -22,7 +22,7 @@ A link has associated these performance characteristics:
 
 * **BW** Channel Bandwidth: in Bytes
 * **PR** Channel Propagation speed
-* The **Latency** is dynamically computed using: Message.size.bits / (BW + PR)
+* The **Latency** is dynamically computed using: (Message.size.bits / BW) + PR
 
 A network can be created using a dictionary structure (or json file) or through some implemented algorithms from specific libraries compatibles with Networkx (see :ref:`architecture details <architecture>`).
 
