@@ -81,11 +81,7 @@ class Pop_and_Failures(Population):
             self.nodes_removed.append({"id":node_to_remove,"module":someModuleDeployed,"time":sim.env.now})
 
             sim.remove_node(node_to_remove)
-            for key in keys_DES:
-                sim.stop_process(key)
-
-            # print "\tRemoving Node"
-            sim.topology.G.remove_node(node_to_remove)
+            
 
             self.limit -=1
 
