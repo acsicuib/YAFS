@@ -1,6 +1,7 @@
 
 from yafs.selection import Selection
 import networkx as nx
+import copy
 import math
 class CloudPath_RR(Selection):
 
@@ -56,9 +57,16 @@ class BroadPath(Selection):
                     bestDES = dev
 
             return minPath,bestDES
-        except (nx.NetworkXNoPath, nx.NodeNotFound) as e:
-            self.logger.warning("There is no path between two nodes: %s - %s "%(node_src,node_dst))
-            print "Simulation ends?"
+        except nx.NetworkXNoPath as e:
+            self.logger.warning("There is no path between two nodes: %s - %s " % (node_src, node_dst))
+            print "Simulation ends?. Time:", sim.env.now
+            # sim.stop = True ## You can stop all DES process
+            return [], None
+
+        except nx.NodeNotFound as e:
+            self.logger.warning("Node not found: %s - %s "%(node_src,node_dst))
+            print "Simulation ends?. Time:",sim.env.now
+            # sim.stop = True ## You can stop all DES process
             return [],None
 
     def get_path(self, sim, app_name,message, topology_src, alloc_DES, alloc_module, traffic):
@@ -73,13 +81,19 @@ class BroadPath(Selection):
         # print "Node (Topo id): %s" %node_src
         # print "Service DST: %s "%message.dst
         DES_dst = alloc_module[app_name][message.dst]
-        currentNodes = len(sim.topology.G.nodes())
-        # print "DES DST: %s" % DES_dst
-        if not self.invalid_cache_value == currentNodes:  # Cache updated
-            self.invalid_cache_value = currentNodes
-            self.most_near_calculator_to_client = {}
 
-            # print "Cache updated"
+        currentNodes = len(sim.topology.G.nodes())
+
+        # print "DES DST: %s" % DES_dst
+
+        # if not self.invalid_cache_value == currentNodes:  # Cache updated
+        #     self.invalid_cache_value = copy.copy(currentNodes)
+        #     self.most_near_calculator_to_client = {}
+        #     self.logger.warning("Cache will be updated")
+        #     # print "Cache updated"
+
+        self.most_near_calculator_to_client = {}
+
         if node_src not in self.most_near_calculator_to_client.keys():
             self.most_near_calculator_to_client[node_src] = self.compute_most_near(
                  node_src,alloc_DES, sim,DES_dst)

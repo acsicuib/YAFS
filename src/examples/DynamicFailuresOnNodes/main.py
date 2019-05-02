@@ -129,6 +129,7 @@ def main(simulated_time):
     print "Total edges available in the  toopology %i" %len(s.topology.G.edges())
 
     print pop.nodes_removed
+    nx.write_graphml_lxml(s.topology.G, "final_network.graphml")
 
 if __name__ == '__main__':
     import logging.config
