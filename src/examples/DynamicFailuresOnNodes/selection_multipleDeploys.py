@@ -86,13 +86,13 @@ class BroadPath(Selection):
 
         # print "DES DST: %s" % DES_dst
 
-        # if not self.invalid_cache_value == currentNodes:  # Cache updated
-        #     self.invalid_cache_value = copy.copy(currentNodes)
-        #     self.most_near_calculator_to_client = {}
-        #     self.logger.warning("Cache will be updated")
-        #     # print "Cache updated"
+        if not self.invalid_cache_value == currentNodes:  # Cache updated
+            self.invalid_cache_value = copy.copy(currentNodes)
+            self.most_near_calculator_to_client = {}
+            self.logger.warning("Cache will be updated")
+            # print "Cache updated"
 
-        self.most_near_calculator_to_client = {}
+        # self.most_near_calculator_to_client = {}
 
         if node_src not in self.most_near_calculator_to_client.keys():
             self.most_near_calculator_to_client[node_src] = self.compute_most_near(
