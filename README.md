@@ -27,25 +27,35 @@ Installation
 
 YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 
-You can download and install YAFS manually:
+1. Clone the project in your local folder:
 
 ```bash
     $ git clone https://github.com/acsicuib/YAFS
 
 ```
 
-To install third-libraries you can execute:
+2. Install third-libraries:
 ```bash
     python setup.py install
 ```
+or manually with easy_install or pip commands
 
-Dependencies are:
+YAFS requieres:
 * Simpy
 * Networkx
 * Numpy
 * Pandas
 * tqdm
 
+3. Perform an execution. In this case, we run src/examples/Tutorial/main1.py
+- From console, you can run the next commands in folder /YAFS:
+```bash
+export PYTHONPATH=$PYTHONPATH:<your/path>YAFS/src/: src/examples/Tutorial/
+python src/examples/Tutorial/main1.py 
+```
+- Or you can use editors such as Spyder or Pycharm (our choice)
+
+ 
 
 Getting started
 ---------------
