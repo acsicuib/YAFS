@@ -47,22 +47,10 @@ YAFS requieres:
 * Pandas
 * tqdm
 
-3. Perform an execution. In this case, we run src/examples/Tutorial/main1.py
-- From console, you can run the next commands in folder /YAFS:
-```bash
-export PYTHONPATH=$PYTHONPATH:<your/path>YAFS/src/: src/examples/Tutorial/
-python src/examples/Tutorial/main1.py 
-```
-- Or you can use editors such as Spyder or Pycharm (our choice)
 
- 
 
-Getting started
----------------
-
-The [YAFS tutorial](https://yafs.readthedocs.io/en/latest/introduction/index.html) is a good starting
-point for you. You can also try out some of the [Examples](https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
-YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
+Getting started & your first execution
+--------------------------------------
 
 To run some folder project you can create a simple bash script, with the following lines (please update the path according with your system) or you can use a python editor such as: Pycharm, Spyder, etc.
 
@@ -70,6 +58,10 @@ To run some folder project you can create a simple bash script, with the followi
 export PYTHONPATH=$PYTHONPATH:/<your path>/YAFS/src/:src/examples/Tutorial/
 python src/examples/Tutorial/main1.py
 ```
+
+The [YAFS tutorial](https://yafs.readthedocs.io/en/latest/introduction/index.html) is a good starting
+point for you. You can also try out some of the [Examples](https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
+YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
 
 
 A "SUPER" TIP: creating custom strategies
