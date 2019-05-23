@@ -8,7 +8,7 @@ class CloudPath_RR(Selection):
     def __init__(self):
         self.rr = {}  # for a each type of service, we have a mod-counter
 
-    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):
 
         node_src = topology_src
         DES_dst = alloc_module[app_name][message.dst]  # returns an array with all DES process serving
@@ -57,7 +57,7 @@ class BroadPath(Selection):
 
         return minPath,bestDES
 
-    def get_path(self, sim, app_name,message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):
         """
         Get the path between a node of the topology and a module deployed in a node. Furthermore it chooses the process deployed in that node.
 

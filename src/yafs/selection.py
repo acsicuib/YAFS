@@ -24,19 +24,21 @@ class Selection(object):
         self.lat_acc = 0.0
         self.propagation = 0.0
 
-    def get_path(self, sim, app_name, message, topology_src,alloc_DES, alloc_module, traffic,from_des):
+    def get_path(self, sim, app_name, message, topology_src,alloc_DES, alloc_module, traffic, from_des):
+
         """
         Args:
 
-            sim (yafs.core.Sim)
-
-            src (int): the node source
-
-            dst (dst): the node destiny
-
-            message (yafs.application.Message)
-
-            traffic (dict): the current occupation of the network
+        :param sim:
+        :param message:
+        :param link:
+        :param alloc_DES:
+        :param alloc_module:
+        :param traffic:
+        :param ctime:
+        :param from_des
+        :return:
+           both empty arrays implies that the message will not send to the destination.
 
         Returns:
 
@@ -55,7 +57,7 @@ class Selection(object):
         """ END Selection """
         return path,ids
 
-    def get_path_from_failure(self, sim, message, link, alloc_DES, alloc_module, traffic, ctime):
+    def get_path_from_failure(self, sim, message, link, alloc_DES, alloc_module, traffic, ctime, from_des):
         """
         This function is call when some link of a message path is broken or unavailable. A new one from that point should be calculated.
 
@@ -66,6 +68,7 @@ class Selection(object):
         :param alloc_module:
         :param traffic:
         :param ctime:
+        :param from_des
         :return:
            both empty arrays implies that the message will not send to the destination.
 

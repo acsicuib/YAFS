@@ -4,7 +4,7 @@ import networkx as nx
 class First_ShortestPath(Selection):
     """Among all possible shorter paths, returns the first."""
 
-    def get_path(self, sim, app_name,message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):
 
         node_src = topology_src
 

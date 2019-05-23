@@ -4,7 +4,7 @@ import networkx as nx
 
 class MinimunPath(Selection):
 
-    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic,from_des):
         """
         Computes the minimun path among the source elemento of the topology and the localizations of the module
 
@@ -38,7 +38,7 @@ class MinPath_RoundRobin(Selection):
     def __init__(self):
         self.rr = {} #for a each type of service, we have a mod-counter
 
-    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic,from_des):
         """
         Computes the minimun path among the source elemento of the topology and the localizations of the module
 

@@ -8,7 +8,7 @@ class MinShortPath(Selection):
         #Always it choices the first DES process, It means only one controller.
         #This implementations is so simple, please see the VRGameFog-IfogSim-WL Selection placement to understand better the selection process
 
-    def get_path(self, sim, app_name,message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):
         """
         Get the path between a node of the topology and a module deployed in a node. Furthermore it chooses the process deployed in that node.
         """
@@ -31,4 +31,4 @@ class MinShortPath(Selection):
 
         return minPath, bestDES
 
-        return best_path,best_DES
+

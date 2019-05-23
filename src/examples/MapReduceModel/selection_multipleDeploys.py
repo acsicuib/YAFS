@@ -31,11 +31,7 @@ class DeviceSpeedAwareRouting(Selection):
                     #print sim.topology.G.edges[link][Topology.LINK_BW]
 
                 att_node = sim.topology.get_nodes_att()[path[-1]]
-                # print "Att _ node %s" %att_node
-#TODO ISAAC
-                # if att_node["id"]==100:
-                #     print "\t last cloud"
-                #     speed += 10000
+
 
                 time_service = message.inst / float(att_node["IPT"])
                 # print "Tims serviice %s" %time_service
@@ -54,7 +50,7 @@ class DeviceSpeedAwareRouting(Selection):
             print "Simulation ends?"
             return [], None
 
-    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):
         node_src = topology_src #entity that sends the message
 
         # print "Message ",message.name
@@ -77,9 +73,7 @@ class DeviceSpeedAwareRouting(Selection):
 
         return [path], [des]
 
-
-
-    def get_path_from_failure(self, sim,message, link, alloc_DES,alloc_module, traffic,ctime):
+    def get_path_from_failure(self, sim, message, link, alloc_DES, alloc_module, traffic, ctime, from_des):
         # print "Example of enrouting"
         #print message.path # [86, 242, 160, 164, 130, 301, 281, 216]
         #print message.dst_int  # 301
@@ -98,7 +92,7 @@ class DeviceSpeedAwareRouting(Selection):
             # print "DST: ",node_dst #261
             # print "INT: ",message.dst_int #301
 
-            path, des = self.get_path(sim,message.app_name,message,node_src,alloc_DES,alloc_module,traffic)
+            path, des = self.get_path(sim,message.app_name,message,node_src,alloc_DES,alloc_module,traffic,from_des)
             if len(path[0])>0:
                 # print path # [[164, 130, 380, 110, 216]]
                 # print des # [40]
