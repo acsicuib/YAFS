@@ -1,3 +1,4 @@
+<script src="http://api.html5media.info/1.1.8/html5media.min.js"></script>
 
 ![YAFS logo](https://github.com/acsicuib/YAFS/raw/master/docs/_static/yafs_logo.png)
 
@@ -95,9 +96,9 @@ Graph animations
 ----------------
 As you can implement events (custom strategies), you can generate plots of your network in each event. Thus, you can store png files and at the end of your simulation, you generate a video with the combination all of them using *ffmpeg* command.
 
-You can find an example in the following src/examples: DynamicWorkloads, ConquestService, and mobileTutorial
+You can find some examples in the following *src/examples*: DynamicWorkloads, ConquestService, and mobileTutorial
 
-Examples from *DynamicWorkload* folder:
+From *DynamicWorkload* folder,
 
 <a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="250" height="250"/></a>
 <a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_001.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_001.png" width="250" height="250"/></a>
@@ -107,12 +108,14 @@ ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
 ```
 
 
-<video poster="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="618" height="347" controls preload>
-  <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4" type="video/mp4">
-  <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.ogv" type="video/ogg">
-</video>
+   <div class="myvideo">
+       <video  style="display:block; width:100%; height:auto;" autoplay controls loop="loop">
+           <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4" type="video/mp4">
+           <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.ogv" type="video/ogg">
 
-<video src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4" width="320" height="200" controls preload></video>
+       </video>
+    </div>
+
 
 Documentation and Help
 ----------------------
