@@ -98,10 +98,10 @@ As you can implement events (custom strategies), you can generate plots of your 
 
 You can find some examples in the following *src/examples*: DynamicWorkloads, ConquestService, and mobileTutorial
 
-From *DynamicWorkload* folder,
+From *DynamicWorkload* folder and *ConquestService*,
 
 <a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="250" height="250"/></a>
-<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_001.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_001.png" width="250" height="250"/></a>
+<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/ConquestService/exp2/results_20190510/net_001.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/ConquestService/exp2/results_20190510/net_001.png" width="250" height="250"/></a>
 
 ```
 ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
