@@ -96,7 +96,7 @@ Graph animations
 As you can implement events (custom strategies), you can generate plots of your network in each event. Thus, you can store png files and at the end of your simulation, you can combine all of them using *ffmpeg* command.
 
 Examples:
-[[https://github.com/username/repository/blob/master/img/octocat.png|alt=octocat]]
+[[src/examples/DynamicWorkload/figure/net_000.png]]
 
 ```
 ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
