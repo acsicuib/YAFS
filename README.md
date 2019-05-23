@@ -93,10 +93,10 @@ class CustomStrategy():
 
 Graph animations
 ----------------
-As you can implement events (custom strategies), you can generate plots of your network in each event. Thus, you can store png files and at the end of your simulation, you can combine all of them using *ffmpeg* command.
+As you can implement events (custom strategies), you can generate plots of your network in each event. Thus, you can store png files and at the end of your simulation, you generate a video with the combination all of them using *ffmpeg* command.
 
 Examples:
-[[src/examples/DynamicWorkload/figure/net_000.png]]
+![test image size](src/examples/DynamicWorkload/figure/net_000.png){:height="50%" width="50%"}
 
 ```
 ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
