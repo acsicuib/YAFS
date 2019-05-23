@@ -10,7 +10,9 @@ import random
 import copy
 
 import simpy
+import scipy.spatial
 from tqdm import tqdm
+import networkx as nx
 
 from yafs.topology import Topology
 from yafs.application import Application
@@ -18,7 +20,11 @@ from yafs.metrics import Metrics
 from yafs.distribution import *
 from yafs import utils
 
+from trackanimation.animation import AnimationTrack
+
 import numpy as np
+import smopy
+from PIL import Image as pimg
 
 EVENT_UP_ENTITY = "node_up"
 EVENT_DOWN_ENTITY = "node_down"
@@ -165,10 +171,25 @@ class Sim:
 
 
 
+
+        """
+        MOBILE ADAPTATIONS
+        """
+        self.service_coverage = {}
+        self.tolerance = 0.0001
+        self.user_tracks = None
+
+        #v2
+        self.endpoints = []
+        self.user_tracks = None
+        self.map = None
+        self.coverage = None
+        self.control_movement_class = None
+
     # self.__send_message(app_name, message, idDES, self.SOURCE_METRIC)
     def __send_message(self, app_name, message, idDES, type):
         """
-        Any exchange of messages is done with this function. It is responsible for updating the metrics
+        Any exchange of messages between modules is done with this function and updates the metrics when the message achieves the destination module
 
         Args:
             app_name (string)º
@@ -180,12 +201,21 @@ class Sim:
         """
         #TODO IMPROVE asignation of topo = alloc_DES(IdDES) , It has to move to the get_path process
         try:
-            paths,DES_dst = self.selector_path[app_name].get_path(self,app_name, message, self.alloc_DES[idDES], self.alloc_DES, self.alloc_module, self.last_busy_time)
+            paths,DES_dst = self.selector_path[app_name].get_path(self,app_name, message, self.alloc_DES[idDES], self.alloc_DES, self.alloc_module, self.last_busy_time,from_des=idDES)
 
             if DES_dst == [None] or DES_dst==[[]]:
                 self.logger.warning(
                     "(#DES:%i)\t--- Unreacheable DST:\t%s: PATH:%s " % (idDES, message.name, paths))
-                self.print_debug_assignaments()
+
+                if self.logger.isEnabledFor("Debug"):
+                    self.logger.debug("From __send_message function: ")
+                    # self.print_debug_assignaments()
+                    # print "NODES (%i): %s"%(len(self.topology.G.nodes()),self.topology.G.nodes())
+                    self.logger.debug("NODES (%i)" % len(self.topology.G.nodes()))
+
+                    if self.control_movement_class is not None:
+                        self.logger.debug("STEP : ",self.control_movement_class.current_step)
+
             else:
 
                 self.logger.debug("(#DES:%i)\t--- SENDING Message:\t%s: PATH:%s  DES:%s" % (idDES, message.name,paths,DES_dst))
@@ -202,6 +232,7 @@ class Sim:
         except KeyError:
             self.logger.warning("(#DES:%i)\t--- Unreacheable DST:\t%s " % (idDES, message.name))
 
+
     def __network_process(self):
         """
         This is an internal DES-process who manages the latency of messages sent in the network.
@@ -209,7 +240,8 @@ class Sim:
         In this way, the message has a transmission latency.
         """
         edges = self.topology.get_edges().keys()
-        self.last_busy_time = {} # dict(zip(edges, [0.0] * len(edges)))
+        self.last_busy_time = {}  # dict(zip(edges, [0.0] * len(edges)))
+
         while not self.stop:
             message = yield self.network_ctrl_pipe.get()
 
@@ -282,7 +314,7 @@ class Sim:
                     self.env.process(self.__wait_message(message, latency_msg_link, shift_time))
                 except:
                     #This fact is produced when a node or edge the topology is changed or disappeared
-                    self.logger.warning("The initial path assigned is unreachabled. Link: (%i,%i). Routing a new one. "%(link[0],link[1]))
+                    self.logger.warning("The initial path assigned is unreachabled. Link: (%i,%i). Routing a new one. %i"%(link[0],link[1],self.env.now))
 
                     paths, DES_dst = self.selector_path[message.app_name].get_path_from_failure(self, message, link, self.alloc_DES,self.alloc_module, self.last_busy_time,self.env.now)
 
@@ -386,7 +418,6 @@ class Sim:
 
     def __update_node_metrics(self, app, module, message, des, type):
         try:
-
             """
             It computes the service time in processing a message and record this event
             """
@@ -402,7 +433,9 @@ class Sim:
                 """
                 id_node = self.alloc_DES[des]
 
-                att_node = self.topology.get_nodes_att()[id_node]
+                # att_node = self.topology.get_nodes_att()[id_node] # WARNING DEPRECATED from V1.0
+                att_node = self.topology.G.nodes[id_node]
+
                 time_service = message.inst / float(att_node["IPT"])
 
 
@@ -413,21 +446,24 @@ class Sim:
             #     from_id_source = id_node  # same src like dst
             # else:
             #     from_id_source = message.path[0]
-
-            # print "-"*50
-            # print "Module: ",module # module that receives the request (RtR)
-            # print "DES ",des # DES process who RtR
-            # print "ID MODULE: ",id_node  #Topology entity who RtR
-            # print "Message.name ",message.name # Message name
-            # print "Message.id ", message.id #Message generator id
-            # print "Message.path ",message.path #enrouting path
-            # print "Message src ",message.src #module source who send the request
-            # print "Message dst ",message.dst #module dst (the entity that RtR)
-            # print "Message idDEs ",message.idDES #DES intermediate process that process the request
-            # print "TOPO.src ", message.path[0] #entity that RtR
-            # print "TOPO.dst ", int(self.alloc_DES[des]) #DES process that RtR
-
             #
+     # # if message.id == 1072:
+     #        print "-"*50
+     #        print "Module: ",module # module that receives the request (RtR)
+     #        print "DES ",des # DES process who RtR
+     #        print "ID MODULE: ",id_node  #Topology entity who RtR
+     #        print "Message.name ",message.name # Message name
+     #        print "Message.id ", message.id #Message generator id
+     #        print "Message.path ",message.path #enrouting path
+     #        print "Message src ",message.src #module source who send the request
+     #        print "Message dst ",message.dst #module dst (the entity that RtR)
+     #        print "Message idDEs ",message.idDES #DES intermediate process that process the request
+     #        print "TOPO.src ", message.path[0] #entity that RtR
+     #        print "TOPO.dst ", int(self.alloc_DES[des]) #DES process that RtR
+     #        print "time service ",time_service
+     #        exit()
+
+     #
             # # print "MODULE: ",self.alloc_module[app][module]
             # # tmp = []
             # # for it in self.alloc_module[app][module]:
@@ -466,8 +502,10 @@ class Sim:
             return time_service
         except KeyError:
             # The node can be removed
-            self.logger.debug("Updating node metrics - Node removed: DES:%i" % des)
+            self.logger.critical("Make sure that this node has been removed or it has all mandatory attributes - Node: DES:%i" % des)
             return 0
+
+
         # self.logger.debug("TS[%s] - DES: %i - %d"%(module,des,time_service))
         # except:
         #     self.logger.warning("This module has been removed previously to the arrival time of this message. DES: %i"%des)
@@ -544,23 +582,27 @@ class Sim:
                         """
                         Processing the message
                         """
-
-                        # print "Consumer Message: %d " % self.env.now
-                        # print "MODULE DES: ",ides
-                        # print "id ",msg.id
-                        # print "name ",msg.name
-                        # print msg.path
-                        # print msg.dst_int
-                        # print msg.timestamp
-                        # print msg.dst
+                        # if ides == 3:
+                        #     print "Consumer Message: %d " % self.env.now
+                        #     print "MODULE DES: ",ides
+                        #     print "id ",msg.id
+                        #     print "name ",msg.name
+                        #     print msg.path
+                        #     print msg.dst_int
+                        #     print msg.timestamp
+                        #     print msg.dst
                         #
-                        # print "-" * 30
+                        #     print "-" * 30
 
                         #The module only computes this type of message one time.
                         #It records once
                         if not doBefore:
+                            self.logger.debug(
+                                "(App:%s#DES:%i#%s)\tModule - Recording the message:\t%s" % (app_name, ides, module, msg.name))
                             type = self.NODE_METRIC
+
                             service_time = self.__update_node_metrics(app_name, module, msg, ides, type)
+
                             yield self.env.timeout(service_time)
                             doBefore = True
 
@@ -621,10 +663,11 @@ class Sim:
             Processing the message
             """
             self.logger.debug(
-                "(App:%s#DES:%i#%s)\tModule - Sink Message:\t%s" % (app_name, ides, module, msg.name))
+                "(App:%s#DES:%i#%s)\tModule Pure - Sink Message:\t%s" % (app_name, ides, module, msg.name))
             type = self.SINK_METRIC
             service_time = self.__update_node_metrics(app_name, module, msg, ides, type)
             yield self.env.timeout(service_time)  # service time is 0
+
         self.logger.debug("STOP_Process - Module Pure Sink: %s\t#DES:%i" % (module, ides))
 
 
@@ -902,8 +945,9 @@ class Sim:
         value: a list of deployed services
         """
         alloc_entities = {}
-        for key in self.topology.nodeAttributes.keys():
+        for key in self.topology.G.nodes:
             alloc_entities[key] = []
+
 
         for id_des_process in self.alloc_source:
             src_deployed = self.alloc_source[id_des_process]
@@ -1036,8 +1080,150 @@ class Sim:
         print "-" * 40
         # exit()
 
+    #
+    # ### MOBILE ADAPTATION SECTION
+    # def update_service_coverage(self):
+    #     if self.street_network is not None:
+    #         points = utils.create_points(self.topology.G)
+    #         point_streets = utils.create_points(self.street_network)
+    #
+    #         tree = scipy.spatial.KDTree(points.values())
+    #         points_within_tolerance = tree.query_ball_point(point_streets.values(), self.tolerance)
+    #
+    #         # key = node network
+    #         # value = id - module SW
+    #
+    #         self.service_coverage = {}
+    #         for idx, pt in enumerate(points_within_tolerance):
+    #             ## MODULE SW
+    #             key2 = point_streets.keys()[idx]
+    #             nG2 = self.street_network.nodes[key2]
+    #             # print "%s is close to " % nG2["model"]
+    #             ## Street coverage
+    #             for p in pt:
+    #                 key = points.keys()[p]
+    #                 # service_coverage[(G.nodes[key]['x'],G.nodes[key]['y'])]=nG2["model"]
+    #                 self.service_coverage[key] = nG2["id"]
 
-    def run(self, until,test_initial_deploy=False,show_progress_monitor=True):
+
+
+    # def setMobilityUserBehaviour(self,dataPopulation):
+    #     self.user_behaviour = dataPopulation #TODO CHECK SYNTAX
+
+    def __add_mobile_agent(self,ides, gme):
+        #The mobile starts
+
+        yield self.env.timeout(gme.start)
+        self.logger.info("(#DES:%i)\t--- Mobile Entity STARTS :\t%s " % (ides, gme._id))
+        while (len(gme.path) - 1 > gme.current_position) and not self.stop and self.des_process_running[ides]:
+            e = (gme.path[gme.current_position], gme.path[gme.current_position + 1])
+            data = self.street_network.get_edge_data(*e)
+            try:
+                next_time = int(utils.toMeters(data[0]["geometry"]) / gme.speed)
+            except KeyError:
+                next_time = 1  # default time by roundabout or other Spatial THINGS
+
+            # take an action?
+            gme.next_time = next_time
+
+            self.logger.info("(#DES:%i)\t--- DO ACTION :\t%s " % (ides, gme._id))
+            gme.do.action(gme)
+
+            #TODO Can the MA wait more time in that node?
+
+            yield self.env.timeout(next_time)
+            gme.current_position += 1
+
+        # Last movement
+        if self.des_process_running[ides] and not self.stop:
+            gme.do.action(gme)
+
+        self.logger.info("(#DES:%i)\t--- Mobile Entity ENDS :\t%s " % (ides, gme._id))
+        # print "Mobile agent: %s ends " % gme.plate
+
+
+
+    def add_mobile_agent(self,gme):
+        ides = self.__get_id_process()
+        self.des_process_running[ides] = True
+        self.env.process(self.__add_mobile_agent(ides, gme))
+
+        ### ATENCION COONTROLAR VAR: INTERNAS
+        #self.alloc_DES[ides] = id_node
+
+        return ides
+
+    def load_user_tracks(self,tracks):
+        self.user_tracks = tracks
+
+        # self.user_tracks = AnimationTrack(df_points=tracks, dpi=300, bg_map=False, map_transparency=0.5)
+
+        # for i, (point, nextpoint) in enumerate(fig.compute_points()):
+        #     print i, point, nextpoint
+        #     if i == 2: break
+        # exit()
+
+    def generate_animation(self,pathFile):
+        if len(self.endpoints)==0: self.__update_connection_points()
+        if self.map == None: self.__load_map()
+
+        #map_endpoints = [self.map.to_pixels(i[0], i[1]) for i in self.endpoints]
+        #map_endpoints = np.array(map_endpoints)
+        self.map.img.save(pathFile+"_map_background.png")
+
+        animation = AnimationTrack(self, dpi=100, bg_map=True, aspect='equal')
+        animation.make_video(output_file=pathFile, framerate=10, linewidth=1.0,G=self.topology.G)
+
+
+    # def generate_snapshot(self, pathFile,event):
+    #     if len(self.endpoints) == 0: self.__update_connection_points()
+    #     if self.map == None: self.__load_map()
+    #
+    #     #map_endpoints = [self.map.to_pixels(i[0], i[1]) for i in self.endpoints]
+    #     #map_endpoints = np.array(map_endpoints)
+    #
+    #     animation = AnimationTrack(self, dpi=100, bg_map=True, aspect='equal')
+    #     animation.make_video(output_file=pathFile, framerate=10, linewidth=1.0)
+
+    def __load_map(self):
+        trk_bounds = self.user_tracks.get_bounds()
+        min_lat = trk_bounds.min_latitude
+        max_lat = trk_bounds.max_latitude
+        min_lng = trk_bounds.min_longitude
+        max_lng = trk_bounds.max_longitude
+
+        self.map = smopy.Map((min_lat, min_lng, max_lat, max_lng), z=12)
+
+
+    def __update_connection_points(self):
+        level = nx.get_node_attributes(self.topology.G, 'level')
+        lat = nx.get_node_attributes(self.topology.G, 'lat')
+        lng = nx.get_node_attributes(self.topology.G, 'lng')
+
+        self.endpoints = []
+        self.name_endpoints = {}
+        pos = 0
+        for n in level:
+            if level[n] == 0:
+                self.endpoints.append([lat[n], lng[n]])
+                self.name_endpoints[pos]=n
+                pos +=1
+        self.endpoints = np.array(self.endpoints)
+
+
+    def set_coverage_class(self, class_name,**kwargs):
+        if len(self.endpoints)==0: self.__update_connection_points()
+        if self.map == None: self.__load_map()
+
+        self.coverage = class_name(self.map,self.endpoints,**kwargs)
+
+    def set_mobile_fog_entities(self,mobile_fog_entities):
+        self.mobile_fog_entities = mobile_fog_entities
+
+    def set_movement_control(self,evol):
+        self.control_movement_class = evol
+
+    def run(self, until,test_initial_deploy=False,show_progress_monitor=True,mobile_behaviour=False):
         """
         Start the simulation
 
@@ -1057,18 +1243,24 @@ class Sim:
         Creating initial deploy of services
         """
         for place in self.placement_policy.itervalues():
-	    for app_name in place["apps"]:
-            	place["placement_policy"].initial_allocation(self, app_name)  # internally consideres the apps in charge
+            for app_name in place["apps"]:
+
+                print "APP_NAME ",app_name
+                place["placement_policy"].initial_allocation(self, app_name)  # internally consideres the apps in charge
 
         """
-        A internal DES process to stop the simulation,
+        A internal DES process will stop the simulation,
         *Simpy.run.until* wait to all pipers are empty. So, hundreds of messages should be service... We force with the stop
         """
         time_shift = 200
-        distribution = deterministicDistribution(name="Deterministic", time=time_shift)
+        distribution = deterministic_distribution(name="SIM_Deterministic", time=time_shift)
         self.env.process(self.__add_stop_monitor("Stop_Control_Monitor",self.__ctrl_progress_monitor,distribution,show_progress_monitor,time_shift=time_shift))
 
-
+        # if mobile_behaviour:
+        #     """
+        #     Updating control variables of mobile environment
+        #     """
+        #     self.update_service_coverage()
 
 
         self.print_debug_assignaments()

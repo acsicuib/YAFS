@@ -3,8 +3,8 @@ import logging
 
 
 import networkx as nx
-
-
+import matplotlib.pyplot as plt
+import warnings
 
 
 class Topology:
@@ -29,14 +29,25 @@ class Topology:
     def __init__(self, logger=None):
 
         self.__idNode = -1
+        # G is a nx.networkx graph
         self.G = None
-        #G is a networkx graph
 
+
+        # TODO VERSION 2. THIS VALUE SHOULD BE REMOVED
+        # INSTEAD USE NX.G. attributes
         self.nodeAttributes = {}
+
+
+        # A simple *cache* to have all cloud  nodes
+        # TODO VERSION 2. THIS VALUE SHOULD BE REMOVED
         self.cloudNodes = []
-        #A simple *cache* to have all cloud  nodes
+
+
 
         self.logger = logger or logging.getLogger(__name__)
+
+
+
 
     def __init_uptimes(self):
         for key in self.nodeAttributes:
@@ -126,7 +137,35 @@ class Topology:
         self.__idNode = len(self.G.nodes)
         self.__init_uptimes()
 
+    def load_all_node_attr(self,data):
+        self.G = nx.Graph()
+        for edge in data["link"]:
+            self.G.add_edge(edge["s"], edge["d"], BW=edge[self.LINK_BW], PR=edge[self.LINK_PR])
+
+        dc = {str(x): {} for x in data["entity"][0].keys()}
+        for ent in data["entity"]:
+            for key in ent.keys():
+                dc[key][ent["id"]] = ent[key]
+        for x in data["entity"][0].keys():
+            nx.set_node_attributes(self.G, values=dc[x], name=str(x))
+
+        for node in data["entity"]:
+            self.nodeAttributes[node["id"]] = node
+
+        self.__idNode = len(self.G.nodes)
+        self.__init_uptimes()
+
+
+
+
     def load_graphml(self,filename):
+        warnings.warn("The load_graphml function is deprecated and "
+                      "will be removed in version 2.0.0. "
+                      "Use NX.READ_GRAPHML function instead.",
+                      FutureWarning,
+                      stacklevel=8
+                      )
+
         self.G = nx.read_graphml(filename)
         attEdges = {}
         for k in self.G.edges():
@@ -204,3 +243,12 @@ class Topology:
 
     def write(self,path):
         nx.write_gexf(self.G, path)
+
+
+    def draw_png(self,path_file):
+        fig, ax = plt.subplots(nrows=1, ncols=1)
+        pos = nx.spring_layout(self.G)
+        nx.draw(self.G, pos)
+        labels = nx.draw_networkx_labels(self.G, pos)
+        fig.savefig(path_file)  # save the figure to file
+        plt.close(fig)  # close the figure

@@ -21,13 +21,14 @@ from yafs.distribution import *
 from Evolutive_population import Population_Move
 from selection_multipleDeploys import  CloudPath_RR
 
-
+import pylab as plt
 import itertools
 import time
 import operator
 import copy
 import networkx as nx
 import numpy as np
+import pandas as pd
 
 RANDOM_SEED = 1
 
@@ -55,7 +56,10 @@ def main(simulated_time):
 
     t = Topology()
     t.G = nx.read_graphml("Euclidean.graphml")
-    t.G = nx.convert_node_labels_to_integers(t.G, first_label=0, ordering='default', label_attribute=None)
+
+    ls = list(t.G.nodes)
+    li = {x: int(x) for x in ls}
+    nx.relabel_nodes(t.G, li, False) #Transform str-labels to int-labels
 
     print "Nodes: %i" %len(t.G.nodes())
     print "Edges: %i" %len(t.G.edges())
@@ -73,6 +77,18 @@ def main(simulated_time):
 
     top20_devices =  sorted_clustMeasure[0:20]
     main_fog_device = copy.copy(top20_devices[0][0])
+
+    # df = pd.read_csv("pos_network.csv")
+    # pos = {}
+    # for r in df.iterrows():
+    #     lat = r[1].x
+    #     lng = r[1].y
+    #     pos[r[0]] = (lat, lng)
+
+    # fig = plt.figure(figsize=(10, 8), dpi=100)
+    # nx.draw(t.G, with_labels=True,pos=pos,node_size=60,node_color="orange", font_size=8)
+    # plt.savefig('labels.png')
+    # exit()
 
     print "-" * 20
     print "Best top centralized device: ",main_fog_device
@@ -124,7 +140,6 @@ def main(simulated_time):
 
     s.run(simulated_time,test_initial_deploy=False,show_progress_monitor=False)
 
-    print pop.list_src
 
     # s.draw_allocated_topology() # for debugging
     s.print_debug_assignaments()

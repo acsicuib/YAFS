@@ -55,7 +55,11 @@ def main(simulated_time):
 
     t = Topology()
     t.G = nx.read_graphml("Euclidean.graphml")
-    t.G = nx.convert_node_labels_to_integers(t.G, first_label=0, ordering='default', label_attribute=None)
+
+    ls = list(t.G.nodes)
+    li = {x: int(x) for x in ls}
+    nx.relabel_nodes(t.G, li, False) #Transform str-labels to int-labels
+
 
     print "Nodes: %i" %len(t.G.nodes())
     print "Edges: %i" %len(t.G.edges())
@@ -129,6 +133,7 @@ def main(simulated_time):
     print "Total edges available in the  toopology %i" %len(s.topology.G.edges())
 
     print pop.nodes_removed
+    nx.write_graphml_lxml(s.topology.G, "final_network.graphml")
 
 if __name__ == '__main__':
     import logging.config

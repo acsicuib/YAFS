@@ -24,7 +24,7 @@ class Selection(object):
         self.lat_acc = 0.0
         self.propagation = 0.0
 
-    def get_path(self, sim, app_name, message, topology_src,alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src,alloc_DES, alloc_module, traffic,from_des):
         """
         Args:
 
@@ -83,7 +83,7 @@ class OneRandomPath(Selection):
     Among all the possible options, it returns a random path.
     """
 
-    def get_path(self, sim, app_name, message, topology_src,alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src,alloc_DES, alloc_module, traffic,from_des):
         paths = []
         dst_idDES = []
         src_node = topology_src
@@ -101,7 +101,7 @@ class OneRandomPath(Selection):
 class First_ShortestPath(Selection):
     """Among all possible shorter paths, returns the first."""
 
-    def get_path(self, sim, app_name,message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name,message, topology_src, alloc_DES, alloc_module, traffic,from_des):
         paths = []
         dst_idDES = []
 

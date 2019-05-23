@@ -1,6 +1,8 @@
 
 from yafs.selection import Selection
 import networkx as nx
+import matplotlib.pyplot as plt
+
 import math
 class CloudPath_RR(Selection):
 
@@ -8,7 +10,7 @@ class CloudPath_RR(Selection):
     def __init__(self):
         self.rr = {}  # for a each type of service, we have a mod-counter
         self.messages_affected = []
-    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic):
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic,from_des):
 
         node_src = topology_src
         DES_dst = alloc_module[app_name][message.dst]  # returns an array with all DES process serving

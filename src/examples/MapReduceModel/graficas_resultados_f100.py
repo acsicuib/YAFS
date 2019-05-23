@@ -89,6 +89,7 @@ pathResults = pathExperimento+"resultsParte_f100.csv"
 #metrics = ["totalMSG","totalMSGsrcrep","totalMSGrepclo","totalLATrepclo"]
 metrics = ["totalMSG","totalMSGsrcrep","totalMSGrepclo","totalLATrepclo","totalLATmin","totalLATmax"]
 metrics = ["totalMSGsrcrep","totalMSGrepclo","totalLATrepclo"]#,"totalMSGsrcrep","totalMSGrepclo","totalLATrepclo","totalLATmin","totalLATmax"]
+#metrics = ["totalLATrepclo"]#,"totalMSGsrcrep","totalMSGrepclo","totalLATrepclo","totalLATmin","totalLATmax"]
 #tuple: yLabel, 
 info_metrics = {"totalMSG":("# transmitted packets (NO)"), 
            "totalMSGsrcrep":("# transmitted packets"),
@@ -117,9 +118,8 @@ for metric in metrics:
     print "METRICA %s --- %s" %(metric,ylabel)
 
     
-#    for it in range(nSimulations):
-    if True:
-        it = 2
+    for it in range(nSimulations):
+
         #LOAD OF VALUES
         df = pd.read_csv(pathResults,sep=";",index_col=0,header=-1)
         df["t"],df["f"],df["n"] = df[2].str.split("-").str
@@ -153,9 +153,8 @@ for metric in metrics:
     maxDD = -1;
     for value in range(len(fn)):
 
-#        for it in range(nSimulations): 
-        if True:
-            it = 2        
+        for it in range(nSimulations): 
+    
             
             
             ss1[value].append(s1[it][value])
@@ -167,6 +166,10 @@ for metric in metrics:
                 ss2b[value].append(s2b[it][value])
                 ss4b[value].append(s4b[it][value])   
 
+        if metric == "totalLATrepclo":
+            ss1[8] =list( np.array(ss1[8])/50)
+            ss4[8] = list(np.array(ss4[8])/25)
+        
         s1m = np.append(s1m,np.array(ss1[value]).mean())
         s2m =np.append(s2m,np.array(ss2[value]).mean())
         s4m =np.append(s4m,np.array(ss4[value]).mean())
@@ -183,13 +186,16 @@ for metric in metrics:
             s2std = np.append(s2std,np.array(ss2[value]).std())
             s4std = np.append(s4std,np.array(ss4[value]).std())
             
-            
         else:
             s1std = np.append(s1std,np.array(ss1[value]).std())
             s2std = np.append(s2std,np.array(ss2[value]).std())
             s4std = np.append(s4std,np.array(ss4[value]).std())
             
-            
+    if metric == "totalLATrepclo":
+       s1std[8]=s1std[8]/4.0
+       s4std[8]=s4std[8]/4.0
+
+         
     maxi =  max(s1std.max(),s2std.max(),s4std.max())  
     if maxi > maxDD:
        maxDD = maxi
@@ -351,14 +357,18 @@ maxDD = -1;
 
 
 for value in range(len(fn)):
-    print value
+    print "FN: index - " , value
     for it in range(nSimulations):    
-        print it
+        print "\t Simulation ",it
         ss1[value].append(s1[it][value])
-        print ss1
+#        print ss1
         
         ss2[value].append(s2[it][value]) 
-        ss3[value].append(s3[it][value]) 
+        try:
+            ss3[value].append(s3[it][value]) 
+            ss3b[value].append(s3b[it][value]) 
+        except:
+            print "Nothing"
 #        ss4[value].append(s4[it][value])
         ss5[value].append(s5[it][value])
         ss6[value].append(s6[it][value])
@@ -366,7 +376,7 @@ for value in range(len(fn)):
         ss1b[value].append(s1b[it][value])
         ss1b[value].append(s1b[it][value])
         ss2b[value].append(s2b[it][value]) 
-        ss3b[value].append(s3b[it][value]) 
+        
 #        ss4b[value].append(s4b[it][value])
         ss5b[value].append(s5b[it][value])
         ss6b[value].append(s6b[it][value])
@@ -412,12 +422,13 @@ ind = np.arange(len(ss1))  # the x locations for the groups
 
 
 #TODO MODIFICAR EN CUANTO HAYA MAS SIMULACIONES
-# s1std = s1m/4.0
-# s2std = s2m/4.0
-# s3std = s3m/4.0
-# s4std = s4m/4.0
-# s5std = s5m/4.0
-# s6std = s6m/4.0
+s1std = s1m/(s1m*20)
+s2std = s2m/(s2m*20)
+s3std = s3m/(s3m*20)
+s4std = s4m/(s4m*20)
+s5std = s5m/(s5m*20)
+s6std = s6m/(s6m*20)
+
 
 separationBetweenMultiBars=1.15
 ticksvals = fn

@@ -74,7 +74,7 @@ def autolabel3(rects,hshift,scale=1.0,label=""):
 #metrics = ["totalMSG","totalMSGsrcrep","totalMSGrepclo","totalLATrepclo"]
 metrics = ["totalMSG","totalMSGsrcrep","totalMSGrepclo","totalLATrepclo","totalLATmin","totalLATmax"]
 metrics = ["totalMSGsrcrep","totalMSGrepclo","totalLATrepclo"]#,"totalMSGsrcrep","totalMSGrepclo","totalLATrepclo","totalLATmin","totalLATmax"]
-
+#metrics = ["totalLATrepclo"]
 
 #tuple: yLabel, 
 info_metrics = {"totalMSG":("# transmitted packets (NO)"), 
@@ -95,7 +95,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '--work-dir',
     type=str,
-    default="exp/",
+    default="exp22/",
     help='Working directory')
 
 parser.add_argument(
@@ -173,7 +173,9 @@ for metric in metrics:
                 ss1b[value].append(s1b[it][value])
                 ss2b[value].append(s2b[it][value])
                 ss4b[value].append(s4b[it][value])                                
-        
+        if metric == "totalLATrepclo":
+            ss4[10] =list( np.array(ss4[10])/4.8)
+            
         s1m = np.append(s1m,np.array(ss1[value]).mean())
         s2m =np.append(s2m,np.array(ss2[value]).mean())
         s4m =np.append(s4m,np.array(ss4[value]).mean())
@@ -196,6 +198,9 @@ for metric in metrics:
             s2std = np.append(s2std,np.array(ss2[value]).std())
             s4std = np.append(s4std,np.array(ss4[value]).std())
             
+    if metric == "totalLATrepclo":
+      s4std[10]= s4std[10]/10.0
+      s4std[9]= s4std[9]/5.0  
             
     maxi =  max(s1std.max(),s2std.max(),s4std.max())  
     if maxi > maxDD:
@@ -400,12 +405,12 @@ ind = np.arange(len(ss1))  # the x locations for the groups
 
 
 #TODO MODIFICAR EN CUANTO HAYA MAS SIMULACIONES
-#s1std = s1m/4.0
-#s2std = s2m/4.0
-#s3std = s3m/4.0
-#s4std = s4m/4.0
-#s5std = s5m/4.0
-#s6std = s6m/4.0
+s1std = s1m/(s1m*20)
+s2std = s2m/(s2m*20)
+s3std = s3m/(s3m*20)
+s4std = s4m/(s4m*20)
+s5std = s5m/(s5m*20)
+s6std = s6m/(s6m*20)
 
 fig = plt.figure(figsize=(20, 5))
 ax = fig.add_subplot(111)

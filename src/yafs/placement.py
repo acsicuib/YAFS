@@ -71,18 +71,14 @@ class JSONPlacement(Placement):
         self.data = json
 
     def initial_allocation(self, sim, app_name):
-
         for item in self.data["initialAllocation"]:
-            #print item
-            app_name = item["app"]
-            module = item["module_name"]
-            idtopo = item["id_resource"]
-
-            app = sim.apps[app_name]
-            services = app.services
-            #print services[module]
-            idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
-
+            if app_name == item["app"]:
+                # app_name = item["app"]
+                module = item["module_name"]
+                idtopo = item["id_resource"]
+                app = sim.apps[app_name]
+                services = app.services
+                idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
 
 
 class JSONPlacementOnCloud(Placement):
@@ -94,12 +90,13 @@ class JSONPlacementOnCloud(Placement):
     def initial_allocation(self, sim, app_name):
 
         for item in self.data["initialAllocation"]:
-            app_name = item["app"]
-            module = item["module_name"]
+            if app_name == item["app"]:
+                app_name = item["app"]
+                module = item["module_name"]
 
-            app = sim.apps[app_name]
-            services = app.services
-            idDES = sim.deploy_module(app_name, module, services[module],[self.idCloud])
+                app = sim.apps[app_name]
+                services = app.services
+                idDES = sim.deploy_module(app_name, module, services[module],[self.idCloud])
 
 
 

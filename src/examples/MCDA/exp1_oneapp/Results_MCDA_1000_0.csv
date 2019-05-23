@@ -1,0 +1,2 @@
+id,type,app,module,message,DES.src,DES.dst,TOPO.src,TOPO.dst,module.src,service,time_in,time_out,time_emit,time_reception
+1,COMP_M,14,14_76,M.USER.APP.14,8,9,884,62,None,34.85350966429298,909.2363354960513,944.0898451603443,298.0,909.2363354960513

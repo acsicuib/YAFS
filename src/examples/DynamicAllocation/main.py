@@ -54,7 +54,10 @@ def main(simulated_time):
 
     t = Topology()
     t.G = nx.read_graphml("Euclidean.graphml")
-    t.G = nx.convert_node_labels_to_integers(t.G, first_label=0, ordering='default', label_attribute=None)
+
+    ls = list(t.G.nodes)
+    li = {x: int(x) for x in ls}
+    nx.relabel_nodes(t.G, li, False) #Transform str-labels to int-labels
 
     print "Nodes: %i" %len(t.G.nodes())
     print "Edges: %i" %len(t.G.edges())

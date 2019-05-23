@@ -4,6 +4,8 @@ This module is a generic class to introduce whatever kind of distribution in the
 """
 import random
 import numpy as np
+import warnings
+
 class Distribution(object):
     """
     Abstract class
@@ -16,8 +18,22 @@ class Distribution(object):
 
 class deterministicDistribution(Distribution):
     def __init__(self,time, **kwargs):
+        warnings.warn("The exponentialDistribution class is deprecated and "
+                      "will be removed in version 2.0.0. "
+                      "Use the exponential_distribution function instead.",
+                      FutureWarning,
+                      stacklevel=8
+                      )
         self.time = time
         super(deterministicDistribution, self).__init__(**kwargs)
+
+    def next(self):
+        return self.time
+
+class deterministic_distribution(Distribution):
+    def __init__(self, time, **kwargs):
+        self.time = time
+        super(deterministic_distribution, self).__init__(**kwargs)
 
     def next(self):
         return self.time
@@ -38,6 +54,12 @@ class deterministicDistributionStartPoint(Distribution):
 
 class exponentialDistribution(Distribution):
     def __init__(self,lambd,seed=1, **kwargs):
+        warnings.warn("The exponentialDistribution class is deprecated and "
+                      "will be removed in version 2.0.0. "
+                      "Use the exponential_distribution function instead.",
+                      FutureWarning,
+                      stacklevel=8
+                     )
         super(exponentialDistribution, self).__init__(**kwargs)
         self.l = lambd
         self.rnd = np.random.RandomState(seed)
@@ -47,6 +69,17 @@ class exponentialDistribution(Distribution):
         if value==0: return 1
         return value
 
+
+class exponential_distribution(Distribution):
+    def __init__(self,lambd,seed=1, **kwargs):
+        super(exponential_distribution, self).__init__(**kwargs)
+        self.l = lambd
+        self.rnd = np.random.RandomState(seed)
+
+    def next(self):
+        value = int(self.rnd.exponential(self.l, size=1)[0])
+        if value==0: return 1
+        return value
 
 
 class exponentialDistributionStartPoint(Distribution):
