@@ -108,6 +108,7 @@ ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
 ```
 
 The video:
+<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="250" height="250"/></a>
 
 <video style="display:block; width:100%; height:auto;" autoplay controls loop="loop">
     <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4" type="video/mp4">
