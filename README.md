@@ -98,17 +98,21 @@ As you can implement events (custom strategies), you can generate plots of your 
 You can find an example in the following src/examples: DynamicWorkloads, ConquestService, and mobileTutorial
 
 Examples from *DynamicWorkload* folder:
-<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="100" height="100"/></a>
-<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_001.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_001.png" width="100" height="100"/></a>
+
+<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="250" height="250"/></a>
+<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_001.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_001.png" width="250" height="250"/></a>
 
 ```
 ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
 ```
 
-<video width="320" height="240" controls>
+
+<video poster="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="618" height="347" controls preload>
   <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4" type="video/mp4">
+  <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.ogv" type="video/ogg">
 </video>
 
+<video src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4" width="320" height="200" controls preload></video>
 
 Documentation and Help
 ----------------------
