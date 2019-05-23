@@ -1,4 +1,3 @@
-<script src="http://api.html5media.info/1.1.8/html5media.min.js"></script>
 
 ![YAFS logo](https://github.com/acsicuib/YAFS/raw/master/docs/_static/yafs_logo.png)
 
