@@ -91,6 +91,16 @@ class CustomStrategy():
 ```
 **Note**: the sim variable is type of core.py, it means, it contains all the variables and strategies: topology, placements, applications, etc.
 
+Graph animations
+----------------
+As you can implement events (custom strategies), you can generate plots of your network in each event. Thus, you can store png files and at the end of your simulation, you can combine all of them using *ffmpeg* command.
+
+Examples:
+[[https://github.com/username/repository/blob/master/img/octocat.png|alt=octocat]]
+
+```
+ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
+```
 
 Documentation and Help
 ----------------------
@@ -103,6 +113,7 @@ For more help, contact with the authors or You must dig through the [source code
 
 Improvements
 ------------
+- may / 23 / 2019 New improvements are included. Highlight that workloads/users and mobile endpoints can be represented through *gpx traces*. Geopositional libraries are required
 - june / 25 / 2018 Bug Fixed - The DES.src metric of the CSV results is fixed. Identifies the DES-process who sends the message
 - june / 20 / 2018 Messages from sources have an unique identifier that is copied in all the transmissions. We can trace each application invocation.
 
