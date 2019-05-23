@@ -27,19 +27,20 @@ Installation
 
 YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 
-You can download and install YAFS manually:
+1. Clone the project in your local folder:
 
 ```bash
     $ git clone https://github.com/acsicuib/YAFS
 
 ```
 
-To install third-libraries you can execute:
+2. Install third-libraries:
 ```bash
     python setup.py install
 ```
+or manually with easy_install or pip commands
 
-Dependencies are:
+YAFS requieres:
 * Simpy
 * Networkx
 * Numpy
@@ -47,12 +48,9 @@ Dependencies are:
 * tqdm
 
 
-Getting started
----------------
 
-The [YAFS tutorial](https://yafs.readthedocs.io/en/latest/introduction/index.html) is a good starting
-point for you. You can also try out some of the [Examples](https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
-YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
+Getting started & your first execution
+--------------------------------------
 
 To run some folder project you can create a simple bash script, with the following lines (please update the path according with your system) or you can use a python editor such as: Pycharm, Spyder, etc.
 
@@ -61,10 +59,15 @@ export PYTHONPATH=$PYTHONPATH:/<your path>/YAFS/src/:src/examples/Tutorial/
 python src/examples/Tutorial/main1.py
 ```
 
+The [YAFS tutorial](https://yafs.readthedocs.io/en/latest/introduction/index.html) is a good starting
+point for you. You can also try out some of the [Examples](https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
+YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
 
-A "SUPER" TIP
--------------
+
+A "SUPER" TIP: creating custom strategies
+-----------------------------------------
 We try to implement a wonderful tutorial but our time is limited. Thus, we can introduce this simple tip to create a custom strategy in the simulation.
+This example defines a **dynamical** strategy since along the simulation can altered other strategies or even the topology, the applications, or whatever thing that you wish to modify.
 
 For example, in your main.py function, you can declare a custom strategy with a deterministic distribution, and you can include the parameters that you want, i.e. the simulator class, and the routingPath.
 
@@ -86,6 +89,7 @@ class CustomStrategy():
         #or whatever you want
 
 ```
+**Note**: the sim variable is type of core.py, it means, it contains all the variables and strategies: topology, placements, applications, etc.
 
 
 Documentation and Help
@@ -114,5 +118,11 @@ REFERENCES
 YAFS is used in the following projects:
 
 * Isaac Lera, Carlos Guerrero, Carlos Juiz. Comparing centrality indices for network usage optimization of data placement policies in fog devices. FMEC 2018: 115-122
+* Carlos Guerrero, Isaac Lera, Carlos Juiz. Migration-Aware Genetic Optimization for MapReduce Scheduling and Replica Placement in Hadoop. Journal of Grid Computing 2018. 10.1007/s10723-018-9432-8
+* Isaac Lera, Carlos Guerrero, Carlos Juiz. Availability-aware Service Placement Policy in Fog Computing Based on Graph Partitions. IEEE Internet of Things Journal 2019. 10.1109/JIOT.2018.2889511
+* Isaac Lera, Carlos Guerrero, Carlos Juiz. Analysing the Applicability of a Multi-Criteria Decision Method in Fog Computing
+Placement Problem. FMEC 2019
+
+
 
 Please, send us your reference to publish it!
