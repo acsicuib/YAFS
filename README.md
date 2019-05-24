@@ -105,10 +105,9 @@ You can find some examples in the following *src/examples*: DynamicWorkloads, Co
 ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
 ```
 
+<img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.gif" width="350" height="350"/></a>
 
-![2](https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.gif)
-
-<img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/ConquestService/out.gif" width="250" height="250"/></a>
+<img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/ConquestService/out.gif" width="350" height="350"/></a>
 
 
 
