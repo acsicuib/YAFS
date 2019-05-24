@@ -46,8 +46,12 @@ YAFS requieres:
 * Numpy
 * Pandas
 * tqdm
-
-
+* gpxpy
+* geopy
+* smopy
+* shapely
+* scipy
+* pyproj
 
 Getting started & your first execution
 --------------------------------------
@@ -107,6 +111,8 @@ ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
 ```
 
 And the result is a video:
+
+![2](https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.gif)
 
 <a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="250" height="250"/></a>
 
