@@ -114,12 +114,7 @@ And the result is a video:
 
 ![2](https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.gif)
 
-<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="250" height="250"/></a>
-
-<video style="display:block; width:100%; height:auto;" autoplay controls loop="loop">
-    <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.mp4" type="video/mp4">
-    <source src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.ogv" type="video/ogg">
-</video>
+<img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/ConquestService/out.gif" width="250" height="250"/></a>
 
 
 
