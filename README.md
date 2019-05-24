@@ -34,24 +34,10 @@ YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 
 ```
 
-2. Install third-libraries:
-```bash
-    python setup.py install
-```
-or manually with easy_install or pip commands
+2. Install third-libraries with easy_install or pip commands
 
-YAFS requieres:
-* Simpy
-* Networkx
-* Numpy
-* Pandas
-* tqdm
-* gpxpy
-* geopy
-* smopy
-* shapely
-* scipy
-* pyproj
+* Simpy, Networkx, Numpy, Pandas, tqdm
+* gpxpy, geopy, smopy, shapely, scipy, pyproj
 
 Getting started & your first execution
 --------------------------------------
@@ -103,6 +89,8 @@ You can find some examples in the following *src/examples*: DynamicWorkloads, Co
 
 ```
 ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
+ffmpeg -i out.mp4 -pix_fmt rgb24  out.gif
+
 ```
 
 <img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.gif" width="350" height="350"/></a>
