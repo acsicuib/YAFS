@@ -99,18 +99,12 @@ Graph animations
 ----------------
 As you can implement events (custom strategies), you can generate plots of your network in each event. Thus, you can store png files and at the end of your simulation, you generate a video with the combination all of them using *ffmpeg* command.
 
-You can find some examples in the following *src/examples*: DynamicWorkloads, ConquestService, and mobileTutorial
-
-From *DynamicWorkload* folder and *ConquestService*, you have a sequence of png files and you can run the ffmpeg command (see an example)
-
-<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/net_000.png" width="250" height="250"/></a>
-<a href="https://github.com/acsicuib/YAFS/raw/master/src/examples/ConquestService/exp2/results_20190510/net_001.png"><img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/ConquestService/exp2/results_20190510/net_001.png" width="250" height="250"/></a>
+You can find some examples in the following *src/examples*: DynamicWorkloads, ConquestService, and mobileTutorial. From *DynamicWorkload* folder and *ConquestService*, we have generate the following animations:
 
 ```
 ffmpeg -r 1 -i net_%03d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
 ```
 
-And the result is a video:
 
 ![2](https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.gif)
 
