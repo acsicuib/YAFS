@@ -17,23 +17,23 @@ YAFS is released under the MIT License. However, we would like to know in which 
 **Please consider use this cite when you use YAFS**:
 
 ```bash
-    Isaac Lera, Carlos Guerrero, Carlos Juiz. YAFS: A simulator for IoT scenarios in fog computing. IEEE Access.
+    Isaac Lera, Carlos Guerrero, Carlos Juiz. YAFS: A simulator for IoT scenarios in fog computing. IEEE Access. Vol. 7(1), pages 91745-91758,
     10.1109/ACCESS.2019.2927895, Jul 10 2019.
 
     https://ieeexplore.ieee.org/document/8758823
 
     @ARTICLE{8758823,
-        author={I. {Lera} and C. {Guerrero} and C. {Juiz}},
-        journal={IEEE Access},
-        title={YAFS: A simulator for IoT scenarios in fog computing},
-        year={2019},
-        volume={},
-        number={},
-        pages={1-1},
-        keywords={Complex Networks;Fog Computing;Internet of Things;Simulator},
-        doi={10.1109/ACCESS.2019.2927895},
-        ISSN={2169-3536},
-        month={},
+    author={I. {Lera} and C. {Guerrero} and C. {Juiz}},
+    journal={IEEE Access},
+    title={YAFS: A Simulator for IoT Scenarios in Fog Computing},
+    year={2019},
+    volume={7},
+    number={},
+    pages={91745-91758},
+    keywords={Relays;Large scale integration;Wireless communication;OFDM;Interference cancellation;Channel estimation;Real-time systems;Complex networks;fog computing;Internet of Things;simulator},
+    doi={10.1109/ACCESS.2019.2927895},
+    ISSN={2169-3536},
+    month={},
     }
 ```
 
