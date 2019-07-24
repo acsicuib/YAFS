@@ -55,8 +55,10 @@ YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 
 * Simpy, Networkx, Numpy, Pandas, tqdm
 * gpxpy, geopy, smopy, shapely, scipy, pyproj
-
-2.b Thanks to David for creating a dependency installation file: [URL](https://github.com/davidperezabreu/toshare)
+* Note: Thanks to David for creating a dependency installation file: [URL](https://github.com/davidperezabreu/toshare)
+```bash
+   $ conda env update -f yafs.yml
+```
 
 
 Getting started & your first execution
