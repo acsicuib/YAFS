@@ -10,6 +10,7 @@ class CloudPath_RR(Selection):
         self.rr = {}  # for a each type of service, we have a mod-counter
         self.messages_affected = []
 
+
     def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):
 
         node_src = topology_src
@@ -107,6 +108,7 @@ class BroadPath(Selection):
 
         return [path],[des]
 
+
     def get_path_from_failure(self, sim, message, link, alloc_DES, alloc_module, traffic, ctime, from_des):
         # print "Example of enrouting"
         # print message.path # [86, 242, 160, 164, 130, 301, 281, 216]
@@ -114,6 +116,8 @@ class BroadPath(Selection):
         # print link #(130, 301) link is broken! 301 is unreacheble
 
         idx = message.path.index(link[0])
+        # print "idx: ", idx
+
         if idx == len(message.path):
             # The node who serves ... not possible case
             return [],[]
@@ -125,15 +129,21 @@ class BroadPath(Selection):
             #print "DST: ",node_dst #261
             #print "INT: ",message.dst_int #301
 
-            path, des = self.get_path(sim,message.app_name,message,node_src,alloc_DES,alloc_module,traffic,from_des)
-            if len(path[0]) > 0:
-                #print path # [[164, 130, 380, 110, 216]]
-                #print des # [40]
+
+            path, des = self.get_path(sim, message.app_name, message, node_src, alloc_DES, alloc_module, traffic,
+                                      from_des)
+
+
+
+
+            if len(path[0]) > 1:
+                # print "PAHT ",path # [[164, 130, 380, 110, 216]]
+                # print "DES ",des # [40]
 
                 concPath = message.path[0:message.path.index(path[0][0])] + path[0]
-                # print concPath # [86, 242, 160, 164, 130, 380, 110, 216]
+                # print "CPATH ",concPath # [86, 242, 160, 164, 130, 380, 110, 216]
                 newINT = path[0][2]
-                # print newINT # 380
+                # print "NI ",newINT # 380
 
                 message.dst_int = newINT
                 return [concPath], des

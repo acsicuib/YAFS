@@ -316,7 +316,7 @@ class Sim:
                     #This fact is produced when a node or edge the topology is changed or disappeared
                     self.logger.warning("The initial path assigned is unreachabled. Link: (%i,%i). Routing a new one. %i"%(link[0],link[1],self.env.now))
 
-                    paths, DES_dst = self.selector_path[message.app_name].get_path_from_failure(self, message, link, self.alloc_DES,self.alloc_module, self.last_busy_time,self.env.now)
+                    paths, DES_dst = self.selector_path[message.app_name].get_path_from_failure(self, message, link, self.alloc_DES,self.alloc_module, self.last_busy_time,self.env.now,from_des=message.idDES)
 
                     if DES_dst == [] and paths==[]:
                         #Message communication ending:
