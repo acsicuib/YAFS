@@ -55,15 +55,29 @@
 </div>
 <dl class="method">
 <dt id="yafs.selection.Selection.get_path">
-<code class="descname">get_path</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em>, <em>message</em>, <em>topology_src</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection.get_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.Selection.get_path" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_path</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em>, <em>message</em>, <em>topology_src</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>from_des</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection.get_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.Selection.get_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Args:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – </li>
+<li><strong>message</strong> – </li>
+<li><strong>link</strong> – </li>
+<li><strong>alloc_DES</strong> – </li>
+<li><strong>alloc_module</strong> – </li>
+<li><strong>traffic</strong> – </li>
+<li><strong>ctime</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:param from_des
+:return:</p>
 <blockquote>
-<div><p>sim (yafs.core.Sim)</p>
-<p>src (int): the node source</p>
-<p>dst (dst): the node destiny</p>
-<p>message (yafs.application.Message)</p>
-<p>traffic (dict): the current occupation of the network</p>
-</div></blockquote>
+<div>both empty arrays implies that the message will not send to the destination.</div></blockquote>
 <p>Returns:</p>
 <blockquote>
 <div><p>a path among nodes</p>
@@ -77,13 +91,13 @@
 
 <dl class="method">
 <dt id="yafs.selection.Selection.get_path_from_failure">
-<code class="descname">get_path_from_failure</code><span class="sig-paren">(</span><em>sim</em>, <em>message</em>, <em>link</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>ctime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection.get_path_from_failure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.Selection.get_path_from_failure" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_path_from_failure</code><span class="sig-paren">(</span><em>sim</em>, <em>message</em>, <em>link</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>ctime</em>, <em>from_des</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection.get_path_from_failure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.selection.Selection.get_path_from_failure" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is call when some link of a message path is broken or unavailable. A new one from that point should be calculated.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>sim</strong> – </li>
 <li><strong>message</strong> – </li>
 <li><strong>link</strong> – </li>
@@ -94,11 +108,12 @@
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">both empty arrays implies that the message will not send to the destination.</p>
-</td>
-</tr>
 </tbody>
 </table>
+<p>:param from_des
+:return:</p>
+<blockquote>
+<div>both empty arrays implies that the message will not send to the destination.</div></blockquote>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">this function is optional</p>

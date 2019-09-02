@@ -5,7 +5,6 @@
 
         Yet Another Fog Simulator for Python
 
-        `PyPI <https://pypi.python.org/pypi/yafs>`_
 
 .. only:: html
 
@@ -69,14 +68,28 @@ Please, consider including this reference in your works or publications:
 
 .. code-block:: python
 
-    PENDING
+    Isaac Lera, Carlos Guerrero, Carlos Juiz. YAFS: A simulator for IoT scenarios in fog computing. IEEE Access. Vol. 7(1), pages 91745-91758,
+    10.1109/ACCESS.2019.2927895, Jul 10 2019.
 
-.. code-block:: python
+    https://ieeexplore.ieee.org/document/8758823
 
-    PENDING
+    @ARTICLE{8758823,
+    author={I. {Lera} and C. {Guerrero} and C. {Juiz}},
+    journal={IEEE Access},
+    title={YAFS: A Simulator for IoT Scenarios in Fog Computing},
+    year={2019},
+    volume={7},
+    number={},
+    pages={91745-91758},
+    keywords={Relays;Large scale integration;Wireless communication;OFDM;Interference cancellation;Channel estimation;Real-time systems;Complex networks;fog computing;Internet of Things;simulator},
+    doi={10.1109/ACCESS.2019.2927895},
+    ISSN={2169-3536},
+    month={},
+
 
 Please let it knows us if you use this project in your research. We will cite them. Thank you
 
+You can find other related works developed with YAFS in the readme of YAFS git hub repository.
 
 ===========
 Acknowledge

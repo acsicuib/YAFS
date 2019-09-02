@@ -51,7 +51,9 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 
 <span class="kn">import</span> <span class="nn">simpy</span>
+<span class="kn">import</span> <span class="nn">scipy.spatial</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 
 <span class="kn">from</span> <span class="nn">yafs.topology</span> <span class="k">import</span> <span class="n">Topology</span>
 <span class="kn">from</span> <span class="nn">yafs.application</span> <span class="k">import</span> <span class="n">Application</span>
@@ -59,7 +61,11 @@
 <span class="kn">from</span> <span class="nn">yafs.distribution</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">yafs</span> <span class="k">import</span> <span class="n">utils</span>
 
+<span class="kn">from</span> <span class="nn">trackanimation.animation</span> <span class="k">import</span> <span class="n">AnimationTrack</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">smopy</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">pimg</span>
 
 <span class="n">EVENT_UP_ENTITY</span> <span class="o">=</span> <span class="s2">&quot;node_up&quot;</span>
 <span class="n">EVENT_DOWN_ENTITY</span> <span class="o">=</span> <span class="s2">&quot;node_down&quot;</span>
@@ -206,10 +212,25 @@
 
 
 
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        MOBILE ADAPTATIONS</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">service_coverage</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span> <span class="o">=</span> <span class="mf">0.0001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tracks</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1">#v2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tracks</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coverage</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_movement_class</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="c1"># self.__send_message(app_name, message, idDES, self.SOURCE_METRIC)</span>
     <span class="k">def</span> <span class="nf">__send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">idDES</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Any exchange of messages is done with this function. It is responsible for updating the metrics</span>
+<span class="sd">        Any exchange of messages between modules is done with this function and updates the metrics when the message achieves the destination module</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            app_name (string)º</span>
@@ -221,12 +242,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#TODO IMPROVE asignation of topo = alloc_DES(IdDES) , It has to move to the get_path process</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">paths</span><span class="p">,</span><span class="n">DES_dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">[</span><span class="n">idDES</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span><span class="p">)</span>
+            <span class="n">paths</span><span class="p">,</span><span class="n">DES_dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">[</span><span class="n">idDES</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span><span class="p">,</span><span class="n">from_des</span><span class="o">=</span><span class="n">idDES</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">DES_dst</span> <span class="o">==</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="ow">or</span> <span class="n">DES_dst</span><span class="o">==</span><span class="p">[[]]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;(#DES:</span><span class="si">%i</span><span class="s2">)</span><span class="se">\t</span><span class="s2">--- Unreacheable DST:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">: PATH:</span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idDES</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">paths</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">print_debug_assignaments</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="s2">&quot;Debug&quot;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;From __send_message function: &quot;</span><span class="p">)</span>
+                    <span class="c1"># self.print_debug_assignaments()</span>
+                    <span class="c1"># print &quot;NODES (%i): %s&quot;%(len(self.topology.G.nodes()),self.topology.G.nodes())</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;NODES (</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_movement_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;STEP : &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">control_movement_class</span><span class="o">.</span><span class="n">current_step</span><span class="p">)</span>
+
             <span class="k">else</span><span class="p">:</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(#DES:</span><span class="si">%i</span><span class="s2">)</span><span class="se">\t</span><span class="s2">--- SENDING Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">: PATH:</span><span class="si">%s</span><span class="s2">  DES:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idDES</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">paths</span><span class="p">,</span><span class="n">DES_dst</span><span class="p">))</span>
@@ -243,6 +273,7 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;(#DES:</span><span class="si">%i</span><span class="s2">)</span><span class="se">\t</span><span class="s2">--- Unreacheable DST:</span><span class="se">\t</span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idDES</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
+
     <span class="k">def</span> <span class="nf">__network_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is an internal DES-process who manages the latency of messages sent in the network.</span>
@@ -250,7 +281,8 @@
 <span class="sd">        In this way, the message has a transmission latency.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_edges</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># dict(zip(edges, [0.0] * len(edges)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict(zip(edges, [0.0] * len(edges)))</span>
+
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_ctrl_pipe</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
@@ -323,9 +355,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__wait_message</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">latency_msg_link</span><span class="p">,</span> <span class="n">shift_time</span><span class="p">))</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="c1">#This fact is produced when a node or edge the topology is changed or disappeared</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;The initial path assigned is unreachabled. Link: (</span><span class="si">%i</span><span class="s2">,</span><span class="si">%i</span><span class="s2">). Routing a new one. &quot;</span><span class="o">%</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;The initial path assigned is unreachabled. Link: (</span><span class="si">%i</span><span class="s2">,</span><span class="si">%i</span><span class="s2">). Routing a new one. </span><span class="si">%i</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">))</span>
 
-                    <span class="n">paths</span><span class="p">,</span> <span class="n">DES_dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">app_name</span><span class="p">]</span><span class="o">.</span><span class="n">get_path_from_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+                    <span class="n">paths</span><span class="p">,</span> <span class="n">DES_dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">app_name</span><span class="p">]</span><span class="o">.</span><span class="n">get_path_from_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_busy_time</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span><span class="n">from_des</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">idDES</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">DES_dst</span> <span class="o">==</span> <span class="p">[]</span> <span class="ow">and</span> <span class="n">paths</span><span class="o">==</span><span class="p">[]:</span>
                         <span class="c1">#Message communication ending:</span>
@@ -427,7 +459,6 @@
 
     <span class="k">def</span> <span class="nf">__update_node_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">des</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            It computes the service time in processing a message and record this event</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -443,7 +474,9 @@
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="n">id_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">[</span><span class="n">des</span><span class="p">]</span>
 
-                <span class="n">att_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_nodes_att</span><span class="p">()[</span><span class="n">id_node</span><span class="p">]</span>
+                <span class="c1"># att_node = self.topology.get_nodes_att()[id_node] # WARNING DEPRECATED from V1.0</span>
+                <span class="n">att_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">id_node</span><span class="p">]</span>
+
                 <span class="n">time_service</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">inst</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">att_node</span><span class="p">[</span><span class="s2">&quot;IPT&quot;</span><span class="p">])</span>
 
 
@@ -454,21 +487,24 @@
             <span class="c1">#     from_id_source = id_node  # same src like dst</span>
             <span class="c1"># else:</span>
             <span class="c1">#     from_id_source = message.path[0]</span>
-
-            <span class="c1"># print &quot;-&quot;*50</span>
-            <span class="c1"># print &quot;Module: &quot;,module # module that receives the request (RtR)</span>
-            <span class="c1"># print &quot;DES &quot;,des # DES process who RtR</span>
-            <span class="c1"># print &quot;ID MODULE: &quot;,id_node  #Topology entity who RtR</span>
-            <span class="c1"># print &quot;Message.name &quot;,message.name # Message name</span>
-            <span class="c1"># print &quot;Message.id &quot;, message.id #Message generator id</span>
-            <span class="c1"># print &quot;Message.path &quot;,message.path #enrouting path</span>
-            <span class="c1"># print &quot;Message src &quot;,message.src #module source who send the request</span>
-            <span class="c1"># print &quot;Message dst &quot;,message.dst #module dst (the entity that RtR)</span>
-            <span class="c1"># print &quot;Message idDEs &quot;,message.idDES #DES intermediate process that process the request</span>
-            <span class="c1"># print &quot;TOPO.src &quot;, message.path[0] #entity that RtR</span>
-            <span class="c1"># print &quot;TOPO.dst &quot;, int(self.alloc_DES[des]) #DES process that RtR</span>
-
             <span class="c1">#</span>
+     <span class="c1"># # if message.id == 1072:</span>
+     <span class="c1">#        print &quot;-&quot;*50</span>
+     <span class="c1">#        print &quot;Module: &quot;,module # module that receives the request (RtR)</span>
+     <span class="c1">#        print &quot;DES &quot;,des # DES process who RtR</span>
+     <span class="c1">#        print &quot;ID MODULE: &quot;,id_node  #Topology entity who RtR</span>
+     <span class="c1">#        print &quot;Message.name &quot;,message.name # Message name</span>
+     <span class="c1">#        print &quot;Message.id &quot;, message.id #Message generator id</span>
+     <span class="c1">#        print &quot;Message.path &quot;,message.path #enrouting path</span>
+     <span class="c1">#        print &quot;Message src &quot;,message.src #module source who send the request</span>
+     <span class="c1">#        print &quot;Message dst &quot;,message.dst #module dst (the entity that RtR)</span>
+     <span class="c1">#        print &quot;Message idDEs &quot;,message.idDES #DES intermediate process that process the request</span>
+     <span class="c1">#        print &quot;TOPO.src &quot;, message.path[0] #entity that RtR</span>
+     <span class="c1">#        print &quot;TOPO.dst &quot;, int(self.alloc_DES[des]) #DES process that RtR</span>
+     <span class="c1">#        print &quot;time service &quot;,time_service</span>
+     <span class="c1">#        exit()</span>
+
+     <span class="c1">#</span>
             <span class="c1"># # print &quot;MODULE: &quot;,self.alloc_module[app][module]</span>
             <span class="c1"># # tmp = []</span>
             <span class="c1"># # for it in self.alloc_module[app][module]:</span>
@@ -507,8 +543,10 @@
             <span class="k">return</span> <span class="n">time_service</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="c1"># The node can be removed</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating node metrics - Node removed: DES:</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">des</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Make sure that this node has been removed or it has all mandatory attributes - Node: DES:</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">des</span><span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
+
+
         <span class="c1"># self.logger.debug(&quot;TS[%s] - DES: %i - %d&quot;%(module,des,time_service))</span>
         <span class="c1"># except:</span>
         <span class="c1">#     self.logger.warning(&quot;This module has been removed previously to the arrival time of this message. DES: %i&quot;%des)</span>
@@ -585,23 +623,27 @@
                         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                        Processing the message</span>
 <span class="sd">                        &quot;&quot;&quot;</span>
-
-                        <span class="c1"># print &quot;Consumer Message: %d &quot; % self.env.now</span>
-                        <span class="c1"># print &quot;MODULE DES: &quot;,ides</span>
-                        <span class="c1"># print &quot;id &quot;,msg.id</span>
-                        <span class="c1"># print &quot;name &quot;,msg.name</span>
-                        <span class="c1"># print msg.path</span>
-                        <span class="c1"># print msg.dst_int</span>
-                        <span class="c1"># print msg.timestamp</span>
-                        <span class="c1"># print msg.dst</span>
+                        <span class="c1"># if ides == 3:</span>
+                        <span class="c1">#     print &quot;Consumer Message: %d &quot; % self.env.now</span>
+                        <span class="c1">#     print &quot;MODULE DES: &quot;,ides</span>
+                        <span class="c1">#     print &quot;id &quot;,msg.id</span>
+                        <span class="c1">#     print &quot;name &quot;,msg.name</span>
+                        <span class="c1">#     print msg.path</span>
+                        <span class="c1">#     print msg.dst_int</span>
+                        <span class="c1">#     print msg.timestamp</span>
+                        <span class="c1">#     print msg.dst</span>
                         <span class="c1">#</span>
-                        <span class="c1"># print &quot;-&quot; * 30</span>
+                        <span class="c1">#     print &quot;-&quot; * 30</span>
 
                         <span class="c1">#The module only computes this type of message one time.</span>
                         <span class="c1">#It records once</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">doBefore</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                <span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#DES:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module - Recording the message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">ides</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
                             <span class="nb">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NODE_METRIC</span>
+
                             <span class="n">service_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_node_metrics</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ides</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+
                             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">service_time</span><span class="p">)</span>
                             <span class="n">doBefore</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -662,10 +704,11 @@
 <span class="sd">            Processing the message</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#DES:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module - Sink Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">ides</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                <span class="s2">&quot;(App:</span><span class="si">%s</span><span class="s2">#DES:</span><span class="si">%i</span><span class="s2">#</span><span class="si">%s</span><span class="s2">)</span><span class="se">\t</span><span class="s2">Module Pure - Sink Message:</span><span class="se">\t</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">ides</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
             <span class="nb">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SINK_METRIC</span>
             <span class="n">service_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_node_metrics</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ides</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">service_time</span><span class="p">)</span>  <span class="c1"># service time is 0</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;STOP_Process - Module Pure Sink: </span><span class="si">%s</span><span class="se">\t</span><span class="s2">#DES:</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">ides</span><span class="p">))</span>
 
 
@@ -857,6 +900,7 @@
 <span class="sd">        Add a DES process for deploy pure SINK modules (actuators)</span>
 <span class="sd">        This function its used by (:mod:`Placement`): algorithm</span>
 <span class="sd">        Internatlly, there is not a DES PROCESS for this type of behaviour</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            app_name (str): application name</span>
 
@@ -936,10 +980,16 @@
         <span class="c1"># Add Selection control to the App</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span><span class="p">[</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">selector</span></div>
 
-    <span class="k">def</span> <span class="nf">get_alloc_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Sim.get_alloc_entities"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.get_alloc_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_alloc_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; It returns a dictionary of deployed services</span>
+<span class="sd">        key : id-node</span>
+<span class="sd">        value: a list of deployed services</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">alloc_entities</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">nodeAttributes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
             <span class="n">alloc_entities</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
 
         <span class="k">for</span> <span class="n">id_des_process</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_source</span><span class="p">:</span>
             <span class="n">src_deployed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_source</span><span class="p">[</span><span class="n">id_des_process</span><span class="p">]</span>
@@ -952,7 +1002,7 @@
                 <span class="k">for</span> <span class="n">idDES</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">[</span><span class="n">app</span><span class="p">][</span><span class="n">module</span><span class="p">]:</span>
                     <span class="n">alloc_entities</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">[</span><span class="n">idDES</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">app</span><span class="o">+</span><span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="n">module</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">alloc_entities</span>
+        <span class="k">return</span> <span class="n">alloc_entities</span></div>
 
 
     <span class="k">def</span> <span class="nf">deploy_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
@@ -990,6 +1040,25 @@
                 <span class="n">id_DES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">id_topology</span><span class="p">,</span> <span class="n">register_consumer_msg</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">id_DES</span>
+
+
+<div class="viewcode-block" id="Sim.undeploy_module"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.undeploy_module">[docs]</a>    <span class="k">def</span> <span class="nf">undeploy_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span><span class="n">service_name</span><span class="p">,</span> <span class="n">idtopo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; removes all modules deployed in a node</span>
+<span class="sd">        modules with the same name = service_name</span>
+<span class="sd">        from app_name</span>
+<span class="sd">        deployed in id_topo</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_des</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">idtopo</span><span class="p">:</span>
+                <span class="n">all_des</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+        <span class="c1"># Clearing related structures</span>
+        <span class="k">for</span> <span class="n">des</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">][</span><span class="n">service_name</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">des</span> <span class="ow">in</span> <span class="n">all_des</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">][</span><span class="n">service_name</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">des</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stop_process</span><span class="p">(</span><span class="n">des</span><span class="p">)</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">[</span><span class="n">des</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_node_topology</span><span class="p">):</span>
         <span class="c1"># Stopping related processes deployed in the module and clearing main structure: alloc_DES</span>
@@ -1053,8 +1122,150 @@
         <span class="nb">print</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">40</span></div>
         <span class="c1"># exit()</span>
 
+    <span class="c1">#</span>
+    <span class="c1"># ### MOBILE ADAPTATION SECTION</span>
+    <span class="c1"># def update_service_coverage(self):</span>
+    <span class="c1">#     if self.street_network is not None:</span>
+    <span class="c1">#         points = utils.create_points(self.topology.G)</span>
+    <span class="c1">#         point_streets = utils.create_points(self.street_network)</span>
+    <span class="c1">#</span>
+    <span class="c1">#         tree = scipy.spatial.KDTree(points.values())</span>
+    <span class="c1">#         points_within_tolerance = tree.query_ball_point(point_streets.values(), self.tolerance)</span>
+    <span class="c1">#</span>
+    <span class="c1">#         # key = node network</span>
+    <span class="c1">#         # value = id - module SW</span>
+    <span class="c1">#</span>
+    <span class="c1">#         self.service_coverage = {}</span>
+    <span class="c1">#         for idx, pt in enumerate(points_within_tolerance):</span>
+    <span class="c1">#             ## MODULE SW</span>
+    <span class="c1">#             key2 = point_streets.keys()[idx]</span>
+    <span class="c1">#             nG2 = self.street_network.nodes[key2]</span>
+    <span class="c1">#             # print &quot;%s is close to &quot; % nG2[&quot;model&quot;]</span>
+    <span class="c1">#             ## Street coverage</span>
+    <span class="c1">#             for p in pt:</span>
+    <span class="c1">#                 key = points.keys()[p]</span>
+    <span class="c1">#                 # service_coverage[(G.nodes[key][&#39;x&#39;],G.nodes[key][&#39;y&#39;])]=nG2[&quot;model&quot;]</span>
+    <span class="c1">#                 self.service_coverage[key] = nG2[&quot;id&quot;]</span>
 
-<div class="viewcode-block" id="Sim.run"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">until</span><span class="p">,</span><span class="n">test_initial_deploy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">show_progress_monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+
+    <span class="c1"># def setMobilityUserBehaviour(self,dataPopulation):</span>
+    <span class="c1">#     self.user_behaviour = dataPopulation #TODO CHECK SYNTAX</span>
+
+    <span class="k">def</span> <span class="nf">__add_mobile_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ides</span><span class="p">,</span> <span class="n">gme</span><span class="p">):</span>
+        <span class="c1">#The mobile starts</span>
+
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">gme</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;(#DES:</span><span class="si">%i</span><span class="s2">)</span><span class="se">\t</span><span class="s2">--- Mobile Entity STARTS :</span><span class="se">\t</span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ides</span><span class="p">,</span> <span class="n">gme</span><span class="o">.</span><span class="n">_id</span><span class="p">))</span>
+        <span class="k">while</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gme</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">gme</span><span class="o">.</span><span class="n">current_position</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">des_process_running</span><span class="p">[</span><span class="n">ides</span><span class="p">]:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">gme</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="n">gme</span><span class="o">.</span><span class="n">current_position</span><span class="p">],</span> <span class="n">gme</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="n">gme</span><span class="o">.</span><span class="n">current_position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">street_network</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">next_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">toMeters</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;geometry&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">gme</span><span class="o">.</span><span class="n">speed</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">next_time</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># default time by roundabout or other Spatial THINGS</span>
+
+            <span class="c1"># take an action?</span>
+            <span class="n">gme</span><span class="o">.</span><span class="n">next_time</span> <span class="o">=</span> <span class="n">next_time</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;(#DES:</span><span class="si">%i</span><span class="s2">)</span><span class="se">\t</span><span class="s2">--- DO ACTION :</span><span class="se">\t</span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ides</span><span class="p">,</span> <span class="n">gme</span><span class="o">.</span><span class="n">_id</span><span class="p">))</span>
+            <span class="n">gme</span><span class="o">.</span><span class="n">do</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">gme</span><span class="p">)</span>
+
+            <span class="c1">#TODO Can the MA wait more time in that node?</span>
+
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">next_time</span><span class="p">)</span>
+            <span class="n">gme</span><span class="o">.</span><span class="n">current_position</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Last movement</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">des_process_running</span><span class="p">[</span><span class="n">ides</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+            <span class="n">gme</span><span class="o">.</span><span class="n">do</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">gme</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;(#DES:</span><span class="si">%i</span><span class="s2">)</span><span class="se">\t</span><span class="s2">--- Mobile Entity ENDS :</span><span class="se">\t</span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ides</span><span class="p">,</span> <span class="n">gme</span><span class="o">.</span><span class="n">_id</span><span class="p">))</span>
+        <span class="c1"># print &quot;Mobile agent: %s ends &quot; % gme.plate</span>
+
+
+
+    <span class="k">def</span> <span class="nf">add_mobile_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">gme</span><span class="p">):</span>
+        <span class="n">ides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">des_process_running</span><span class="p">[</span><span class="n">ides</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_mobile_agent</span><span class="p">(</span><span class="n">ides</span><span class="p">,</span> <span class="n">gme</span><span class="p">))</span>
+
+        <span class="c1">### ATENCION COONTROLAR VAR: INTERNAS</span>
+        <span class="c1">#self.alloc_DES[ides] = id_node</span>
+
+        <span class="k">return</span> <span class="n">ides</span>
+
+    <span class="k">def</span> <span class="nf">load_user_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tracks</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tracks</span> <span class="o">=</span> <span class="n">tracks</span>
+
+        <span class="c1"># self.user_tracks = AnimationTrack(df_points=tracks, dpi=300, bg_map=False, map_transparency=0.5)</span>
+
+        <span class="c1"># for i, (point, nextpoint) in enumerate(fig.compute_points()):</span>
+        <span class="c1">#     print i, point, nextpoint</span>
+        <span class="c1">#     if i == 2: break</span>
+        <span class="c1"># exit()</span>
+
+    <span class="k">def</span> <span class="nf">generate_animation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pathFile</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_connection_points</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_map</span><span class="p">()</span>
+
+        <span class="c1">#map_endpoints = [self.map.to_pixels(i[0], i[1]) for i in self.endpoints]</span>
+        <span class="c1">#map_endpoints = np.array(map_endpoints)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">pathFile</span><span class="o">+</span><span class="s2">&quot;_map_background.png&quot;</span><span class="p">)</span>
+
+        <span class="n">animation</span> <span class="o">=</span> <span class="n">AnimationTrack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">bg_map</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="n">animation</span><span class="o">.</span><span class="n">make_video</span><span class="p">(</span><span class="n">output_file</span><span class="o">=</span><span class="n">pathFile</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">G</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">)</span>
+
+
+    <span class="c1"># def generate_snapshot(self, pathFile,event):</span>
+    <span class="c1">#     if len(self.endpoints) == 0: self.__update_connection_points()</span>
+    <span class="c1">#     if self.map == None: self.__load_map()</span>
+    <span class="c1">#</span>
+    <span class="c1">#     #map_endpoints = [self.map.to_pixels(i[0], i[1]) for i in self.endpoints]</span>
+    <span class="c1">#     #map_endpoints = np.array(map_endpoints)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     animation = AnimationTrack(self, dpi=100, bg_map=True, aspect=&#39;equal&#39;)</span>
+    <span class="c1">#     animation.make_video(output_file=pathFile, framerate=10, linewidth=1.0)</span>
+
+    <span class="k">def</span> <span class="nf">__load_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trk_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_tracks</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">()</span>
+        <span class="n">min_lat</span> <span class="o">=</span> <span class="n">trk_bounds</span><span class="o">.</span><span class="n">min_latitude</span>
+        <span class="n">max_lat</span> <span class="o">=</span> <span class="n">trk_bounds</span><span class="o">.</span><span class="n">max_latitude</span>
+        <span class="n">min_lng</span> <span class="o">=</span> <span class="n">trk_bounds</span><span class="o">.</span><span class="n">min_longitude</span>
+        <span class="n">max_lng</span> <span class="o">=</span> <span class="n">trk_bounds</span><span class="o">.</span><span class="n">max_longitude</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">=</span> <span class="n">smopy</span><span class="o">.</span><span class="n">Map</span><span class="p">((</span><span class="n">min_lat</span><span class="p">,</span> <span class="n">min_lng</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">max_lng</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__update_connection_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;level&#39;</span><span class="p">)</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">)</span>
+        <span class="n">lng</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;lng&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_endpoints</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">level</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">level</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">lat</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">lng</span><span class="p">[</span><span class="n">n</span><span class="p">]])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name_endpoints</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">=</span><span class="n">n</span>
+                <span class="n">pos</span> <span class="o">+=</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">set_coverage_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_connection_points</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_map</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coverage</span> <span class="o">=</span> <span class="n">class_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_mobile_fog_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mobile_fog_entities</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobile_fog_entities</span> <span class="o">=</span> <span class="n">mobile_fog_entities</span>
+
+    <span class="k">def</span> <span class="nf">set_movement_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">evol</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_movement_class</span> <span class="o">=</span> <span class="n">evol</span>
+
+<div class="viewcode-block" id="Sim.run"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">until</span><span class="p">,</span><span class="n">test_initial_deploy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">show_progress_monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">mobile_behaviour</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the simulation</span>
 
@@ -1074,17 +1285,24 @@
 <span class="sd">        Creating initial deploy of services</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">place</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">placement_policy</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
-            <span class="n">place</span><span class="p">[</span><span class="s2">&quot;placement_policy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">)</span>  <span class="c1"># internally consideres the apps in charge</span>
+            <span class="k">for</span> <span class="n">app_name</span> <span class="ow">in</span> <span class="n">place</span><span class="p">[</span><span class="s2">&quot;apps&quot;</span><span class="p">]:</span>
+
+                <span class="nb">print</span> <span class="s2">&quot;APP_NAME &quot;</span><span class="p">,</span><span class="n">app_name</span>
+                <span class="n">place</span><span class="p">[</span><span class="s2">&quot;placement_policy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">)</span>  <span class="c1"># internally consideres the apps in charge</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A internal DES process to stop the simulation,</span>
+<span class="sd">        A internal DES process will stop the simulation,</span>
 <span class="sd">        *Simpy.run.until* wait to all pipers are empty. So, hundreds of messages should be service... We force with the stop</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time_shift</span> <span class="o">=</span> <span class="mi">200</span>
-        <span class="n">distribution</span> <span class="o">=</span> <span class="n">deterministicDistribution</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Deterministic&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time_shift</span><span class="p">)</span>
+        <span class="n">distribution</span> <span class="o">=</span> <span class="n">deterministic_distribution</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;SIM_Deterministic&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time_shift</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_stop_monitor</span><span class="p">(</span><span class="s2">&quot;Stop_Control_Monitor&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctrl_progress_monitor</span><span class="p">,</span><span class="n">distribution</span><span class="p">,</span><span class="n">show_progress_monitor</span><span class="p">,</span><span class="n">time_shift</span><span class="o">=</span><span class="n">time_shift</span><span class="p">))</span>
 
-
+        <span class="c1"># if mobile_behaviour:</span>
+        <span class="c1">#     &quot;&quot;&quot;</span>
+        <span class="c1">#     Updating control variables of mobile environment</span>
+        <span class="c1">#     &quot;&quot;&quot;</span>
+        <span class="c1">#     self.update_service_coverage()</span>
 
 
         <span class="bp">self</span><span class="o">.</span><span class="n">print_debug_assignaments</span><span class="p">()</span>

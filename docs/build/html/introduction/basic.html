@@ -56,7 +56,7 @@
 <ul class="simple">
 <li><strong>BW</strong> Channel Bandwidth: in Bytes</li>
 <li><strong>PR</strong> Channel Propagation speed</li>
-<li>The <strong>Latency</strong> is dynamically computed using: Message.size.bits / (BW + PR)</li>
+<li>The <strong>Latency</strong> is dynamically computed using: (Message.size.bits / BW) + PR)</li>
 </ul>
 <p>A network can be created using a dictionary structure (or json file) or through some implemented algorithms from specific libraries compatibles with Networkx (see <a class="reference internal" href="../architecture/index.html#architecture"><span class="std std-ref">architecture details</span></a>).</p>
 <p>In the definition of your devices, nodes,  you can include your custom tags.</p>

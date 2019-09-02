@@ -122,13 +122,14 @@
 <code class="descname">deploy_sink</code><span class="sig-paren">(</span><em>app_name</em>, <em>node</em>, <em>module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_sink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.deploy_sink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a DES process for deploy pure SINK modules (actuators)
 This function its used by (<code class="xref py py-mod docutils literal"><span class="pre">Placement</span></code>): algorithm
-Internatlly, there is not a DES PROCESS for this type of behaviour
-Args:</p>
-<blockquote>
-<div><p>app_name (str): application name</p>
+Internatlly, there is not a DES PROCESS for this type of behaviour</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">app_name (str): application name</p>
 <p>node (int): entity.id of the topology who will create the messages</p>
-<p>module (str): module</p>
-</div></blockquote>
+<p class="last">module (str): module</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -162,6 +163,20 @@ This function its used by (<code class="xref py py-mod docutils literal"><span c
 </dd></dl>
 
 <dl class="method">
+<dt id="yafs.core.Sim.get_alloc_entities">
+<code class="descname">get_alloc_entities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.get_alloc_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.get_alloc_entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>It returns a dictionary of deployed services
+key : id-node
+value: a list of deployed services</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.core.Sim.last_busy_time">
+<code class="descname">last_busy_time</code><em class="property"> = None</em><a class="headerlink" href="#yafs.core.Sim.last_busy_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>MOBILE ADAPTATIONS</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="yafs.core.Sim.print_debug_assignaments">
 <code class="descname">print_debug_assignaments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.print_debug_assignaments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.print_debug_assignaments" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions prints debug information about the assignment of DES process - Topology ID - Source Module or Modules</p>
@@ -175,7 +190,7 @@ This function its used by (<code class="xref py py-mod docutils literal"><span c
 
 <dl class="method">
 <dt id="yafs.core.Sim.run">
-<code class="descname">run</code><span class="sig-paren">(</span><em>until</em>, <em>test_initial_deploy=False</em>, <em>show_progress_monitor=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.run" title="Permalink to this definition">¶</a></dt>
+<code class="descname">run</code><span class="sig-paren">(</span><em>until</em>, <em>test_initial_deploy=False</em>, <em>show_progress_monitor=True</em>, <em>mobile_behaviour=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the simulation</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -209,6 +224,15 @@ Using this function (<code class="xref py py-mod docutils literal"><span class="
 <dt>Args:</dt>
 <dd>id.source (int): the identifier of the DES process.</dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.core.Sim.undeploy_module">
+<code class="descname">undeploy_module</code><span class="sig-paren">(</span><em>app_name</em>, <em>service_name</em>, <em>idtopo</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.undeploy_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.core.Sim.undeploy_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes all modules deployed in a node
+modules with the same name = service_name
+from app_name
+deployed in id_topo</p>
 </dd></dl>
 
 <dl class="attribute">

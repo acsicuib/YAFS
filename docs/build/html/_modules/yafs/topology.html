@@ -44,8 +44,8 @@
 
 
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-
-
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 
 <div class="viewcode-block" id="Topology"><a class="viewcode-back" href="../../api_reference/yafs.topology.html#yafs.topology.Topology">[docs]</a><span class="k">class</span> <span class="nc">Topology</span><span class="p">:</span>
@@ -70,14 +70,25 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># G is a nx.networkx graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="c1">#G is a networkx graph</span>
 
+
+        <span class="c1"># TODO VERSION 2. THIS VALUE SHOULD BE REMOVED</span>
+        <span class="c1"># INSTEAD USE NX.G. attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+        <span class="c1"># A simple *cache* to have all cloud  nodes</span>
+        <span class="c1"># TODO VERSION 2. THIS VALUE SHOULD BE REMOVED</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cloudNodes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1">#A simple *cache* to have all cloud  nodes</span>
+
+
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+
 
     <span class="k">def</span> <span class="nf">__init_uptimes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span><span class="p">:</span>
@@ -167,7 +178,35 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__init_uptimes</span><span class="p">()</span></div>
 
+    <span class="k">def</span> <span class="nf">load_all_node_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">],</span> <span class="n">BW</span><span class="o">=</span><span class="n">edge</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">LINK_BW</span><span class="p">],</span> <span class="n">PR</span><span class="o">=</span><span class="n">edge</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">LINK_PR</span><span class="p">])</span>
+
+        <span class="n">dc</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">ent</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ent</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">dc</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">ent</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ent</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">dc</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeAttributes</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__idNode</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init_uptimes</span><span class="p">()</span>
+
+
+
+
     <span class="k">def</span> <span class="nf">load_graphml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The load_graphml function is deprecated and &quot;</span>
+                      <span class="s2">&quot;will be removed in version 2.0.0. &quot;</span>
+                      <span class="s2">&quot;Use NX.READ_GRAPHML function instead.&quot;</span><span class="p">,</span>
+                      <span class="ne">FutureWarning</span><span class="p">,</span>
+                      <span class="n">stacklevel</span><span class="o">=</span><span class="mi">8</span>
+                      <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">read_graphml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="n">attEdges</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
@@ -244,7 +283,16 @@
 
 
     <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span><span class="p">):</span>
-        <span class="n">nx</span><span class="o">.</span><span class="n">write_gexf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
+        <span class="n">nx</span><span class="o">.</span><span class="n">write_gexf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">draw_png</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path_file</span><span class="p">):</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path_file</span><span class="p">)</span>  <span class="c1"># save the figure to file</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>  <span class="c1"># close the figure</span></div>
 </pre></div>
 
           </div>

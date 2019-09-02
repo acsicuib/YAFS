@@ -65,19 +65,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lat_acc</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propagation</span> <span class="o">=</span> <span class="mf">0.0</span>
 
-<div class="viewcode-block" id="Selection.get_path"><a class="viewcode-back" href="../../api_reference/yafs.selection.html#yafs.selection.Selection.get_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">topology_src</span><span class="p">,</span><span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">):</span>
+<div class="viewcode-block" id="Selection.get_path"><a class="viewcode-back" href="../../api_reference/yafs.selection.html#yafs.selection.Selection.get_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">topology_src</span><span class="p">,</span><span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">,</span> <span class="n">from_des</span><span class="p">):</span>
+
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 
-<span class="sd">            sim (yafs.core.Sim)</span>
-
-<span class="sd">            src (int): the node source</span>
-
-<span class="sd">            dst (dst): the node destiny</span>
-
-<span class="sd">            message (yafs.application.Message)</span>
-
-<span class="sd">            traffic (dict): the current occupation of the network</span>
+<span class="sd">        :param sim:</span>
+<span class="sd">        :param message:</span>
+<span class="sd">        :param link:</span>
+<span class="sd">        :param alloc_DES:</span>
+<span class="sd">        :param alloc_module:</span>
+<span class="sd">        :param traffic:</span>
+<span class="sd">        :param ctime:</span>
+<span class="sd">        :param from_des</span>
+<span class="sd">        :return:</span>
+<span class="sd">           both empty arrays implies that the message will not send to the destination.</span>
 
 <span class="sd">        Returns:</span>
 
@@ -96,7 +98,7 @@
         <span class="sd">&quot;&quot;&quot; END Selection &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">path</span><span class="p">,</span><span class="n">ids</span></div>
 
-<div class="viewcode-block" id="Selection.get_path_from_failure"><a class="viewcode-back" href="../../api_reference/yafs.selection.html#yafs.selection.Selection.get_path_from_failure">[docs]</a>    <span class="k">def</span> <span class="nf">get_path_from_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">,</span> <span class="n">ctime</span><span class="p">):</span>
+<div class="viewcode-block" id="Selection.get_path_from_failure"><a class="viewcode-back" href="../../api_reference/yafs.selection.html#yafs.selection.Selection.get_path_from_failure">[docs]</a>    <span class="k">def</span> <span class="nf">get_path_from_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">,</span> <span class="n">ctime</span><span class="p">,</span> <span class="n">from_des</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function is call when some link of a message path is broken or unavailable. A new one from that point should be calculated.</span>
 
@@ -107,6 +109,7 @@
 <span class="sd">        :param alloc_module:</span>
 <span class="sd">        :param traffic:</span>
 <span class="sd">        :param ctime:</span>
+<span class="sd">        :param from_des</span>
 <span class="sd">        :return:</span>
 <span class="sd">           both empty arrays implies that the message will not send to the destination.</span>
 
@@ -124,7 +127,7 @@
 <span class="sd">    Among all the possible options, it returns a random path.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">topology_src</span><span class="p">,</span><span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">topology_src</span><span class="p">,</span><span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">,</span><span class="n">from_des</span><span class="p">):</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">dst_idDES</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">src_node</span> <span class="o">=</span> <span class="n">topology_src</span>
@@ -142,7 +145,7 @@
 <div class="viewcode-block" id="First_ShortestPath"><a class="viewcode-back" href="../../api_reference/yafs.selection.html#yafs.selection.First_ShortestPath">[docs]</a><span class="k">class</span> <span class="nc">First_ShortestPath</span><span class="p">(</span><span class="n">Selection</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Among all possible shorter paths, returns the first.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span><span class="n">message</span><span class="p">,</span> <span class="n">topology_src</span><span class="p">,</span> <span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span><span class="n">message</span><span class="p">,</span> <span class="n">topology_src</span><span class="p">,</span> <span class="n">alloc_DES</span><span class="p">,</span> <span class="n">alloc_module</span><span class="p">,</span> <span class="n">traffic</span><span class="p">,</span><span class="n">from_des</span><span class="p">):</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">dst_idDES</span> <span class="o">=</span> <span class="p">[]</span>
 

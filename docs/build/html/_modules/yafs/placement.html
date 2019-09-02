@@ -112,18 +112,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span>
 
     <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">):</span>
-
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initialAllocation&quot;</span><span class="p">]:</span>
-            <span class="c1">#print item</span>
-            <span class="n">app_name</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span>
-            <span class="n">module</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;module_name&quot;</span><span class="p">]</span>
-            <span class="n">idtopo</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;id_resource&quot;</span><span class="p">]</span>
-
-            <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
-            <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
-            <span class="c1">#print services[module]</span>
-            <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],[</span><span class="n">idtopo</span><span class="p">])</span>
-
+            <span class="k">if</span> <span class="n">app_name</span> <span class="o">==</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]:</span>
+                <span class="c1"># app_name = item[&quot;app&quot;]</span>
+                <span class="n">module</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;module_name&quot;</span><span class="p">]</span>
+                <span class="n">idtopo</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;id_resource&quot;</span><span class="p">]</span>
+                <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
+                <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
+                <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],[</span><span class="n">idtopo</span><span class="p">])</span>
 
 
 <span class="k">class</span> <span class="nc">JSONPlacementOnCloud</span><span class="p">(</span><span class="n">Placement</span><span class="p">):</span>
@@ -135,12 +131,13 @@
     <span class="k">def</span> <span class="nf">initial_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">app_name</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initialAllocation&quot;</span><span class="p">]:</span>
-            <span class="n">app_name</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span>
-            <span class="n">module</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;module_name&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">app_name</span> <span class="o">==</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]:</span>
+                <span class="n">app_name</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span>
+                <span class="n">module</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;module_name&quot;</span><span class="p">]</span>
 
-            <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
-            <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
-            <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],[</span><span class="bp">self</span><span class="o">.</span><span class="n">idCloud</span><span class="p">])</span>
+                <span class="n">app</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
+                <span class="n">services</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">services</span>
+                <span class="n">idDES</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">[</span><span class="n">module</span><span class="p">],[</span><span class="bp">self</span><span class="o">.</span><span class="n">idCloud</span><span class="p">])</span>
 
 
 
