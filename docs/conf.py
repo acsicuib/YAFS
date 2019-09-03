@@ -22,6 +22,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join('..','src')))
 
 
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -289,3 +290,4 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+autodoc_mock_imports = ["simpy"]
