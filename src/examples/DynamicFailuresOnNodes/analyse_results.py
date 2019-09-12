@@ -45,7 +45,7 @@ ticksV = np.array(ticks)*10
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 ax1.plot(ticks, timeLatency, '-')
-ax1.set_ylim(timeLatency.min()-0.5,timeLatency.max()+0.5)
+ax1.set_ylim(timeLatency.min()-0.5,5)#timeLatency.max()+0.5)
 ax1.set_xlabel("Simulation time", fontsize=16)
 ax1.set_ylabel("Latency time", fontsize=16)
 for idx,item in enumerate(dfail.module):
@@ -60,5 +60,5 @@ for idx,item in enumerate(dfail.module):
         y = timeLatency[idx]+1
         ax1.arrow(x,4.7, 0, -0.1, head_width=0.5, head_length=0.1, fc='black', ec='black')
         #ax1.plot(x, y, marker='<', c="black")
-        
+#plt.savefig('figure9b.pdf', format='pdf', dpi=600)        
 

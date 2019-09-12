@@ -123,6 +123,7 @@ class Topology:
     def load(self, data):
         """
             It generates the topology from a JSON file
+            see project example: Tutorial_JSONModelling
 
             Args:
                  data (str): a json
@@ -131,8 +132,30 @@ class Topology:
         for edge in data["link"]:
             self.G.add_edge(edge["s"], edge["d"], BW=edge[self.LINK_BW],PR=edge[self.LINK_PR])
 
+
+        #TODO This part can be removed in next versions
         for node in data["entity"]:
             self.nodeAttributes[node["id"]] = node
+        #end remove
+
+        # Correct way to use custom and mandatory topology attributes
+
+        valuesIPT = {}
+        valuesRAM = {}
+        for node in data["entity"]:
+            try:
+                valuesIPT[node["id"]] = node["IPT"]
+            except KeyError:
+                valuesIPT[node["id"]] = 0
+            try:
+                valuesRAM[node["id"]] = node["RAM"]
+            except KeyError:
+                valuesRAM[node["id"]] = 0
+
+
+        nx.set_node_attributes(self.G,values=valuesIPT,name="IPT")
+        nx.set_node_attributes(self.G,values=valuesRAM,name="RAM")
+
 
         self.__idNode = len(self.G.nodes)
         self.__init_uptimes()

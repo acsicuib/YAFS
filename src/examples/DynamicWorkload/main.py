@@ -156,3 +156,5 @@ if __name__ == '__main__':
     main(simulated_time=10000)
 
     print("\n--- %s seconds ---" % (time.time() - start_time))
+
+#ffmpeg -i out5.mp4 -pix_fmt rgb24  out.gif

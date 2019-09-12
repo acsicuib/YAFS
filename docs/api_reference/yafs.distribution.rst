@@ -4,7 +4,6 @@
 
 .. automodule:: yafs.distribution
 
-
 .. autoclass:: Distribution
     :members:
 

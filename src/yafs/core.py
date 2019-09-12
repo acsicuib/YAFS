@@ -859,6 +859,7 @@ class Sim:
         Add a DES process for deploy pure SINK modules (actuators)
         This function its used by (:mod:`Placement`): algorithm
         Internatlly, there is not a DES PROCESS for this type of behaviour
+
         Args:
             app_name (str): application name
 

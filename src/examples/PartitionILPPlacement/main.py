@@ -204,8 +204,8 @@ idxFControl = 0
 if __name__ == '__main__':
     # import logging.config
     import os
-    # pathExperimento = "exp_rev/"
-    pathExperimento = "/home/uib/src/YAFS/src/examples/PartitionILPPlacement/exp_rev/"
+    pathExperimento = "exp_rev/"
+    #pathExperimento = "/home/uib/src/YAFS/src/examples/PartitionILPPlacement/exp_rev/"
 
     timeSimulation = 10000
     print os.getcwd()

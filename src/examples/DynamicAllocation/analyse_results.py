@@ -74,22 +74,22 @@ time_labels = []
 for t in ax2.get_xticks():
     time_labels.append( "%3.0f"%(t*300))
 ax1.set_xticklabels(time_labels)
-
-
-dfl["date"]=dfl.ctime.astype('datetime64[s]')
-dfl.index = dfl.date
-dfl1 = dfl.resample('300s').agg(dict(buffer='mean'))
-
-fig = plt.figure()
-ax1 = fig.add_subplot(111)
-ax1.plot(ticks, dfl1.buffer.values, '-')
-ax1.set_xlabel("Simulation time", fontsize=16)
-ax1.set_ylabel("Number of messages enqueued", fontsize=16)
-
-time_labels = []
-for t in ax1.get_xticks():
-    time_labels.append( "%3.0f"%(t*300))
-ax1.set_xticklabels(time_labels)
+plt.savefig('figure8b.pdf', format='pdf', dpi=600)
+ 
+#dfl["date"]=dfl.ctime.astype('datetime64[s]')
+#dfl.index = dfl.date
+#dfl1 = dfl.resample('300s').agg(dict(buffer='mean'))
+#
+#fig = plt.figure()
+#ax1 = fig.add_subplot(111)
+#ax1.plot(ticks, dfl1.buffer.values, '-')
+#ax1.set_xlabel("Simulation time", fontsize=16)
+#ax1.set_ylabel("Number of messages enqueued", fontsize=16)
+#
+#time_labels = []
+#for t in ax1.get_xticks():
+#    time_labels.append( "%3.0f"%(t*300))
+#ax1.set_xticklabels(time_labels)
 
 
 

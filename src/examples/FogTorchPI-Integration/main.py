@@ -47,13 +47,12 @@ from yafs.core import Sim
 from yafs.application import Application,Message
 from yafs.topology import Topology
 from yafs.placement import JSONPlacement
-from yafs.population import *
 from yafs.distribution import *
 
 from selection_multipleDeploys import MinShortPath
 from yafs.distribution import deterministicDistribution
 from yafs.utils import fractional_selectivity
-
+from jsonPopulation import *
 import time
 
 RANDOM_SEED = 1
@@ -173,7 +172,7 @@ def main(simulated_time):
     }
 
 
-    placement = JSONPlacement(name="Placement",json=placementJson)
+    placement = JSONPlacement(name="Places",json=placementJson)
 
 
     """
@@ -192,19 +191,19 @@ def main(simulated_time):
             {"app": "EGG_GAME", "module_name": "Display", "id_resource": 12}
         ],
         "sources":[
-            {"app": "EGG_GAME", "message":"M.EGG", "time_dst":100,"id_resource":4},
-            {"app": "EGG_GAME", "message":"M.EGG", "time_dst":100,"id_resource":5},
-            {"app": "EGG_GAME", "message":"M.EGG", "time_dst":100,"id_resource":6},
-            {"app": "EGG_GAME", "message":"M.EGG", "time_dst":100,"id_resource":7},
-            {"app": "EGG_GAME", "message":"M.EGG", "time_dst":100,"id_resource":9},
-            {"app": "EGG_GAME", "message":"M.EGG", "time_dst":100,"id_resource":10},
-            {"app": "EGG_GAME", "message":"M.EGG", "time_dst":100,"id_resource":11},
-            {"app": "EGG_GAME", "message":"M.EGG", "time_dst":100,"id_resource":12},
+            {"app": "EGG_GAME", "message":"M.EGG", "lambda":100,"id_resource":4},
+            {"app": "EGG_GAME", "message":"M.EGG", "lambda":100,"id_resource":5},
+            {"app": "EGG_GAME", "message":"M.EGG", "lambda":100,"id_resource":6},
+            {"app": "EGG_GAME", "message":"M.EGG", "lambda":100,"id_resource":7},
+            {"app": "EGG_GAME", "message":"M.EGG", "lambda":100,"id_resource":9},
+            {"app": "EGG_GAME", "message":"M.EGG", "lambda":100,"id_resource":10},
+            {"app": "EGG_GAME", "message":"M.EGG", "lambda":100,"id_resource":11},
+            {"app": "EGG_GAME", "message":"M.EGG", "lambda":100,"id_resource":12},
         ]
 
     }
 
-    pop = JSONPopulation(name="Statical",json=populationJSON)
+    pop = JSONPopulation(name="Statical",json=populationJSON,iteration=0)
 
     """
     SELECTOR algorithm
