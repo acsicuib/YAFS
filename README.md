@@ -133,6 +133,7 @@ For more help, contact with the authors or You must dig through the [source code
 
 Improvements
 ------------
+- sep. / 12 / 2019 Fixing bugs - All projects work with the attributes defined in the graph var (topology class) using NX library to manage the attributes.
 - may / 23 / 2019 New improvements are included. Highlight that workloads/users and mobile endpoints can be represented through *gpx traces*. Geopositional libraries are required
 - june / 25 / 2018 Bug Fixed - The DES.src metric of the CSV results is fixed. Identifies the DES-process who sends the message
 - june / 20 / 2018 Messages from sources have an unique identifier that is copied in all the transmissions. We can trace each application invocation.
