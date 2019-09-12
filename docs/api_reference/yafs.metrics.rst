@@ -3,7 +3,7 @@
 ================
 
 .. automodule:: yafs.metrics
-
-
-.. autoclass:: Metrics
     :members:
+    :undoc-members:
+    :inherited-members:
+

@@ -48,6 +48,182 @@
 <p><em>run</em> invoked according to the assigned temporal distribution.</p>
 </div></blockquote>
 <dl class="class">
+<dt id="yafs.placement.ClusterPlacement">
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">ClusterPlacement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#ClusterPlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.ClusterPlacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
+<p>It only runs once, in the initialization.</p>
+<dl class="method">
+<dt id="yafs.placement.ClusterPlacement.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.ClusterPlacement.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.ClusterPlacement.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#ClusterPlacement.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.ClusterPlacement.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.ClusterPlacement.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.ClusterPlacement.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules to the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.ClusterPlacement.scaleService">
+<code class="descname">scaleService</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.ClusterPlacement.scaleService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.placement.EdgePlacement">
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">EdgePlacement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#EdgePlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.EdgePlacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
+<p>It only runs once, in the initialization.</p>
+<dl class="method">
+<dt id="yafs.placement.EdgePlacement.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.EdgePlacement.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.EdgePlacement.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#EdgePlacement.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.EdgePlacement.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.EdgePlacement.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.EdgePlacement.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules to the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.EdgePlacement.scaleService">
+<code class="descname">scaleService</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.EdgePlacement.scaleService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.placement.JSONPlacement">
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">JSONPlacement</code><span class="sig-paren">(</span><em>json</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#JSONPlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.JSONPlacement" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="yafs.placement.JSONPlacement.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.JSONPlacement.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.JSONPlacement.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#JSONPlacement.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.JSONPlacement.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.JSONPlacement.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.JSONPlacement.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules to the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.JSONPlacement.scaleService">
+<code class="descname">scaleService</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.JSONPlacement.scaleService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.placement.JSONPlacementOnCloud">
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">JSONPlacementOnCloud</code><span class="sig-paren">(</span><em>json</em>, <em>idCloud</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#JSONPlacementOnCloud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.JSONPlacementOnCloud" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="yafs.placement.JSONPlacementOnCloud.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.JSONPlacementOnCloud.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.JSONPlacementOnCloud.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#JSONPlacementOnCloud.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.JSONPlacementOnCloud.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.JSONPlacementOnCloud.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.JSONPlacementOnCloud.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules to the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.JSONPlacementOnCloud.scaleService">
+<code class="descname">scaleService</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.JSONPlacementOnCloud.scaleService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.placement.NoPlacementOfModules">
+<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">NoPlacementOfModules</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#NoPlacementOfModules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.NoPlacementOfModules" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
+<p>It only runs once, in the initialization.</p>
+<dl class="method">
+<dt id="yafs.placement.NoPlacementOfModules.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.NoPlacementOfModules.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.NoPlacementOfModules.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#NoPlacementOfModules.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.NoPlacementOfModules.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.NoPlacementOfModules.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.NoPlacementOfModules.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules to the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.placement.NoPlacementOfModules.scaleService">
+<code class="descname">scaleService</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.placement.NoPlacementOfModules.scaleService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="yafs.placement.Placement">
 <em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">Placement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.Placement" title="Permalink to this definition">¶</a></dt>
 <dd><p>A placement (or allocation) algorithm controls where to locate the service modules and their replicas in the different nodes of the topology, according to load criteria, or other objectives.</p>
@@ -97,27 +273,11 @@ app_name (String)</dd>
 </dl>
 </dd></dl>
 
-</dd></dl>
+<dl class="method">
+<dt id="yafs.placement.Placement.scaleService">
+<code class="descname">scaleService</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement.scaleService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.Placement.scaleService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="class">
-<dt id="yafs.placement.ClusterPlacement">
-<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">ClusterPlacement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#ClusterPlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.ClusterPlacement" title="Permalink to this definition">¶</a></dt>
-<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
-<p>It only runs once, in the initialization.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="yafs.placement.EdgePlacement">
-<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">EdgePlacement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#EdgePlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.EdgePlacement" title="Permalink to this definition">¶</a></dt>
-<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
-<p>It only runs once, in the initialization.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="yafs.placement.NoPlacementOfModules">
-<em class="property">class </em><code class="descclassname">yafs.placement.</code><code class="descname">NoPlacementOfModules</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#NoPlacementOfModules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.placement.NoPlacementOfModules" title="Permalink to this definition">¶</a></dt>
-<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
-<p>It only runs once, in the initialization.</p>
 </dd></dl>
 
 </div>

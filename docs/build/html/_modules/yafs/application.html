@@ -41,7 +41,7 @@
   <h1>Source code for yafs.application</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<div class="viewcode-block" id="Message"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Message">[docs]</a><span class="k">class</span> <span class="nc">Message</span><span class="p">:</span>
+<div class="viewcode-block" id="Message"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Message">[docs]</a><span class="k">class</span> <span class="nc">Message</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A message is set by the following values:</span>
 
@@ -92,7 +92,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Application"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application">[docs]</a><span class="k">class</span> <span class="nc">Application</span><span class="p">:</span>
+<div class="viewcode-block" id="Application"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Application">[docs]</a><span class="k">class</span> <span class="nc">Application</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An application is defined by a DAG between modules that generate, compute and receive messages.</span>
 
@@ -138,7 +138,7 @@
                             <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> M_In: </span><span class="si">%s</span><span class="s2">  -&gt; M_Out: [NOTHING] &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ser</span><span class="p">[</span><span class="s2">&quot;message_in&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
-<div class="viewcode-block" id="Application.set_modules"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application.set_modules">[docs]</a>    <span class="k">def</span> <span class="nf">set_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="Application.set_modules"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Application.set_modules">[docs]</a>    <span class="k">def</span> <span class="nf">set_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pure source or sink modules must be typified</span>
 
@@ -173,28 +173,28 @@
     <span class="c1">#     elif type_module == self.TYPE_MODULE:</span>
     <span class="c1">#         self.modules_pure = modules</span>
 
-<div class="viewcode-block" id="Application.get_pure_modules"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application.get_pure_modules">[docs]</a>    <span class="k">def</span> <span class="nf">get_pure_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Application.get_pure_modules"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Application.get_pure_modules">[docs]</a>    <span class="k">def</span> <span class="nf">get_pure_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            a list of pure source and sink modules</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_src</span> <span class="ow">and</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_sink</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Application.get_sink_modules"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application.get_sink_modules">[docs]</a>    <span class="k">def</span> <span class="nf">get_sink_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Application.get_sink_modules"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Application.get_sink_modules">[docs]</a>    <span class="k">def</span> <span class="nf">get_sink_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            a list of sink modules</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_sink</span></div>
 
-<div class="viewcode-block" id="Application.add_source_messages"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application.add_source_messages">[docs]</a>    <span class="k">def</span> <span class="nf">add_source_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Application.add_source_messages"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Application.add_source_messages">[docs]</a>    <span class="k">def</span> <span class="nf">add_source_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add in the application those messages that come from pure sources (sensors). This distinction allows them to be controlled by the (:mod:`Population`) algorithm</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span></div>
 
 
-<div class="viewcode-block" id="Application.get_message"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application.get_message">[docs]</a>    <span class="k">def</span> <span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="Application.get_message"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Application.get_message">[docs]</a>    <span class="k">def</span> <span class="nf">get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns: a message instance from the identifier name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -204,7 +204,7 @@
 <span class="sd">    ADD SERVICE</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Application.add_service_source"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application.add_service_source">[docs]</a>    <span class="k">def</span> <span class="nf">add_service_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">module_dest</span><span class="o">=</span><span class="p">[],</span> <span class="n">p</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="Application.add_service_source"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Application.add_service_source">[docs]</a>    <span class="k">def</span> <span class="nf">add_service_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">module_dest</span><span class="o">=</span><span class="p">[],</span> <span class="n">p</span><span class="o">=</span><span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Link to each non-pure module a management for creating messages</span>
 
@@ -230,7 +230,7 @@
                 <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">Application</span><span class="o">.</span><span class="n">TYPE_SOURCE</span><span class="p">,</span> <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="n">distribution</span><span class="p">,</span>
                  <span class="s2">&quot;message_out&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span> <span class="s2">&quot;module_dest&quot;</span><span class="p">:</span> <span class="n">module_dest</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="Application.add_service_module"><a class="viewcode-back" href="../../api_reference/yafs.application.html#yafs.application.Application.add_service_module">[docs]</a>    <span class="k">def</span> <span class="nf">add_service_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">message_in</span><span class="p">,</span> <span class="n">message_out</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">module_dest</span><span class="o">=</span><span class="p">[],</span> <span class="n">p</span><span class="o">=</span><span class="p">[],</span>
+<div class="viewcode-block" id="Application.add_service_module"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.application.Application.add_service_module">[docs]</a>    <span class="k">def</span> <span class="nf">add_service_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">message_in</span><span class="p">,</span> <span class="n">message_out</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">module_dest</span><span class="o">=</span><span class="p">[],</span> <span class="n">p</span><span class="o">=</span><span class="p">[],</span>
                            <span class="o">**</span><span class="n">param</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>

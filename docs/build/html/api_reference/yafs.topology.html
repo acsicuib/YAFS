@@ -23,8 +23,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="application" href="yafs.application.html" />
-    <link rel="prev" title="core — Simulator engine" href="yafs.core.html" />
+    <link rel="next" title="yafs.application" href="yafs.application.html" />
+    <link rel="prev" title="yafs.core — Simulator engine" href="yafs.core.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -99,6 +99,11 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="yafs.topology.Topology.draw_png">
+<code class="descname">draw_png</code><span class="sig-paren">(</span><em>path_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.draw_png"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.draw_png" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="yafs.topology.Topology.find_IDs">
 <code class="descname">find_IDs</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.find_IDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.find_IDs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for nodes with the same attributes that value</p>
@@ -129,6 +134,11 @@
 <dd>list: a list of graph edges, i.e.: ((1,0),(0,2),…)</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="yafs.topology.Topology.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="yafs.topology.Topology.get_node">
@@ -162,12 +172,23 @@
 <dl class="method">
 <dt id="yafs.topology.Topology.load">
 <code class="descname">load</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>It generates the topology from a JSON file</p>
+<dd><p>It generates the topology from a JSON file
+see project example: Tutorial_JSONModelling</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>data (str): a json</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="yafs.topology.Topology.load_all_node_attr">
+<code class="descname">load_all_node_attr</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.load_all_node_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.load_all_node_attr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.topology.Topology.load_graphml">
+<code class="descname">load_graphml</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.load_graphml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.load_graphml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="yafs.topology.Topology.remove_node">
@@ -188,6 +209,11 @@
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="yafs.topology.Topology.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.topology.Topology.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -207,15 +233,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API REFERENCE</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="yafs.html"><code class="docutils literal"><span class="pre">yafs</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.core.html"><code class="docutils literal"><span class="pre">core</span></code> — Simulator engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.core.html"><code class="docutils literal"><span class="pre">yafs.core</span></code> — Simulator engine</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">yafs.topology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.application.html"><code class="docutils literal"><span class="pre">application</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">population</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">placement</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.selection.html"><code class="docutils literal"><span class="pre">selection</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.distribution.html"><code class="docutils literal"><span class="pre">distribution</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.stats.html"><code class="docutils literal"><span class="pre">stats</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.metrics.html"><code class="docutils literal"><span class="pre">metrics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.application.html"><code class="docutils literal"><span class="pre">yafs.application</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.selection.html"><code class="docutils literal"><span class="pre">yafs.selection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.distribution.html"><code class="docutils literal"><span class="pre">yafs.distribution</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.stats.html"><code class="docutils literal"><span class="pre">yafs.stats</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.metrics.html"><code class="docutils literal"><span class="pre">yafs.metrics</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="yafs.utils.html"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
 </ul>
 </li>
@@ -226,8 +252,8 @@
 <ul>
   <li><a href="../contents.html">Documentation overview</a><ul>
   <li><a href="index.html">API REFERENCE</a><ul>
-      <li>Previous: <a href="yafs.core.html" title="previous chapter"><code class="docutils literal"><span class="pre">core</span></code> — Simulator engine</a></li>
-      <li>Next: <a href="yafs.application.html" title="next chapter"><code class="docutils literal"><span class="pre">application</span></code></a></li>
+      <li>Previous: <a href="yafs.core.html" title="previous chapter"><code class="docutils literal"><span class="pre">yafs.core</span></code> — Simulator engine</a></li>
+      <li>Next: <a href="yafs.application.html" title="next chapter"><code class="docutils literal"><span class="pre">yafs.application</span></code></a></li>
   </ul></li>
   </ul></li>
 </ul>

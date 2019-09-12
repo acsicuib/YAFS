@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="ABOUT" href="../about/index.html" />
-    <link rel="prev" title="metrics" href="yafs.metrics.html" />
+    <link rel="prev" title="yafs.metrics" href="yafs.metrics.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,6 +43,48 @@
   <div class="section" id="module-yafs.utils">
 <span id="yafs-utils"></span><h1><code class="docutils literal"><span class="pre">yafs.utils</span></code><a class="headerlink" href="#module-yafs.utils" title="Permalink to this headline">¶</a></h1>
 <p>Some common functions</p>
+<dl class="function">
+<dt id="yafs.utils.create_points">
+<code class="descclassname">yafs.utils.</code><code class="descname">create_points</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/utils.html#create_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.utils.create_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yafs.utils.create_pos">
+<code class="descclassname">yafs.utils.</code><code class="descname">create_pos</code><span class="sig-paren">(</span><em>G</em>, <em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/utils.html#create_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.utils.create_pos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yafs.utils.draw_topology">
+<code class="descclassname">yafs.utils.</code><code class="descname">draw_topology</code><span class="sig-paren">(</span><em>topology</em>, <em>alloc_entity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/utils.html#draw_topology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.utils.draw_topology" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the modeled topology</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yafs.utils.fractional_selectivity">
+<code class="descclassname">yafs.utils.</code><code class="descname">fractional_selectivity</code><span class="sig-paren">(</span><em>threshold</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/utils.html#fractional_selectivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.utils.fractional_selectivity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yafs.utils.get_random_node">
+<code class="descclassname">yafs.utils.</code><code class="descname">get_random_node</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/utils.html#get_random_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.utils.get_random_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yafs.utils.get_shortest_random_path">
+<code class="descclassname">yafs.utils.</code><code class="descname">get_shortest_random_path</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/utils.html#get_shortest_random_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.utils.get_shortest_random_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yafs.utils.haversine_distance">
+<code class="descclassname">yafs.utils.</code><code class="descname">haversine_distance</code><span class="sig-paren">(</span><em>origin</em>, <em>destination</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/utils.html#haversine_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.utils.haversine_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Haversine formula to calculate the distance between two lat/long points on a sphere</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yafs.utils.toMeters">
+<code class="descclassname">yafs.utils.</code><code class="descname">toMeters</code><span class="sig-paren">(</span><em>geometry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/utils.html#toMeters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.utils.toMeters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 
 
@@ -60,15 +102,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API REFERENCE</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="yafs.html"><code class="docutils literal"><span class="pre">yafs</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.core.html"><code class="docutils literal"><span class="pre">core</span></code> — Simulator engine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.topology.html"><code class="docutils literal"><span class="pre">topology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.application.html"><code class="docutils literal"><span class="pre">application</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">population</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">placement</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.selection.html"><code class="docutils literal"><span class="pre">selection</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.distribution.html"><code class="docutils literal"><span class="pre">distribution</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.stats.html"><code class="docutils literal"><span class="pre">stats</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="yafs.metrics.html"><code class="docutils literal"><span class="pre">metrics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.core.html"><code class="docutils literal"><span class="pre">yafs.core</span></code> — Simulator engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.topology.html"><code class="docutils literal"><span class="pre">yafs.topology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.application.html"><code class="docutils literal"><span class="pre">yafs.application</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.population.html"><code class="docutils literal"><span class="pre">yafs.population</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.placement.html"><code class="docutils literal"><span class="pre">yafs.placement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.selection.html"><code class="docutils literal"><span class="pre">yafs.selection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.distribution.html"><code class="docutils literal"><span class="pre">yafs.distribution</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.stats.html"><code class="docutils literal"><span class="pre">yafs.stats</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="yafs.metrics.html"><code class="docutils literal"><span class="pre">yafs.metrics</span></code></a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">yafs.utils</span></code></a></li>
 </ul>
 </li>
@@ -79,7 +121,7 @@
 <ul>
   <li><a href="../contents.html">Documentation overview</a><ul>
   <li><a href="index.html">API REFERENCE</a><ul>
-      <li>Previous: <a href="yafs.metrics.html" title="previous chapter"><code class="docutils literal"><span class="pre">metrics</span></code></a></li>
+      <li>Previous: <a href="yafs.metrics.html" title="previous chapter"><code class="docutils literal"><span class="pre">yafs.metrics</span></code></a></li>
       <li>Next: <a href="../about/index.html" title="next chapter">ABOUT</a></li>
   </ul></li>
   </ul></li>

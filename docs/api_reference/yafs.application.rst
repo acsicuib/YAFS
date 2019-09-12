@@ -3,10 +3,6 @@
 ====================
 
 .. automodule:: yafs.application
-
-
-.. autoclass:: Message
     :members:
-
-.. autoclass:: Application
-    :members:
+    :undoc-members:
+    :inherited-members:

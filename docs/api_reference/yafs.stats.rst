@@ -3,7 +3,6 @@
 ==============
 
 .. automodule:: yafs.stats
-
-
-.. autoclass:: Stats
     :members:
+    :undoc-members:
+    :inherited-members:

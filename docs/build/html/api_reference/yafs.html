@@ -176,6 +176,976 @@
 </tr>
 </tbody>
 </table>
+<dl class="class">
+<dt id="yafs.Sim">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Sim</code><span class="sig-paren">(</span><em>topology</em>, <em>name_register='events_log.json'</em>, <em>link_register='links_log.json'</em>, <em>redis=None</em>, <em>purge_register=True</em>, <em>logger=None</em>, <em>default_results_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains the cloud event-discrete simulation environment and it controls the structure variables.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>topology (object) - the associate (<code class="xref py py-mod docutils literal"><span class="pre">Topology</span></code>) of the environment. There is only one.</dd>
+<dt>Kwargs:</dt>
+<dd><p class="first">name_register (str): database file name where are registered the events.</p>
+<p>purge_register (boolean): True - clean the database</p>
+<p class="last">logger (logger) - logger</p>
+</dd>
+</dl>
+<p><strong>Main variables to coordinate with algorithm:</strong></p>
+<dl class="attribute">
+<dt id="yafs.Sim.FORWARD_METRIC">
+<code class="descname">FORWARD_METRIC</code><em class="property"> = 'FWD_M'</em><a class="headerlink" href="#yafs.Sim.FORWARD_METRIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Sim.LINK_METRIC">
+<code class="descname">LINK_METRIC</code><em class="property"> = 'LINK'</em><a class="headerlink" href="#yafs.Sim.LINK_METRIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Sim.NODE_METRIC">
+<code class="descname">NODE_METRIC</code><em class="property"> = 'COMP_M'</em><a class="headerlink" href="#yafs.Sim.NODE_METRIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Sim.SINK_METRIC">
+<code class="descname">SINK_METRIC</code><em class="property"> = 'SINK_M'</em><a class="headerlink" href="#yafs.Sim.SINK_METRIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Sim.SOURCE_METRIC">
+<code class="descname">SOURCE_METRIC</code><em class="property"> = 'SRC_M'</em><a class="headerlink" href="#yafs.Sim.SOURCE_METRIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.add_mobile_agent">
+<code class="descname">add_mobile_agent</code><span class="sig-paren">(</span><em>gme</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.add_mobile_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.add_mobile_agent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.deploy_app">
+<code class="descname">deploy_app</code><span class="sig-paren">(</span><em>app</em>, <em>placement</em>, <em>population</em>, <em>selector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.deploy_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>This process is responsible for linking the <em>application</em> to the different algorithms (placement, population, and service)</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">app (object): <code class="xref py py-mod docutils literal"><span class="pre">Application</span></code> class</p>
+<p>placement (object): <code class="xref py py-mod docutils literal"><span class="pre">Placement</span></code> class</p>
+<p>population (object): <code class="xref py py-mod docutils literal"><span class="pre">Population</span></code> class</p>
+<p class="last">selector (object): <code class="xref py py-mod docutils literal"><span class="pre">Selector</span></code> class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.deploy_module">
+<code class="descname">deploy_module</code><span class="sig-paren">(</span><em>app_name</em>, <em>module</em>, <em>services</em>, <em>ids</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.deploy_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.deploy_monitor">
+<code class="descname">deploy_monitor</code><span class="sig-paren">(</span><em>name</em>, <em>function</em>, <em>distribution</em>, <em>**param</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.deploy_monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a DES process for user purpose</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">name (string) name of monitor</p>
+<p>function (function): function that will be invoked within the simulator with the user’s code</p>
+<p class="last">distribution (function): a temporary distribution function</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd>param (dict): the parameters of the <em>distribution</em> function</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.deploy_sink">
+<code class="descname">deploy_sink</code><span class="sig-paren">(</span><em>app_name</em>, <em>node</em>, <em>module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_sink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.deploy_sink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a DES process for deploy pure SINK modules (actuators)
+This function its used by (<code class="xref py py-mod docutils literal"><span class="pre">Placement</span></code>): algorithm
+Internatlly, there is not a DES PROCESS for this type of behaviour</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">app_name (str): application name</p>
+<p>node (int): entity.id of the topology who will create the messages</p>
+<p class="last">module (str): module</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.deploy_source">
+<code class="descname">deploy_source</code><span class="sig-paren">(</span><em>app_name</em>, <em>id_node</em>, <em>msg</em>, <em>distribution</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.deploy_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.deploy_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a DES process for deploy pure source modules (sensors)
+This function its used by (<code class="xref py py-mod docutils literal"><span class="pre">Population</span></code>) algorithm</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">app_name (str): application name</p>
+<p>id_node (int): entity.id of the topology who will create the messages</p>
+<p class="last">distribution (function): a temporary distribution function</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd>param - the parameters of the <em>distribution</em> function</dd>
+<dt>Returns:</dt>
+<dd>id (int) the same input <em>id</em></dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.draw_allocated_topology">
+<code class="descname">draw_allocated_topology</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.draw_allocated_topology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.draw_allocated_topology" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.generate_animation">
+<code class="descname">generate_animation</code><span class="sig-paren">(</span><em>pathFile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.generate_animation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.generate_animation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.get_DES">
+<code class="descname">get_DES</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.get_DES"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.get_DES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.get_DES_from_Service_In_Node">
+<code class="descname">get_DES_from_Service_In_Node</code><span class="sig-paren">(</span><em>node</em>, <em>app_name</em>, <em>service</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.get_DES_from_Service_In_Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.get_DES_from_Service_In_Node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.get_alloc_entities">
+<code class="descname">get_alloc_entities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.get_alloc_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.get_alloc_entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>It returns a dictionary of deployed services
+key : id-node
+value: a list of deployed services</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.get_assigned_structured_modules_from_DES">
+<code class="descname">get_assigned_structured_modules_from_DES</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.get_assigned_structured_modules_from_DES"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.get_assigned_structured_modules_from_DES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.load_user_tracks">
+<code class="descname">load_user_tracks</code><span class="sig-paren">(</span><em>tracks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.load_user_tracks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.load_user_tracks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.print_debug_assignaments">
+<code class="descname">print_debug_assignaments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.print_debug_assignaments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.print_debug_assignaments" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions prints debug information about the assignment of DES process - Topology ID - Source Module or Modules</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.register_event_entity">
+<code class="descname">register_event_entity</code><span class="sig-paren">(</span><em>next_event_dist</em>, <em>event_type='node_up'</em>, <em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.register_event_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.register_event_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.remove_node">
+<code class="descname">remove_node</code><span class="sig-paren">(</span><em>id_node_topology</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.remove_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>until</em>, <em>test_initial_deploy=False</em>, <em>show_progress_monitor=True</em>, <em>mobile_behaviour=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the simulation</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>until (int): Defines a stop time. If None the simulation runs until some internal algorithm changes the var <em>yafs.core.sim.stop</em> to True</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.set_coverage_class">
+<code class="descname">set_coverage_class</code><span class="sig-paren">(</span><em>class_name</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.set_coverage_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.set_coverage_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.set_mobile_fog_entities">
+<code class="descname">set_mobile_fog_entities</code><span class="sig-paren">(</span><em>mobile_fog_entities</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.set_mobile_fog_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.set_mobile_fog_entities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.set_movement_control">
+<code class="descname">set_movement_control</code><span class="sig-paren">(</span><em>evol</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.set_movement_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.set_movement_control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.start_process">
+<code class="descname">start_process</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.start_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.start_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>All pure source modules (sensors) are controlled by this boolean.
+Using this function (<code class="xref py py-mod docutils literal"><span class="pre">Population</span></code>) algorithm can start one source</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id.source (int): the identifier of the DES process.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.stop_process">
+<code class="descname">stop_process</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.stop_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.stop_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>All pure source modules (sensors) are controlled by this boolean.
+Using this function (<code class="xref py py-mod docutils literal"><span class="pre">Population</span></code>) algorithm can stop one source</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id.source (int): the identifier of the DES process.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Sim.undeploy_module">
+<code class="descname">undeploy_module</code><span class="sig-paren">(</span><em>app_name</em>, <em>service_name</em>, <em>idtopo</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/core.html#Sim.undeploy_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Sim.undeploy_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes all modules deployed in a node
+modules with the same name = service_name
+from app_name
+deployed in id_topo</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Topology">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Topology</code><span class="sig-paren">(</span><em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class unifies the functions to deal with <strong>Complex Networks</strong> as a network topology within of the simulator. In addition, it facilitates its creation, and assignment of attributes.</p>
+<dl class="attribute">
+<dt id="yafs.Topology.LINK_BW">
+<code class="descname">LINK_BW</code><em class="property"> = 'BW'</em><a class="headerlink" href="#yafs.Topology.LINK_BW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Topology.LINK_PR">
+<code class="descname">LINK_PR</code><em class="property"> = 'PR'</em><a class="headerlink" href="#yafs.Topology.LINK_PR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Topology.NODE_IPT">
+<code class="descname">NODE_IPT</code><em class="property"> = 'IPT'</em><a class="headerlink" href="#yafs.Topology.NODE_IPT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.add_node">
+<code class="descname">add_node</code><span class="sig-paren">(</span><em>nodes</em>, <em>edges=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.add_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.add_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a list of nodes in the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">nodes (list): a list of identifiers</p>
+<p class="last">edges (list): a list of destination edges</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.create_random_topology">
+<code class="descname">create_random_topology</code><span class="sig-paren">(</span><em>nxGraphGenerator</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.create_random_topology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.create_random_topology" title="Permalink to this definition">¶</a></dt>
+<dd><p>It generates the topology from a Graph generators of NetworkX</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>nxGraphGenerator (function): a graph generator function</dd>
+<dt>Kwargs:</dt>
+<dd>params (dict): a list of parameters of <em>nxGraphGenerator</em> function</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.create_topology_from_graph">
+<code class="descname">create_topology_from_graph</code><span class="sig-paren">(</span><em>G</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.create_topology_from_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.create_topology_from_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>It generates the topology from a NetworkX graph</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>G (<em>networkx.classes.graph.Graph</em>)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.draw_png">
+<code class="descname">draw_png</code><span class="sig-paren">(</span><em>path_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.draw_png"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.draw_png" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.find_IDs">
+<code class="descname">find_IDs</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.find_IDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.find_IDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for nodes with the same attributes that value</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>value (dict). example value = {“model”: “m-“}. Only one key is admitted</dd>
+<dt>Returns:</dt>
+<dd>A list with the ID of each node that have the same attribute that the value.value</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.get_edge">
+<code class="descname">get_edge</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.get_edge" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>key (str): a edge identifier, i.e. (1,9)</dd>
+<dt>Returns:</dt>
+<dd>list: a list of edge attributes</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.get_edges">
+<code class="descname">get_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.get_edges" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>list: a list of graph edges, i.e.: ((1,0),(0,2),…)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.get_node">
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>key (int): a node identifier</dd>
+<dt>Returns:</dt>
+<dd>list: a list of node features</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.get_nodes">
+<code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>list: a list of all nodes features</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.get_nodes_att">
+<code class="descname">get_nodes_att</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.get_nodes_att"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.get_nodes_att" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>A dictionary with the features of the nodes</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>It generates the topology from a JSON file
+see project example: Tutorial_JSONModelling</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data (str): a json</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.load_all_node_attr">
+<code class="descname">load_all_node_attr</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.load_all_node_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.load_all_node_attr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.load_graphml">
+<code class="descname">load_graphml</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.load_graphml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.load_graphml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.remove_node">
+<code class="descname">remove_node</code><span class="sig-paren">(</span><em>id_node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.remove_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a node of the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>id_node (int): node identifier</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.size">
+<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.size" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>an int with the number of nodes</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Topology.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/topology.html#Topology.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Topology.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Application">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Application</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Application" title="Permalink to this definition">¶</a></dt>
+<dd><p>An application is defined by a DAG between modules that generate, compute and receive messages.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>name (str): The name must be unique within the same topology.</dd>
+<dt>Returns:</dt>
+<dd>an application</dd>
+</dl>
+<dl class="attribute">
+<dt id="yafs.Application.TYPE_MODULE">
+<code class="descname">TYPE_MODULE</code><em class="property"> = 'MODULE'</em><a class="headerlink" href="#yafs.Application.TYPE_MODULE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Application.TYPE_SINK">
+<code class="descname">TYPE_SINK</code><em class="property"> = 'SINK'</em><a class="headerlink" href="#yafs.Application.TYPE_SINK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Application.TYPE_SOURCE">
+<code class="descname">TYPE_SOURCE</code><em class="property"> = 'SOURCE'</em><a class="headerlink" href="#yafs.Application.TYPE_SOURCE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Application.add_service_module">
+<code class="descname">add_service_module</code><span class="sig-paren">(</span><em>module_name</em>, <em>message_in</em>, <em>message_out=''</em>, <em>distribution=''</em>, <em>module_dest=[]</em>, <em>p=[]</em>, <em>**param</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application.add_service_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Application.add_service_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link to each non-pure module a management of transfering of messages</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">module_name (str): module name</p>
+<p>message_in (Message): input message</p>
+<p>message_out (Message): output message. If Empty the module is a sink</p>
+<p>distribution (function): a function with a distribution function</p>
+<p>module_dest (list): a list of modules who can receive this message. Broadcasting.</p>
+<p class="last">p (list): a list of probabilities to send this message. Broadcasting</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd>param (dict): the parameters for <em>distribution</em> function</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Application.add_service_source">
+<code class="descname">add_service_source</code><span class="sig-paren">(</span><em>module_name</em>, <em>distribution=None</em>, <em>message=None</em>, <em>module_dest=[]</em>, <em>p=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application.add_service_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Application.add_service_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link to each non-pure module a management for creating messages</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">module_name (str): module name</p>
+<p>distribution (function): a function with a distribution function</p>
+<p>message (Message): the message</p>
+<p>module_dest (list): a list of modules who can receive this message. Broadcasting.</p>
+<p class="last">p (list): a list of probabilities to send this message. Broadcasting</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd>param_distribution (dict): the parameters for <em>distribution</em> function</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Application.add_source_messages">
+<code class="descname">add_source_messages</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application.add_source_messages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Application.add_source_messages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add in the application those messages that come from pure sources (sensors). This distinction allows them to be controlled by the (<code class="xref py py-mod docutils literal"><span class="pre">Population</span></code>) algorithm</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Application.get_message">
+<code class="descname">get_message</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application.get_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Application.get_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns: a message instance from the identifier name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Application.get_pure_modules">
+<code class="descname">get_pure_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application.get_pure_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Application.get_pure_modules" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>a list of pure source and sink modules</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Application.get_sink_modules">
+<code class="descname">get_sink_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application.get_sink_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Application.get_sink_modules" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>a list of sink modules</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Application.set_modules">
+<code class="descname">set_modules</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application.set_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Application.set_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pure source or sink modules must be typified</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data (dict) : a set of characteristic of modules</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Message">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Message</code><span class="sig-paren">(</span><em>name</em>, <em>src</em>, <em>dst</em>, <em>instructions=0</em>, <em>bytes=0</em>, <em>broadcasting=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Message" title="Permalink to this definition">¶</a></dt>
+<dd><p>A message is set by the following values:</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">name (str): a name, unique for each application</p>
+<p>src (str): the name of module who send this message</p>
+<p>dst (dst): the nsame of module who recibe this message</p>
+<p>inst (int): the number of instrucctions to be executed ((by default 0), Instead of MIPS, we use IPt since the time is relative to the simulation units.</p>
+<p class="last">bytes (int): the size in bytes (by default 0)</p>
+</dd>
+<dt>Internal args used in the <strong>yafs.core</strong> are:</dt>
+<dd><p class="first">timestamp (float): simulation time. Instant of time that was created.</p>
+<p>path (list): a list of entities of the topology that has to travel to reach its target module from its source module.</p>
+<p>dst_int (int): an identifier of the intermediate entity in which it is in the process of transmission.</p>
+<p class="last">app_name (str): the name of the application</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Population">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Population</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/population.html#Population"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Population" title="Permalink to this definition">¶</a></dt>
+<dd><p>A population algorithm controls how the message generation of the sensor modules is associated in the nodes of the topology.
+This assignment is based on a generation controller to each message. And a generation control is assigned to a node or to several
+in the topology both during the initiation and / or during the execution of the simulation.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A class interface</p>
+</div>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">name (str): associated name</p>
+<p class="last">activation_dist (function): a distribution function to active the <em>run</em> function in execution time</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd>param (dict): the parameters of the <em>activation_dist</em></dd>
+</dl>
+<dl class="method">
+<dt id="yafs.Population.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/population.html#Population.get_next_activation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Population.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated in the simulation</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Population.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/population.html#Population.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Population.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an ecosystem and an application, it starts the allocation of pure sources in the topology.</p>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">override required</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Population.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/population.html#Population.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Population.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules that generate the messages.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Population.set_sink_control">
+<code class="descname">set_sink_control</code><span class="sig-paren">(</span><em>values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/population.html#Population.set_sink_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Population.set_sink_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>localization of sink modules</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Population.set_src_control">
+<code class="descname">set_src_control</code><span class="sig-paren">(</span><em>values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/population.html#Population.set_src_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Population.set_src_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the drivers of each message generator.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>values (dict):</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Statical">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Statical</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/population.html#Statical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Statical" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation of a population algorithm statically assigns the generation of a source in a node of the topology. It is only invoked in the initialization.</p>
+<p>Extends: :mod: Population</p>
+<dl class="method">
+<dt id="yafs.Statical.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#yafs.Statical.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated in the simulation</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Statical.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/population.html#Statical.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Statical.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Statical.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.Statical.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules that generate the messages.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Statical.set_sink_control">
+<code class="descname">set_sink_control</code><span class="sig-paren">(</span><em>values</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.Statical.set_sink_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>localization of sink modules</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Statical.set_src_control">
+<code class="descname">set_src_control</code><span class="sig-paren">(</span><em>values</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.Statical.set_src_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the drivers of each message generator.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>values (dict):</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Placement">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Placement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Placement" title="Permalink to this definition">¶</a></dt>
+<dd><p>A placement (or allocation) algorithm controls where to locate the service modules and their replicas in the different nodes of the topology, according to load criteria, or other objectives.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A class interface</p>
+</div>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">name (str): associated name</p>
+<p class="last">activation_dist (function): a distribution function to active the <em>run</em> function in execution time</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd>param (dict): the parameters of the <em>activation_dist</em></dd>
+</dl>
+<dl class="method">
+<dt id="yafs.Placement.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement.get_next_activation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Placement.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Placement.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Placement.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an ecosystem, it starts the allocation of modules in the topology.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod:yafs.core.Sim)
+app_name (String)</dd>
+</dl>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">override required</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Placement.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Placement.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules to the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Placement.scaleService">
+<code class="descname">scaleService</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#Placement.scaleService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Placement.scaleService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.ClusterPlacement">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">ClusterPlacement</code><span class="sig-paren">(</span><em>name</em>, <em>activation_dist=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#ClusterPlacement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.ClusterPlacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation locates the services of the application in the cheapest cluster regardless of where the sources or sinks are located.</p>
+<p>It only runs once, in the initialization.</p>
+<dl class="method">
+<dt id="yafs.ClusterPlacement.get_next_activation">
+<code class="descname">get_next_activation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#yafs.ClusterPlacement.get_next_activation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns:</dt>
+<dd>the next time to be activated</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.ClusterPlacement.initial_allocation">
+<code class="descname">initial_allocation</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/placement.html#ClusterPlacement.initial_allocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.ClusterPlacement.initial_allocation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.ClusterPlacement.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.ClusterPlacement.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be invoked during the simulation to change the assignment of the modules to the topology</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sim (:mod: yafs.core.Sim)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.ClusterPlacement.scaleService">
+<code class="descname">scaleService</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.ClusterPlacement.scaleService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Selection">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Selection</code><span class="sig-paren">(</span><em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>A selection algorithm provide the route among topology entities for that a message reach the destiny module.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A class interface</p>
+</div>
+<dl class="method">
+<dt id="yafs.Selection.get_path">
+<code class="descname">get_path</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em>, <em>message</em>, <em>topology_src</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>from_des</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection.get_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Selection.get_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – </li>
+<li><strong>message</strong> – </li>
+<li><strong>link</strong> – </li>
+<li><strong>alloc_DES</strong> – </li>
+<li><strong>alloc_module</strong> – </li>
+<li><strong>traffic</strong> – </li>
+<li><strong>ctime</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:param from_des
+:return:</p>
+<blockquote>
+<div>both empty arrays implies that the message will not send to the destination.</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div><p>a path among nodes</p>
+<p>an identifier of the module</p>
+</div></blockquote>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">override required</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="yafs.Selection.get_path_from_failure">
+<code class="descname">get_path_from_failure</code><span class="sig-paren">(</span><em>sim</em>, <em>message</em>, <em>link</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>ctime</em>, <em>from_des</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#Selection.get_path_from_failure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Selection.get_path_from_failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is call when some link of a message path is broken or unavailable. A new one from that point should be calculated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – </li>
+<li><strong>message</strong> – </li>
+<li><strong>link</strong> – </li>
+<li><strong>alloc_DES</strong> – </li>
+<li><strong>alloc_module</strong> – </li>
+<li><strong>traffic</strong> – </li>
+<li><strong>ctime</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:param from_des
+:return:</p>
+<blockquote>
+<div>both empty arrays implies that the message will not send to the destination.</div></blockquote>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">this function is optional</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.OneRandomPath">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">OneRandomPath</code><span class="sig-paren">(</span><em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#OneRandomPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.OneRandomPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Among all the possible options, it returns a random path.</p>
+<dl class="method">
+<dt id="yafs.OneRandomPath.get_path">
+<code class="descname">get_path</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em>, <em>message</em>, <em>topology_src</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>from_des</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#OneRandomPath.get_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.OneRandomPath.get_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.OneRandomPath.get_path_from_failure">
+<code class="descname">get_path_from_failure</code><span class="sig-paren">(</span><em>sim</em>, <em>message</em>, <em>link</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>ctime</em>, <em>from_des</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.OneRandomPath.get_path_from_failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is call when some link of a message path is broken or unavailable. A new one from that point should be calculated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – </li>
+<li><strong>message</strong> – </li>
+<li><strong>link</strong> – </li>
+<li><strong>alloc_DES</strong> – </li>
+<li><strong>alloc_module</strong> – </li>
+<li><strong>traffic</strong> – </li>
+<li><strong>ctime</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:param from_des
+:return:</p>
+<blockquote>
+<div>both empty arrays implies that the message will not send to the destination.</div></blockquote>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">this function is optional</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.First_ShortestPath">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">First_ShortestPath</code><span class="sig-paren">(</span><em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#First_ShortestPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.First_ShortestPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Among all possible shorter paths, returns the first.</p>
+<dl class="method">
+<dt id="yafs.First_ShortestPath.get_path">
+<code class="descname">get_path</code><span class="sig-paren">(</span><em>sim</em>, <em>app_name</em>, <em>message</em>, <em>topology_src</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>from_des</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/selection.html#First_ShortestPath.get_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.First_ShortestPath.get_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.First_ShortestPath.get_path_from_failure">
+<code class="descname">get_path_from_failure</code><span class="sig-paren">(</span><em>sim</em>, <em>message</em>, <em>link</em>, <em>alloc_DES</em>, <em>alloc_module</em>, <em>traffic</em>, <em>ctime</em>, <em>from_des</em><span class="sig-paren">)</span><a class="headerlink" href="#yafs.First_ShortestPath.get_path_from_failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is call when some link of a message path is broken or unavailable. A new one from that point should be calculated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – </li>
+<li><strong>message</strong> – </li>
+<li><strong>link</strong> – </li>
+<li><strong>alloc_DES</strong> – </li>
+<li><strong>alloc_module</strong> – </li>
+<li><strong>traffic</strong> – </li>
+<li><strong>ctime</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:param from_des
+:return:</p>
+<blockquote>
+<div>both empty arrays implies that the message will not send to the destination.</div></blockquote>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">this function is optional</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Metrics">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Metrics</code><span class="sig-paren">(</span><em>default_results_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/metrics.html#Metrics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Metrics" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="yafs.Metrics.TIME_LATENCY">
+<code class="descname">TIME_LATENCY</code><em class="property"> = 'time_latency'</em><a class="headerlink" href="#yafs.Metrics.TIME_LATENCY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Metrics.TIME_RESPONSE">
+<code class="descname">TIME_RESPONSE</code><em class="property"> = 'time_response'</em><a class="headerlink" href="#yafs.Metrics.TIME_RESPONSE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Metrics.TIME_SERVICE">
+<code class="descname">TIME_SERVICE</code><em class="property"> = 'time_service'</em><a class="headerlink" href="#yafs.Metrics.TIME_SERVICE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Metrics.TIME_TOTAL_RESPONSE">
+<code class="descname">TIME_TOTAL_RESPONSE</code><em class="property"> = 'time_total_response'</em><a class="headerlink" href="#yafs.Metrics.TIME_TOTAL_RESPONSE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Metrics.TIME_WAIT">
+<code class="descname">TIME_WAIT</code><em class="property"> = 'time_wait'</em><a class="headerlink" href="#yafs.Metrics.TIME_WAIT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Metrics.WATT_SERVICE">
+<code class="descname">WATT_SERVICE</code><em class="property"> = 'byService'</em><a class="headerlink" href="#yafs.Metrics.WATT_SERVICE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yafs.Metrics.WATT_UPTIME">
+<code class="descname">WATT_UPTIME</code><em class="property"> = 'byUptime'</em><a class="headerlink" href="#yafs.Metrics.WATT_UPTIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Metrics.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/metrics.html#Metrics.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Metrics.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Metrics.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/metrics.html#Metrics.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Metrics.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yafs.Metrics.insert_link">
+<code class="descname">insert_link</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/metrics.html#Metrics.insert_link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Metrics.insert_link" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.Distribution">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">Distribution</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/distribution.html#Distribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class</p>
+<dl class="method">
+<dt id="yafs.Distribution.next">
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/distribution.html#Distribution.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.Distribution.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.deterministic_distribution">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">deterministic_distribution</code><span class="sig-paren">(</span><em>time</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/distribution.html#deterministic_distribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.deterministic_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="yafs.deterministic_distribution.next">
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/distribution.html#deterministic_distribution.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.deterministic_distribution.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.exponential_distribution">
+<em class="property">class </em><code class="descclassname">yafs.</code><code class="descname">exponential_distribution</code><span class="sig-paren">(</span><em>lambd</em>, <em>seed=1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/distribution.html#exponential_distribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.exponential_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="yafs.exponential_distribution.next">
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/distribution.html#exponential_distribution.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.exponential_distribution.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 

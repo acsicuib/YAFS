@@ -43,27 +43,6 @@
   <div class="section" id="module-yafs.application">
 <span id="yafs-application"></span><h1><code class="docutils literal"><span class="pre">yafs.application</span></code><a class="headerlink" href="#module-yafs.application" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="yafs.application.Message">
-<em class="property">class </em><code class="descclassname">yafs.application.</code><code class="descname">Message</code><span class="sig-paren">(</span><em>name</em>, <em>src</em>, <em>dst</em>, <em>instructions=0</em>, <em>bytes=0</em>, <em>broadcasting=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.application.Message" title="Permalink to this definition">¶</a></dt>
-<dd><p>A message is set by the following values:</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">name (str): a name, unique for each application</p>
-<p>src (str): the name of module who send this message</p>
-<p>dst (dst): the nsame of module who recibe this message</p>
-<p>inst (int): the number of instrucctions to be executed ((by default 0), Instead of MIPS, we use IPt since the time is relative to the simulation units.</p>
-<p class="last">bytes (int): the size in bytes (by default 0)</p>
-</dd>
-<dt>Internal args used in the <strong>yafs.core</strong> are:</dt>
-<dd><p class="first">timestamp (float): simulation time. Instant of time that was created.</p>
-<p>path (list): a list of entities of the topology that has to travel to reach its target module from its source module.</p>
-<p>dst_int (int): an identifier of the intermediate entity in which it is in the process of transmission.</p>
-<p class="last">app_name (str): the name of the application</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
 <dt id="yafs.application.Application">
 <em class="property">class </em><code class="descclassname">yafs.application.</code><code class="descname">Application</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.application.Application" title="Permalink to this definition">¶</a></dt>
 <dd><p>An application is defined by a DAG between modules that generate, compute and receive messages.</p>
@@ -166,6 +145,27 @@
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="yafs.application.Message">
+<em class="property">class </em><code class="descclassname">yafs.application.</code><code class="descname">Message</code><span class="sig-paren">(</span><em>name</em>, <em>src</em>, <em>dst</em>, <em>instructions=0</em>, <em>bytes=0</em>, <em>broadcasting=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yafs/application.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yafs.application.Message" title="Permalink to this definition">¶</a></dt>
+<dd><p>A message is set by the following values:</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">name (str): a name, unique for each application</p>
+<p>src (str): the name of module who send this message</p>
+<p>dst (dst): the nsame of module who recibe this message</p>
+<p>inst (int): the number of instrucctions to be executed ((by default 0), Instead of MIPS, we use IPt since the time is relative to the simulation units.</p>
+<p class="last">bytes (int): the size in bytes (by default 0)</p>
+</dd>
+<dt>Internal args used in the <strong>yafs.core</strong> are:</dt>
+<dd><p class="first">timestamp (float): simulation time. Instant of time that was created.</p>
+<p>path (list): a list of entities of the topology that has to travel to reach its target module from its source module.</p>
+<p>dst_int (int): an identifier of the intermediate entity in which it is in the process of transmission.</p>
+<p class="last">app_name (str): the name of the application</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

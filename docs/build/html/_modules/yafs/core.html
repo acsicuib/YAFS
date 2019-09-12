@@ -72,7 +72,7 @@
 
 <span class="n">NETWORK_LIMIT</span> <span class="o">=</span> <span class="mi">100000000</span>
 
-<div class="viewcode-block" id="Sim"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim">[docs]</a><span class="k">class</span> <span class="nc">Sim</span><span class="p">:</span>
+<div class="viewcode-block" id="Sim"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim">[docs]</a><span class="k">class</span> <span class="nc">Sim</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    This class contains the cloud event-discrete simulation environment and it controls the structure variables.</span>
@@ -777,10 +777,10 @@
 <span class="sd">    SECTION FOR PUBLIC METHODS</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get_DES</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">des_control_process</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+<div class="viewcode-block" id="Sim.get_DES"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.get_DES">[docs]</a>    <span class="k">def</span> <span class="nf">get_DES</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">des_control_process</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Sim.deploy_monitor"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.deploy_monitor">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.deploy_monitor"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.deploy_monitor">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a DES process for user purpose</span>
 
@@ -797,7 +797,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_monitor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="o">**</span><span class="n">param</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Sim.register_event_entity"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.register_event_entity">[docs]</a>    <span class="k">def</span> <span class="nf">register_event_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_event_dist</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="n">EVENT_UP_ENTITY</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.register_event_entity"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.register_event_entity">[docs]</a>    <span class="k">def</span> <span class="nf">register_event_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_event_dist</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="n">EVENT_UP_ENTITY</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TODO</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -806,7 +806,7 @@
         <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">EVENT_DOWN_ENTITY</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_down_node_process</span><span class="p">(</span> <span class="n">next_event_dist</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Sim.deploy_source"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.deploy_source">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">id_node</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">distribution</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.deploy_source"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.deploy_source">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">id_node</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">distribution</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a DES process for deploy pure source modules (sensors)</span>
 <span class="sd">        This function its used by (:mod:`Population`) algorithm</span>
@@ -895,7 +895,7 @@
         <span class="k">return</span> <span class="n">idDES</span>
 
 
-<div class="viewcode-block" id="Sim.deploy_sink"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.deploy_sink">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_sink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.deploy_sink"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.deploy_sink">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_sink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a DES process for deploy pure SINK modules (actuators)</span>
 <span class="sd">        This function its used by (:mod:`Placement`): algorithm</span>
@@ -921,7 +921,7 @@
 
 
 
-<div class="viewcode-block" id="Sim.stop_process"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.stop_process">[docs]</a>    <span class="k">def</span> <span class="nf">stop_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.stop_process"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.stop_process">[docs]</a>    <span class="k">def</span> <span class="nf">stop_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All pure source modules (sensors) are controlled by this boolean.</span>
 <span class="sd">        Using this function (:mod:`Population`) algorithm can stop one source</span>
@@ -931,7 +931,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">des_process_running</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Sim.start_process"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.start_process">[docs]</a>    <span class="k">def</span> <span class="nf">start_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.start_process"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.start_process">[docs]</a>    <span class="k">def</span> <span class="nf">start_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All pure source modules (sensors) are controlled by this boolean.</span>
 <span class="sd">        Using this function (:mod:`Population`) algorithm can start one source</span>
@@ -943,7 +943,7 @@
 
 
 
-<div class="viewcode-block" id="Sim.deploy_app"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.deploy_app">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">placement</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.deploy_app"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.deploy_app">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">placement</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This process is responsible for linking the *application* to the different algorithms (placement, population, and service)</span>
 
@@ -981,7 +981,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">selector_path</span><span class="p">[</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">selector</span></div>
 
 
-<div class="viewcode-block" id="Sim.get_alloc_entities"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.get_alloc_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_alloc_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.get_alloc_entities"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.get_alloc_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_alloc_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; It returns a dictionary of deployed services</span>
 <span class="sd">        key : id-node</span>
 <span class="sd">        value: a list of deployed services</span>
@@ -1005,7 +1005,7 @@
         <span class="k">return</span> <span class="n">alloc_entities</span></div>
 
 
-    <span class="k">def</span> <span class="nf">deploy_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.deploy_module"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.deploy_module">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app_name</span><span class="p">,</span><span class="n">module</span><span class="p">,</span> <span class="n">services</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
         <span class="n">register_consumer_msg</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">id_DES</span> <span class="o">=</span><span class="p">[]</span>
 
@@ -1039,10 +1039,10 @@
             <span class="k">for</span> <span class="n">id_topology</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
                 <span class="n">id_DES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__deploy_module</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">id_topology</span><span class="p">,</span> <span class="n">register_consumer_msg</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">id_DES</span>
+        <span class="k">return</span> <span class="n">id_DES</span></div>
 
 
-<div class="viewcode-block" id="Sim.undeploy_module"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.undeploy_module">[docs]</a>    <span class="k">def</span> <span class="nf">undeploy_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span><span class="n">service_name</span><span class="p">,</span> <span class="n">idtopo</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.undeploy_module"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.undeploy_module">[docs]</a>    <span class="k">def</span> <span class="nf">undeploy_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span><span class="n">service_name</span><span class="p">,</span> <span class="n">idtopo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; removes all modules deployed in a node</span>
 <span class="sd">        modules with the same name = service_name</span>
 <span class="sd">        from app_name</span>
@@ -1060,7 +1060,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">stop_process</span><span class="p">(</span><span class="n">des</span><span class="p">)</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">[</span><span class="n">des</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_node_topology</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.remove_node"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_node_topology</span><span class="p">):</span>
         <span class="c1"># Stopping related processes deployed in the module and clearing main structure: alloc_DES</span>
         <span class="n">des_tmp</span><span class="o">=</span><span class="p">[]</span>
         <span class="k">if</span> <span class="n">id_node_topology</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -1078,31 +1078,31 @@
                         <span class="n">v2</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
         <span class="c1"># Finally removing node from topology</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">id_node_topology</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">id_node_topology</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">draw_allocated_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.draw_allocated_topology"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.draw_allocated_topology">[docs]</a>    <span class="k">def</span> <span class="nf">draw_allocated_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alloc_entities</span><span class="p">()</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">draw_topology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span><span class="n">entities</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">draw_topology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span><span class="n">entities</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">get_DES_from_Service_In_Node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">service</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.get_DES_from_Service_In_Node"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.get_DES_from_Service_In_Node">[docs]</a>    <span class="k">def</span> <span class="nf">get_DES_from_Service_In_Node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">service</span><span class="p">):</span>
         <span class="n">deployed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">[</span><span class="n">app_name</span><span class="p">][</span><span class="n">service</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">des</span> <span class="ow">in</span> <span class="n">deployed</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">[</span><span class="n">des</span><span class="p">]</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">des</span>
-        <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
 
-    <span class="k">def</span> <span class="nf">get_assigned_structured_modules_from_DES</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.get_assigned_structured_modules_from_DES"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.get_assigned_structured_modules_from_DES">[docs]</a>    <span class="k">def</span> <span class="nf">get_assigned_structured_modules_from_DES</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">fullAssignation</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">app</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">[</span><span class="n">app</span><span class="p">]:</span>
                 <span class="n">deployed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_module</span><span class="p">[</span><span class="n">app</span><span class="p">][</span><span class="n">module</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">des</span> <span class="ow">in</span> <span class="n">deployed</span><span class="p">:</span>
                     <span class="n">fullAssignation</span><span class="p">[</span><span class="n">des</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DES&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alloc_DES</span><span class="p">[</span><span class="n">des</span><span class="p">],</span> <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="n">module</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">fullAssignation</span>
+        <span class="k">return</span> <span class="n">fullAssignation</span></div>
 
 
-<div class="viewcode-block" id="Sim.print_debug_assignaments"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.print_debug_assignaments">[docs]</a>    <span class="k">def</span> <span class="nf">print_debug_assignaments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.print_debug_assignaments"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.print_debug_assignaments">[docs]</a>    <span class="k">def</span> <span class="nf">print_debug_assignaments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This functions prints debug information about the assignment of DES process - Topology ID - Source Module or Modules</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1185,7 +1185,7 @@
 
 
 
-    <span class="k">def</span> <span class="nf">add_mobile_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">gme</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.add_mobile_agent"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.add_mobile_agent">[docs]</a>    <span class="k">def</span> <span class="nf">add_mobile_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">gme</span><span class="p">):</span>
         <span class="n">ides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_id_process</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">des_process_running</span><span class="p">[</span><span class="n">ides</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__add_mobile_agent</span><span class="p">(</span><span class="n">ides</span><span class="p">,</span> <span class="n">gme</span><span class="p">))</span>
@@ -1193,10 +1193,10 @@
         <span class="c1">### ATENCION COONTROLAR VAR: INTERNAS</span>
         <span class="c1">#self.alloc_DES[ides] = id_node</span>
 
-        <span class="k">return</span> <span class="n">ides</span>
+        <span class="k">return</span> <span class="n">ides</span></div>
 
-    <span class="k">def</span> <span class="nf">load_user_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tracks</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">user_tracks</span> <span class="o">=</span> <span class="n">tracks</span>
+<div class="viewcode-block" id="Sim.load_user_tracks"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.load_user_tracks">[docs]</a>    <span class="k">def</span> <span class="nf">load_user_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tracks</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_tracks</span> <span class="o">=</span> <span class="n">tracks</span></div>
 
         <span class="c1"># self.user_tracks = AnimationTrack(df_points=tracks, dpi=300, bg_map=False, map_transparency=0.5)</span>
 
@@ -1205,7 +1205,7 @@
         <span class="c1">#     if i == 2: break</span>
         <span class="c1"># exit()</span>
 
-    <span class="k">def</span> <span class="nf">generate_animation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pathFile</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.generate_animation"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.generate_animation">[docs]</a>    <span class="k">def</span> <span class="nf">generate_animation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pathFile</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_connection_points</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_map</span><span class="p">()</span>
 
@@ -1214,7 +1214,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">pathFile</span><span class="o">+</span><span class="s2">&quot;_map_background.png&quot;</span><span class="p">)</span>
 
         <span class="n">animation</span> <span class="o">=</span> <span class="n">AnimationTrack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">bg_map</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
-        <span class="n">animation</span><span class="o">.</span><span class="n">make_video</span><span class="p">(</span><span class="n">output_file</span><span class="o">=</span><span class="n">pathFile</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">G</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">animation</span><span class="o">.</span><span class="n">make_video</span><span class="p">(</span><span class="n">output_file</span><span class="o">=</span><span class="n">pathFile</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">G</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">G</span><span class="p">)</span></div>
 
 
     <span class="c1"># def generate_snapshot(self, pathFile,event):</span>
@@ -1253,19 +1253,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">set_coverage_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.set_coverage_class"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.set_coverage_class">[docs]</a>    <span class="k">def</span> <span class="nf">set_coverage_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_connection_points</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__load_map</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">coverage</span> <span class="o">=</span> <span class="n">class_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coverage</span> <span class="o">=</span> <span class="n">class_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">set_mobile_fog_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mobile_fog_entities</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mobile_fog_entities</span> <span class="o">=</span> <span class="n">mobile_fog_entities</span>
+<div class="viewcode-block" id="Sim.set_mobile_fog_entities"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.set_mobile_fog_entities">[docs]</a>    <span class="k">def</span> <span class="nf">set_mobile_fog_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mobile_fog_entities</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobile_fog_entities</span> <span class="o">=</span> <span class="n">mobile_fog_entities</span></div>
 
-    <span class="k">def</span> <span class="nf">set_movement_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">evol</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">control_movement_class</span> <span class="o">=</span> <span class="n">evol</span>
+<div class="viewcode-block" id="Sim.set_movement_control"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.set_movement_control">[docs]</a>    <span class="k">def</span> <span class="nf">set_movement_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">evol</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_movement_class</span> <span class="o">=</span> <span class="n">evol</span></div>
 
-<div class="viewcode-block" id="Sim.run"><a class="viewcode-back" href="../../api_reference/yafs.core.html#yafs.core.Sim.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">until</span><span class="p">,</span><span class="n">test_initial_deploy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">show_progress_monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">mobile_behaviour</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Sim.run"><a class="viewcode-back" href="../../api_reference/yafs.html#yafs.core.Sim.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">until</span><span class="p">,</span><span class="n">test_initial_deploy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">show_progress_monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">mobile_behaviour</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the simulation</span>
 

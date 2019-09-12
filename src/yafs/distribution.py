@@ -6,6 +6,7 @@ import random
 import numpy as np
 import warnings
 
+
 class Distribution(object):
     """
     Abstract class

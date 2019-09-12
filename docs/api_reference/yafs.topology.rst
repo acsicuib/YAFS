@@ -3,6 +3,6 @@
 =================
 
 .. automodule:: yafs.topology
-
-.. autoclass:: Topology
     :members:
+    :undoc-members:
+    :inherited-members:

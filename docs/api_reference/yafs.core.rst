@@ -3,7 +3,9 @@
 ==================================
 
 .. automodule:: yafs.core
-   :members:
+    :members:
+    :undoc-members:
+    :inherited-members:
 
 
 
