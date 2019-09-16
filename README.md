@@ -38,6 +38,14 @@ YAFS is released under the MIT License. However, we would like to know in which 
 ```
 
 
+Resources
+---------
+
+YAFS tutorial (https://yafs.readthedocs.io/en/latest/introduction/index.html)
+and user guide (https://www.slideshare.net/wisaaco/yet-another-fog-simulator-yafs-user-guide) are a good starting
+point for you. You can also try out some of the Examples (https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
+YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
+
 
 Installation
 ------------
