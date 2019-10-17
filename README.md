@@ -123,12 +123,16 @@ ffmpeg -i out.mp4 -pix_fmt rgb24  out.gif
 
 ```
 
+from example/DynamicWorkload
 <img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/DynamicWorkload/figure/out.gif" width="350" height="350"/></a>
 
+from example/ConquestService
 <img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/ConquestService/out.gif" width="350" height="350"/></a>
 
+from example/mobileTutorial
 <img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/mobileTutorial/exp/results_20190326/out.gif" width="550" height="550"/></a>
 
+from example/mobileTutorial
 <img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/mobileTutorial/exp/results_20190326/out2.gif" width="550" height="550"/></a>
 
 
