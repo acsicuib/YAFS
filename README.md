@@ -50,6 +50,8 @@ YAFS but in any case you have to understand the main concepts of Cloud Computing
 Installation
 ------------
 
+**NOTE** A full implementation in Python 3.6 is available in other repository without any of the example folders [repo url](https://github.com/acsicuib/MARIO/tree/gauss2020). A total adaptation of the example is required to update this repo. Sorry for that, but the working is still the same! 
+
 YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 
 1. Clone the project in your local folder:
@@ -67,6 +69,7 @@ YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 ```bash
    $ conda env update -f yafs.yml
 ```
+
 
 
 Getting started & your first execution
@@ -170,6 +173,7 @@ YAFS is used in the following projects:
 * Isaac Lera, Carlos Guerrero, Carlos Juiz. Availability-aware Service Placement Policy in Fog Computing Based on Graph Partitions. IEEE Internet of Things Journal 2019. 10.1109/JIOT.2018.2889511
 * Isaac Lera, Carlos Guerrero, Carlos Juiz. Analysing the Applicability of a Multi-Criteria Decision Method in Fog Computing
 Placement Problem. FMEC 2019
+* Antonio Brogi, Stefano Forti, Carlos Guerrero, Isaac Lera. [Towards Declarative Decentralised Application Management in the Fog](https://github.com/acsicuib/MARIO/tree/gauss2020). Proceedings at 2020 IEEE International Symposium on Software Reliability Engineering Workshops (ISSREW). 223--230, Coimbra, Portugal, 2020. 10.1109/ISSREW51248.2020.00077. 
 
 
 
