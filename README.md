@@ -1,6 +1,17 @@
 
 ![YAFS logo](https://github.com/acsicuib/YAFS/raw/master/docs/_static/yafs_logo.png)
 
+NEWS
+====
+A new version of YAFS is available in the [branch](https://github.com/acsicuib/YAFS/tree/YAFS3).
+- Supports +Python3.6. 
+- Depends on fewer third libraries. It is lighter and easier to install.
+- It has 4 awesome "tutorial_scenarios" or skeletons so you can use them to create your scenario with artificial intelligence, rules, neural networks, ... with whatever you want.
+- Note: the examples in folder "examples" is not up to date for this version yet, but the code is kept for you to inspire.
+- Note: some parts of the Doc is not still updated. 
+
+DESCRIPTION
+===========
 YAFS (Yet Another Fog Simulator) is a simulator tool based on Python of architectures such as: [Fog Computing](https://en.wikipedia.org/wiki/Fog_computing) ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ... [IoT environments](https://en.wikipedia.org/wiki/Internet_of_things) are the most evident fact of this type of architecture.
 
 
