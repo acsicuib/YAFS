@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import random
 
 class Message:
     """
@@ -9,9 +10,9 @@ class Message:
 
         src (str): the name of module who send this message
 
-        dst (dst): the nsame of module who recibe this message
+        dst (dst): the nsame of module who receive this message
 
-        inst (int): the number of instrucctions to be executed ((by default 0), Instead of MIPS, we use IPt since the time is relative to the simulation units.
+        inst (int): the number of instructions to be executed ((by default 0), Instead of MIPS, we use IPt since the time is relative to the simulation units.
 
         bytes (int): the size in bytes (by default 0)
 
@@ -43,12 +44,47 @@ class Message:
         self.last_idDes = []
         self.id = -1
 
+        self.original_DES_src = None #This attribute identifies the user when multiple users are in the same node
+
     def __str__(self):
         print  ("{--")
         print (" Name: %s (%s)" %(self.name,self.id))
         print (" From (src): %s  to (dst): %s" %(self.src,self.dst))
         print (" --}")
         return ("")
+
+def fractional_selectivity(threshold):
+    return random.random() <= threshold
+
+
+def create_applications_from_json(data):
+    applications = {}
+    for app in data:
+        a = Application(name=app["name"])
+        modules = [{"None": {"Type": Application.TYPE_SOURCE}}]
+        for module in app["module"]:
+            modules.append({module["name"]: {"RAM": module["RAM"], "Type": Application.TYPE_MODULE}})
+        a.set_modules(modules)
+
+        ms = {}
+        for message in app["message"]:
+            # print "Creando mensaje: %s" %message["name"]
+            ms[message["name"]] = Message(message["name"], message["s"], message["d"],
+                                          instructions=message["instructions"], bytes=message["bytes"])
+            if message["s"] == "None":
+                a.add_source_messages(ms[message["name"]])
+
+        # print "Total mensajes creados %i" %len(ms.keys())
+        for idx, message in enumerate(app["transmission"]):
+            if "message_out" in message.keys():
+                a.add_service_module(message["module"], ms[message["message_in"]], ms[message["message_out"]],
+                                     fractional_selectivity, threshold=1.0)
+            else:
+                a.add_service_module(message["module"], ms[message["message_in"]])
+
+        applications[app["name"]] = a
+
+    return applications
 
 
 class Application:
@@ -105,8 +141,8 @@ class Application:
             data (dict) : a set of characteristic of modules
         """
         for module in data:
-            name = module.keys()[0]
-            type = module.values()[0]["Type"]
+            name = list(module.keys())[0]
+            type = list(module.values())[0]["Type"]
             if type == self.TYPE_SOURCE:
                 self.modules_src.append(name)
             elif type == self.TYPE_SINK:

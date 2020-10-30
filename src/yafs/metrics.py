@@ -28,6 +28,10 @@ class Metrics:
         self.__ff.writerow(columns_event)
         self.__ff_link.writerow(columns_link)
 
+    def flush(self):
+        self.__filef.flush()
+        self.__filel.flush()
+
     def insert(self,value):
 
         self.__ff.writerow([value["id"],value["type"],

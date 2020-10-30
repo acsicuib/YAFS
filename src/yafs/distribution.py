@@ -17,24 +17,11 @@ class Distribution(object):
     def next(self):
         None
 
-class deterministicDistribution(Distribution):
-    def __init__(self,time, **kwargs):
-        warnings.warn("The exponentialDistribution class is deprecated and "
-                      "will be removed in version 2.0.0. "
-                      "Use the exponential_distribution function instead.",
-                      FutureWarning,
-                      stacklevel=8
-                      )
-        self.time = time
-        super(deterministicDistribution, self).__init__(**kwargs)
-
-    def next(self):
-        return self.time
 
 class deterministic_distribution(Distribution):
     def __init__(self, time, **kwargs):
-        self.time = time
         super(deterministic_distribution, self).__init__(**kwargs)
+        self.time = time
 
     def next(self):
         return self.time

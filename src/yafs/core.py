@@ -2,34 +2,25 @@
 """
 This module unifies the event-discrete simulation environment with the rest of modules: placement, topology, selection, population, utils and metrics.
 
+
+ NOTE: THIS VERSION IS A REDUCED ONE WITHOUT INCLUDE GEOGRAPHICAL LIBS
+
 """
 
 
 import logging
-import random
 import copy
-
 import simpy
-import scipy.spatial
-from tqdm import tqdm
-import networkx as nx
 
 from yafs.topology import Topology
 from yafs.application import Application
 from yafs.metrics import Metrics
 from yafs.distribution import *
-from yafs import utils
-
-from trackanimation.animation import AnimationTrack
-
-import numpy as np
-import smopy
-from PIL import Image as pimg
 
 EVENT_UP_ENTITY = "node_up"
 EVENT_DOWN_ENTITY = "node_down"
 
-NETWORK_LIMIT = 100000000
+NETWORK_LIMIT = 1000000000
 
 class Sim:
     """
@@ -85,7 +76,7 @@ class Sim:
         self.apps = {}
 
         self.until = 0 #End time simulation
-        #self.db = TinyDB(name_register)
+
         self.metrics = Metrics(default_results_path=default_results_path)
 
         self.unreachabled_links = 0
@@ -171,21 +162,6 @@ class Sim:
 
 
 
-
-        """
-        MOBILE ADAPTATIONS
-        """
-        self.service_coverage = {}
-        self.tolerance = 0.0001
-        self.user_tracks = None
-
-        #v2
-        self.endpoints = []
-        self.user_tracks = None
-        self.map = None
-        self.coverage = None
-        self.control_movement_class = None
-
     # self.__send_message(app_name, message, idDES, self.SOURCE_METRIC)
     def __send_message(self, app_name, message, idDES, type):
         """
@@ -207,7 +183,7 @@ class Sim:
                 self.logger.warning(
                     "(#DES:%i)\t--- Unreacheable DST:\t%s: PATH:%s " % (idDES, message.name, paths))
 
-                if self.logger.isEnabledFor("Debug"):
+                if self.logger.isEnabledFor(logging.DEBUG):
                     self.logger.debug("From __send_message function: ")
                     # self.print_debug_assignaments()
                     # print "NODES (%i): %s"%(len(self.topology.G.nodes()),self.topology.G.nodes())
@@ -263,7 +239,10 @@ class Sim:
                 self.consumer_pipes[pipe_id].put(message)
             else:
                 # The message is sent at first time or it sent more times.
-                if message.dst_int < 0:
+                # if message.dst_int < 0:
+
+                if (isinstance(message.dst_int , str) and len(message.dst_int ) == 0) or \
+                        (isinstance(message.dst_int , int) and message.dst_int  < 0):
                     src_int = message.path[0]
                     message.dst_int = message.path[1]
                 else:
@@ -411,7 +390,7 @@ class Sim:
                 msg = copy.copy(message)
                 msg.timestamp = self.env.now
                 msg.id = self.__getIDMessage()
-
+                msg.original_DES_src = idDES
                 self.__send_message(name_app, msg, idDES, self.SOURCE_METRIC)
 
         self.logger.debug("STOP_Process - Module Pure Source\t#DES:%i" % idDES)
@@ -447,23 +426,24 @@ class Sim:
             # else:
             #     from_id_source = message.path[0]
             #
-     # # if message.id == 1072:
-     #        print "-"*50
-     #        print "Module: ",module # module that receives the request (RtR)
-     #        print "DES ",des # DES process who RtR
-     #        print "ID MODULE: ",id_node  #Topology entity who RtR
-     #        print "Message.name ",message.name # Message name
-     #        print "Message.id ", message.id #Message generator id
-     #        print "Message.path ",message.path #enrouting path
-     #        print "Message src ",message.src #module source who send the request
-     #        print "Message dst ",message.dst #module dst (the entity that RtR)
-     #        print "Message idDEs ",message.idDES #DES intermediate process that process the request
-     #        print "TOPO.src ", message.path[0] #entity that RtR
-     #        print "TOPO.dst ", int(self.alloc_DES[des]) #DES process that RtR
-     #        print "time service ",time_service
-     #        exit()
 
-     #
+            # print("-"*50)
+            # print("Module: ",module) # module that receives the request (RtR)
+            # print("DES ",des) # DES process who RtR
+            # print("ID MODULE: ",id_node)  #Topology entity who RtR
+            # print("Message.name ",message.name) # Message name
+            # print("Message.id ", message.id) #Message generator id
+            # print("Message.path ",message.path) #enrouting path
+            # print("Message src ",message.src) #module source who send the request
+            # print("Message dst ",message.dst) #module dst (the entity that RtR)
+            # print("Message idDEs ",message.idDES) #DES intermediate process that process the request
+            # print("TOPO.src ", message.path[0]) #entity that RtR
+            # print("TOPO.dst ", int(self.alloc_DES[des])) #DES process that RtR
+            # print("time service ",time_service)
+            # print("original_DES_src ",message.original_DES_src) #when a message comes from a SRC.pure (user)
+
+
+
             # # print "MODULE: ",self.alloc_module[app][module]
             # # tmp = []
             # # for it in self.alloc_module[app][module]:
@@ -472,18 +452,19 @@ class Sim:
             # # print "PATH 0: " ,message.path[0]
 
 
-
-            #WARNING. If there are more than two equal modules deployed in the same entity, it will not be possible to determine which process sent this package at this point. That information will have to be calculated by the trace of the message (message.id)
             sourceDES = -1
             try:
+                # WARNING.
+                # ONLY IN THIS CASE (Try)
+                # If there are more than two equal modules deployed in the same entity, it will not be possible to determine which process sent this package at this point. That information will have to be calculated by the trace of the message (message.id)
+                #TODO fix this problem
                 DES_possible = self.alloc_module[app][message.src]
                 for eDES in DES_possible:
                     if self.alloc_DES[eDES] == message.path[0]:
                         sourceDES = eDES
             except:
-                for k in self.alloc_source.keys():
-                    if self.alloc_source[k]['id'] == message.path[0]:
-                        sourceDES = k
+                #The message comes from a SRC.entity (an user)
+                sourceDES = message.original_DES_src
 
             # print "Source DES ",sourceDES
             # print "-" * 50
@@ -503,7 +484,7 @@ class Sim:
         except KeyError:
             # The node can be removed
             self.logger.critical("Make sure that this node has been removed or it has all mandatory attributes - Node: DES:%i" % des)
-            return 0
+            return 1
 
 
         # self.logger.debug("TS[%s] - DES: %i - %d"%(module,des,time_service))
@@ -550,6 +531,8 @@ class Sim:
                     "(App:%s#DES:%i#%s)\tModule - Generating Message:\t%s" % (app_name, idDES, module, message.name))
                 msg = copy.copy(message)
                 msg.timestamp = self.env.now
+                msg.original_DES_src = idDES
+
                 self.__send_message(app_name, msg, idDES,self.SOURCE_METRIC)
 
         self.logger.debug("STOP_Process - Module Source: %s\t#DES:%i" % (module, idDES))
@@ -670,31 +653,31 @@ class Sim:
 
         self.logger.debug("STOP_Process - Module Pure Sink: %s\t#DES:%i" % (module, ides))
 
-
-    def __add_stop_monitor(self, name, function, distribution,show_progress_monitor, **param):
+    def __add_stop_monitor(self, name, function, distribution, show_progress_monitor, **param):
         """
         Add a DES process for Stop/Progress bar monitor
         """
         myId = self.__get_id_process()
         self.logger.debug("Added_Process - Internal Monitor: %s\t#DES:%i" % (name,myId))
         if show_progress_monitor:
-            self.pbar = tqdm(total=self.until)
+            # self.pbar = tqdm(total=self.until)
+            pass
         while not self.stop:
             yield self.env.timeout(distribution.next())
             function(show_progress_monitor,**param)
         self.logger.debug("STOP_Process - Internal Monitor: %s\t#DES:%i" % (name, myId))
 
 
-    def __add_monitor(self, name, function, distribution, **param):
+    def __add_monitor(self, idDES, name, function, distribution, **param):
         """
         Add a DES process for user purpose
         """
-        myId = self.__get_id_process()
-        self.logger.debug("Added_Process - Internal Monitor: %s\t#DES:%i" % (name, myId))
-        while not self.stop:
+        self.logger.debug("Added_Process - Internal Monitor: %s\t#DES:%i" % (name, idDES))
+        while not self.stop and self.des_process_running[idDES]:
             yield self.env.timeout(distribution.next())
             function(**param)
-        self.logger.debug("STOP_Process - Internal Monitor: %s\t#DES:%i" % (name, myId))
+        self.logger.debug("STOP_Process - Internal Monitor: %s\t#DES:%i" % (name, idDES))
+
 
 
     def __add_consumer_service_pipe(self,app_name,module,idDES):
@@ -739,6 +722,8 @@ class Sim:
     def get_DES(self,name):
         return self.des_control_process[name]
 
+
+
     def deploy_monitor(self, name, function, distribution, **param):
         """
         Add a DES process for user purpose
@@ -754,7 +739,11 @@ class Sim:
             param (dict): the parameters of the *distribution* function
 
         """
-        self.env.process(self.__add_monitor(name, function, distribution, **param))
+        idDES = self.__get_id_process()
+        self.des_process_running[idDES] = True
+        self.env.process(self.__add_monitor(idDES, name, function, distribution, **param))
+        return idDES
+
 
     def register_event_entity(self, next_event_dist, event_type=EVENT_UP_ENTITY, **args):
         """
@@ -900,9 +889,7 @@ class Sim:
         """
         self.des_process_running[id] = True
 
-
-
-    def deploy_app(self, app, placement, population, selector):
+    def deploy_app(self, app, placement, selector):
         """
         This process is responsible for linking the *application* to the different algorithms (placement, population, and service)
 
@@ -910,8 +897,6 @@ class Sim:
             app (object): :mod:`Application` class
 
             placement (object): :mod:`Placement` class
-
-            population (object): :mod:`Population` class
 
             selector (object): :mod:`Selector` class
         """
@@ -928,16 +913,48 @@ class Sim:
                 self.env.process(self.__add_placement_process(placement))
         self.placement_policy[placement.name]["apps"].append(app.name)
 
-        # Add Population control to the App
-
-        if not population.name in self.population_policy.keys():  # First Time
-            self.population_policy[population.name] = {"population_policy": population, "apps": []}
-            if population.activation_dist is not None:
-                self.env.process(self.__add_population_process(population))
-        self.population_policy[population.name]["apps"].append(app.name)
-
         # Add Selection control to the App
         self.selector_path[app.name] = selector
+
+    # def deploy_app(self, app, placement, population, selector):
+    #     warnings.warn("deprecated", DeprecationWarning)
+    #
+    #     """
+    #     This process is responsible for linking the *application* to the different algorithms (placement, population, and service)
+    #
+    #     Args:
+    #         app (object): :mod:`Application` class
+    #
+    #         placement (object): :mod:`Placement` class
+    #
+    #         population (object): :mod:`Population` class
+    #
+    #         selector (object): :mod:`Selector` class
+    #     """
+    #     # Application
+    #     self.apps[app.name] = app
+    #
+    #     # Initialization
+    #     self.alloc_module[app.name] = {}
+    #
+    #     # Add Placement controls to the App
+    #     if not placement.name in self.placement_policy.keys():  # First Time
+    #         self.placement_policy[placement.name] = {"placement_policy": placement, "apps": []}
+    #         if placement.activation_dist is not None:
+    #             print("ENV ADD PLACEMENT")
+    #             self.env.process(self.__add_placement_process(placement))
+    #     self.placement_policy[placement.name]["apps"].append(app.name)
+    #
+    #     # Add Population control to the App
+    #
+    #     if not population.name in self.population_policy.keys():  # First Time
+    #         self.population_policy[population.name] = {"population_policy": population, "apps": []}
+    #         if population.activation_dist is not None:
+    #             self.env.process(self.__add_population_process(population))
+    #     self.population_policy[population.name]["apps"].append(app.name)
+    #
+    #     # Add Selection control to the App
+    #     self.selector_path[app.name] = selector
 
 
     def get_alloc_entities(self):
@@ -953,13 +970,13 @@ class Sim:
         for id_des_process in self.alloc_source:
             src_deployed = self.alloc_source[id_des_process]
             # print "Module (SRC): %s(%s) - deployed at entity.id: %s" %(src_deployed["module"],src_deployed["app"],src_deployed["id"])
-            alloc_entities[src_deployed["id"]].append(src_deployed["app"]+"#"+src_deployed["module"])
+            alloc_entities[src_deployed["id"]].append(str(src_deployed["app"])+"#"+src_deployed["module"])
 
         for app in self.alloc_module:
             for module in self.alloc_module[app]:
                 # print "Module (MOD): %s(%s) - deployed at entities.id: %s" % (module,app,self.alloc_module[app][module])
                 for idDES in self.alloc_module[app][module]:
-                    alloc_entities[self.alloc_DES[idDES]].append(app+"#"+module)
+                    alloc_entities[self.alloc_DES[idDES]].append(str(app)+"#"+str(module))
 
         return alloc_entities
 
@@ -1001,7 +1018,7 @@ class Sim:
         return id_DES
 
 
-    def undeploy_module(self, app_name,service_name, idtopo):
+    def undeploy_all_modules(self, app_name,service_name, idtopo):
         """ removes all modules deployed in a node
         modules with the same name = service_name
         from app_name
@@ -1019,6 +1036,31 @@ class Sim:
                 self.stop_process(des)
                 del self.alloc_DES[des]
 
+    def undeploy_source(self, des):
+        """ remove one source deployed in a node
+        from app_name
+        deployed in id_topo
+        """
+        # Clearing related structures
+        if des in self.alloc_source:
+            self.stop_process(des)
+            del self.alloc_source[des]
+            del self.alloc_DES[des]
+
+
+    def undeploy_module(self, app_name,service_name, des):
+        """ remove one module deployed in a node
+        from app_name
+        deployed in id_topo
+        """
+        # Clearing related structures
+        for d in self.alloc_module[app_name][service_name]:
+            if d == des:
+                self.alloc_module[app_name][service_name].remove(des)
+                self.stop_process(des)
+                del self.alloc_DES[des]
+                break
+
     def remove_node(self, id_node_topology):
         # Stopping related processes deployed in the module and clearing main structure: alloc_DES
         des_tmp=[]
@@ -1028,6 +1070,7 @@ class Sim:
                     des_tmp.append(k)
                     self.stop_process(k)
                     del self.alloc_DES[k]
+                    break
 
         # Clearing other related structures
         for k, v in self.alloc_module.items():
@@ -1038,10 +1081,6 @@ class Sim:
 
         # Finally removing node from topology
         self.topology.G.remove_node(id_node_topology)
-
-    def draw_allocated_topology(self):
-        entities = self.get_alloc_entities()
-        utils.draw_topology(self.topology,entities)
 
 
     def get_DES_from_Service_In_Node(self, node, app_name, service):
@@ -1073,158 +1112,17 @@ class Sim:
                 for des in deployed:
                     fullAssignation[des] = {"ID":self.alloc_DES[des],"Module":module} #DES process are unique for each module/element
 
-        print "-"*40
-        print "DES\t| TOPO \t| Src.Mod \t| Modules"
-        print ("-" * 40)
+        print("-"*40)
+        print("DES\t| TOPO \t| Src.Mod \t| Modules")
+        print("-" * 40)
         for k in self.alloc_DES:
-            print k,"\t|",self.alloc_DES[k],"\t|",self.alloc_source[k]["name"] if k in self.alloc_source.keys() else "--","\t\t|",fullAssignation[k]["Module"] if k in fullAssignation.keys() else "--"
-        print "-" * 40
-        # exit()
-
-    #
-    # ### MOBILE ADAPTATION SECTION
-    # def update_service_coverage(self):
-    #     if self.street_network is not None:
-    #         points = utils.create_points(self.topology.G)
-    #         point_streets = utils.create_points(self.street_network)
-    #
-    #         tree = scipy.spatial.KDTree(points.values())
-    #         points_within_tolerance = tree.query_ball_point(point_streets.values(), self.tolerance)
-    #
-    #         # key = node network
-    #         # value = id - module SW
-    #
-    #         self.service_coverage = {}
-    #         for idx, pt in enumerate(points_within_tolerance):
-    #             ## MODULE SW
-    #             key2 = point_streets.keys()[idx]
-    #             nG2 = self.street_network.nodes[key2]
-    #             # print "%s is close to " % nG2["model"]
-    #             ## Street coverage
-    #             for p in pt:
-    #                 key = points.keys()[p]
-    #                 # service_coverage[(G.nodes[key]['x'],G.nodes[key]['y'])]=nG2["model"]
-    #                 self.service_coverage[key] = nG2["id"]
+            print(k,"\t|",self.alloc_DES[k],"\t|",self.alloc_source[k]["name"] if k in self.alloc_source.keys() else "--","\t\t|",fullAssignation[k]["Module"] if k in fullAssignation.keys() else "--")
+        print("-" * 40)
 
 
-
-    # def setMobilityUserBehaviour(self,dataPopulation):
-    #     self.user_behaviour = dataPopulation #TODO CHECK SYNTAX
-
-    def __add_mobile_agent(self,ides, gme):
-        #The mobile starts
-
-        yield self.env.timeout(gme.start)
-        self.logger.info("(#DES:%i)\t--- Mobile Entity STARTS :\t%s " % (ides, gme._id))
-        while (len(gme.path) - 1 > gme.current_position) and not self.stop and self.des_process_running[ides]:
-            e = (gme.path[gme.current_position], gme.path[gme.current_position + 1])
-            data = self.street_network.get_edge_data(*e)
-            try:
-                next_time = int(utils.toMeters(data[0]["geometry"]) / gme.speed)
-            except KeyError:
-                next_time = 1  # default time by roundabout or other Spatial THINGS
-
-            # take an action?
-            gme.next_time = next_time
-
-            self.logger.info("(#DES:%i)\t--- DO ACTION :\t%s " % (ides, gme._id))
-            gme.do.action(gme)
-
-            #TODO Can the MA wait more time in that node?
-
-            yield self.env.timeout(next_time)
-            gme.current_position += 1
-
-        # Last movement
-        if self.des_process_running[ides] and not self.stop:
-            gme.do.action(gme)
-
-        self.logger.info("(#DES:%i)\t--- Mobile Entity ENDS :\t%s " % (ides, gme._id))
-        # print "Mobile agent: %s ends " % gme.plate
+    def run(self, until, show_progress_monitor=False, test_initial_deploy=False):
 
 
-
-    def add_mobile_agent(self,gme):
-        ides = self.__get_id_process()
-        self.des_process_running[ides] = True
-        self.env.process(self.__add_mobile_agent(ides, gme))
-
-        ### ATENCION COONTROLAR VAR: INTERNAS
-        #self.alloc_DES[ides] = id_node
-
-        return ides
-
-    def load_user_tracks(self,tracks):
-        self.user_tracks = tracks
-
-        # self.user_tracks = AnimationTrack(df_points=tracks, dpi=300, bg_map=False, map_transparency=0.5)
-
-        # for i, (point, nextpoint) in enumerate(fig.compute_points()):
-        #     print i, point, nextpoint
-        #     if i == 2: break
-        # exit()
-
-    def generate_animation(self,pathFile):
-        if len(self.endpoints)==0: self.__update_connection_points()
-        if self.map == None: self.__load_map()
-
-        #map_endpoints = [self.map.to_pixels(i[0], i[1]) for i in self.endpoints]
-        #map_endpoints = np.array(map_endpoints)
-        self.map.img.save(pathFile+"_map_background.png")
-
-        animation = AnimationTrack(self, dpi=100, bg_map=True, aspect='equal')
-        animation.make_video(output_file=pathFile, framerate=10, linewidth=1.0,G=self.topology.G)
-
-
-    # def generate_snapshot(self, pathFile,event):
-    #     if len(self.endpoints) == 0: self.__update_connection_points()
-    #     if self.map == None: self.__load_map()
-    #
-    #     #map_endpoints = [self.map.to_pixels(i[0], i[1]) for i in self.endpoints]
-    #     #map_endpoints = np.array(map_endpoints)
-    #
-    #     animation = AnimationTrack(self, dpi=100, bg_map=True, aspect='equal')
-    #     animation.make_video(output_file=pathFile, framerate=10, linewidth=1.0)
-
-    def __load_map(self):
-        trk_bounds = self.user_tracks.get_bounds()
-        min_lat = trk_bounds.min_latitude
-        max_lat = trk_bounds.max_latitude
-        min_lng = trk_bounds.min_longitude
-        max_lng = trk_bounds.max_longitude
-
-        self.map = smopy.Map((min_lat, min_lng, max_lat, max_lng), z=12)
-
-
-    def __update_connection_points(self):
-        level = nx.get_node_attributes(self.topology.G, 'level')
-        lat = nx.get_node_attributes(self.topology.G, 'lat')
-        lng = nx.get_node_attributes(self.topology.G, 'lng')
-
-        self.endpoints = []
-        self.name_endpoints = {}
-        pos = 0
-        for n in level:
-            if level[n] == 0:
-                self.endpoints.append([lat[n], lng[n]])
-                self.name_endpoints[pos]=n
-                pos +=1
-        self.endpoints = np.array(self.endpoints)
-
-
-    def set_coverage_class(self, class_name,**kwargs):
-        if len(self.endpoints)==0: self.__update_connection_points()
-        if self.map == None: self.__load_map()
-
-        self.coverage = class_name(self.map,self.endpoints,**kwargs)
-
-    def set_mobile_fog_entities(self,mobile_fog_entities):
-        self.mobile_fog_entities = mobile_fog_entities
-
-    def set_movement_control(self,evol):
-        self.control_movement_class = evol
-
-    def run(self, until,test_initial_deploy=False,show_progress_monitor=True,mobile_behaviour=False):
         """
         Start the simulation
 
@@ -1236,18 +1134,16 @@ class Sim:
         """
         Creating app.sources and deploy the sources in the topology
         """
-        for pop in self.population_policy.itervalues():
-            for app_name in pop["apps"]:
-                pop["population_policy"].initial_allocation(self, app_name)
+        for pop in self.population_policy.items():
+            for app_name in pop[1]["apps"]:
+                pop[1]["population_policy"].initial_allocation(self, app_name)
 
         """
         Creating initial deploy of services
         """
-        for place in self.placement_policy.itervalues():
-            for app_name in place["apps"]:
-
-                print "APP_NAME ",app_name
-                place["placement_policy"].initial_allocation(self, app_name)  # internally consideres the apps in charge
+        for place in self.placement_policy.items():
+            for app_name in place[1]["apps"]:
+                place[1]["placement_policy"].initial_allocation(self, app_name)  # internally consideres the apps in charge
 
         """
         A internal DES process will stop the simulation,
@@ -1272,6 +1168,6 @@ class Sim:
         """
         self.until = until
         if not test_initial_deploy:
-            self.env.run(until=until) #This does not stop the simpy.simulation at time. We have to force the stop
+            self.env.run(until) #This does not stop the simpy.simulation at time. We have to force the stop
 
         self.metrics.close()

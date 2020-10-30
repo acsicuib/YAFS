@@ -1,0 +1,40 @@
+{
+  "initialAllocation": [
+    {
+      "module_name": "0_01",
+      "app": 0,
+      "id_resource": 0
+    },
+
+    {
+      "module_name": "1_01",
+      "app": 1,
+      "id_resource": 0
+    },
+    {
+      "module_name": "2_01",
+      "app": 2,
+      "id_resource": 0
+    },
+    {
+      "module_name": "3_01",
+      "app": 3,
+      "id_resource": 0
+    },
+    {
+      "module_name": "4_01",
+      "app": 4,
+      "id_resource": 0
+    },
+    {
+      "module_name": "5_01",
+      "app": 5,
+      "id_resource": 0
+    },
+    {
+      "module_name": "6_01",
+      "app": 6,
+      "id_resource": 0
+    }
+  ]
+}

@@ -189,7 +189,7 @@ def main(simulated_time, path,pathResults,case,it):
 
     evol.summarize()
 
-    print "----"
+    print("----")
     entities = s.get_alloc_entities()
     src_entities,modules_entities = Counter(),Counter()
     for k, v in entities.iteritems():
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         pathExperimento = "exp1/"
     #####
 
-    print "PATH EXPERIMENTO: ",pathExperimento
+    print("PATH EXPERIMENTO: ",pathExperimento)
     nSimulations = 1
     timeSimulation = 1000000#100000
     datestamp = time.strftime('%Y%m%d')
@@ -254,4 +254,4 @@ if __name__ == '__main__':
         print("\n--- %s seconds ---" % (time.time() - start_time))
         start_time = time.time()
 
-    print "Simulation Done"
+    print("Simulation Done")

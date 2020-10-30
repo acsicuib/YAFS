@@ -1,0 +1,230 @@
+[
+  {
+    "id": 0,
+    "name": 0,
+    "HwReqs": 1,
+    "MaxReqs": 200,
+    "MaxLatency": 50,
+
+    "transmission": [
+      {
+        "message_in": "M.USER.APP.0",
+        "module": "0_01"
+      }
+    ],
+    "module": [
+      {
+        "id": 1,
+        "name": "0_01",
+        "type": "MODULE",
+        "RAM": 1
+      }
+    ],
+    "message": [
+      {
+        "id": 0,
+        "name": "M.USER.APP.0",
+        "s": "None",
+        "d": "0_01",
+        "bytes": 20,
+        "instructions": 30
+      }
+    ]
+  },
+
+  {
+    "id": 1,
+    "name": 1,
+    "HwReqs": 1,
+    "MaxReqs": 200,
+    "MaxLatency": 50,
+
+    "transmission": [
+      {
+        "message_in": "M.USER.APP.1",
+        "module": "1_01"
+      }
+    ],
+    "module": [
+      {
+        "id": 1,
+        "name": "1_01",
+        "type": "MODULE",
+        "RAM": 1
+      }
+    ],
+    "message": [
+      {
+        "id": 0,
+        "name": "M.USER.APP.1",
+        "s": "None",
+        "d": "1_01",
+        "bytes": 20,
+        "instructions": 30
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": 2,
+    "HwReqs": 1,
+    "MaxReqs": 200,
+    "MaxLatency": 50,
+
+    "transmission": [
+      {
+        "message_in": "M.USER.APP.2",
+        "module": "2_01"
+      }
+    ],
+    "module": [
+      {
+        "id": 2,
+        "name": "2_01",
+        "type": "MODULE",
+        "RAM": 1
+      }
+    ],
+    "message": [
+      {
+        "id": 1,
+        "name": "M.USER.APP.2",
+        "s": "None",
+        "d": "2_01",
+        "bytes": 20,
+        "instructions": 30
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": 3,
+    "HwReqs": 1,
+    "MaxReqs": 200,
+    "MaxLatency": 50,
+
+
+    "transmission": [
+      {
+        "message_in": "M.USER.APP.3",
+        "module": "3_01"
+      }
+    ],
+    "module": [
+      {
+        "id": 3,
+        "name": "3_01",
+        "type": "MODULE",
+        "RAM": 1
+      }
+    ],
+    "message": [
+      {
+        "id": 2,
+        "name": "M.USER.APP.3",
+        "s": "None",
+        "d": "3_01",
+        "bytes": 20,
+        "instructions": 30
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": 4,
+    "HwReqs": 1,
+    "MaxReqs": 200,
+    "MaxLatency": 50,
+
+
+    "transmission": [
+      {
+        "message_in": "M.USER.APP.4",
+        "module": "4_01"
+      }
+    ],
+    "module": [
+      {
+        "id": 4,
+        "name": "4_01",
+        "type": "MODULE",
+        "RAM": 1
+      }
+    ],
+    "message": [
+      {
+        "id": 3,
+        "name": "M.USER.APP.4",
+        "s": "None",
+        "d": "4_01",
+        "bytes": 20,
+        "instructions": 30
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": 5,
+    "HwReqs": 1,
+    "MaxReqs": 200,
+    "MaxLatency": 50,
+
+
+    "transmission": [
+      {
+        "message_in": "M.USER.APP.5",
+        "module": "5_01"
+      }
+    ],
+    "module": [
+      {
+        "id": 5,
+        "name": "5_01",
+        "type": "MODULE",
+        "RAM": 1
+      }
+    ],
+    "message": [
+      {
+        "id": 4,
+        "name": "M.USER.APP.5",
+        "s": "None",
+        "d": "5_01",
+        "bytes": 20,
+        "instructions": 30
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": 6,
+    "HwReqs": 1,
+    "MaxReqs": 200,
+    "MaxLatency": 50,
+
+    "transmission": [
+      {
+        "message_in": "M.USER.APP.6",
+        "module": "6_01"
+      }
+    ],
+    "module": [
+      {
+        "id": 6,
+        "name": "6_01",
+        "type": "MODULE",
+        "RAM": 1
+      }
+    ],
+    "message": [
+      {
+        "id": 5,
+        "name": "M.USER.APP.6",
+        "s": "None",
+        "d": "6_01",
+        "bytes": 20,
+        "instructions": 30
+      }
+    ]
+  }
+]

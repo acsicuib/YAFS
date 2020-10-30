@@ -11,7 +11,7 @@ import json
 import networkx as nx
 import logging.config
 import subprocess
-import osmnx as ox
+
 
 import collections
 import pickle
@@ -291,7 +291,7 @@ if __name__ == '__main__':
         experiment_path = "/home/uib/src/YAFS/src/examples/ConquestService/exp/"
     else:
         experiment_path = "exp/"
-    print "Experiment Path ", experiment_path
+    print("Experiment Path ", experiment_path)
     #
 
     # Experiment variables
@@ -325,6 +325,7 @@ if __name__ == '__main__':
         input_directory = trajectories_path  # can load csv files
         logging.info("Loading trajectories from (raw files): %s" % input_directory)
         tracks = trackanimation.read_track(input_directory)
+
         tracks = tracks.time_video_normalize(time=number_simulation_steps, framerate=1)  # framerate must be one
         tracks.export(temporal_folder + "normalized_trajectories")
 
@@ -353,7 +354,7 @@ if __name__ == '__main__':
         print("\n--- %s seconds ---" % (time.time() - start_time))
         do_video_from_execution_snaps(temporal_folder + "animation_snaps", 'snap_%05d.png', 10)
 
-    print "Simulation Done!"
+    print("Simulation Done!")
     # ffmpeg -r 2 -i snap_%05d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out.mp4
 #ffmpeg -c:v -framerate 10 -f image2pipe -i snap_%03d.png -r 25 -s 1280x960 -pix_fmt yuv420p video_test.mp4
 #ffmpeg -r 1 -i snap_%05d.png -c:v libx264 -vf fps=1 -pix_fmt yuv420p out2.mp4

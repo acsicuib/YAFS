@@ -1,0 +1,28 @@
+{
+  "sources": [
+    {
+      "id_resource": 1,
+      "app": 0,
+      "message": "M.USER.APP.0",
+      "lambda": 200
+    },
+    {
+      "id_resource": 2,
+      "app": 1,
+      "message": "M.USER.APP.1",
+      "lambda": 200
+    },
+    {
+      "id_resource": 3,
+      "app": 2,
+      "message": "M.USER.APP.2",
+      "lambda": 500
+    },
+    {
+      "id_resource": 4,
+      "app": 3,
+      "message": "M.USER.APP.3",
+      "lambda": 500
+    }
+  ]
+}

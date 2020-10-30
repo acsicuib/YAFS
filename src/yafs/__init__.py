@@ -16,7 +16,6 @@ from yafs.population import Population,Statical
 from yafs.application import Application, Message
 from yafs.metrics import Metrics
 from yafs.distribution import *
-import yafs.utils
 
 def compile_toc(entries, section_marker='='):
     """Compiles a list of sections with objects into sphinx formatted
@@ -51,4 +50,4 @@ if __doc__:
 __all__ = [obj.__name__ for section, objs in toc for obj in objs]
 
 __path__ = extend_path(__path__, __name__)
-__version__ = '0.2'
+__version__ = '1.0'

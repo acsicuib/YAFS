@@ -1,7 +1,17 @@
 
 ![YAFS logo](https://github.com/acsicuib/YAFS/raw/master/docs/_static/yafs_logo.png)
 
-YAFS3
+NEWS
+====
+A new version of YAFS is available in the [branch](https://github.com/acsicuib/YAFS/tree/YAFS3).
+- Supports +Python3.6. 
+- Depends on fewer third libraries. It is lighter and easier to install.
+- It has 4 awesome "tutorial_scenarios" or skeletons so you can use them to create your scenario with artificial intelligence, rules, neural networks, ... with whatever you want.
+- Note: the examples in folder "examples" is not up to date for this version yet, but the code is kept for you to inspire.
+- Note: some parts of the Doc is not still updated. 
+
+DESCRIPTION
+===========
 
 YAFS (Yet Another Fog Simulator) is a simulator tool based on Python of architectures such as: [Fog Computing](https://en.wikipedia.org/wiki/Fog_computing) ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ... [IoT environments](https://en.wikipedia.org/wiki/Internet_of_things) are the most evident fact of this type of architecture.
 
@@ -57,19 +67,17 @@ YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 1. Clone the project in your local folder:
 
 ```bash
-    $ git clone https://github.com/acsicuib/YAFS
+    $ git clone --branch YAFS3 https://github.com/acsicuib/YAFS
 
 ```
 
-2. Install third-libraries with easy_install or pip commands
+2. Create one python virtual environment and install dependencies
 
-* Simpy, Networkx, Numpy, Pandas, tqdm
-* gpxpy, geopy, smopy, shapely, scipy, pyproj
-* Note: Thanks to David for creating a conda dependency installation file: [URL](https://github.com/davidperezabreu/toshare)
 ```bash
-   $ conda env update -f yafs.yml
+   (venv)$ python -m pip install -r requirements.txt
 ```
 
+3. I recommend you IDE such as Pycharm (educational licence) to configure Python paths.
 
 Getting started & your first execution
 --------------------------------------

@@ -3,7 +3,6 @@ import logging
 
 
 import networkx as nx
-import matplotlib.pyplot as plt
 import warnings
 
 
@@ -28,22 +27,9 @@ class Topology:
 
     def __init__(self, logger=None):
 
-        self.__idNode = -1
         # G is a nx.networkx graph
         self.G = None
-
-
-        # TODO VERSION 2. THIS VALUE SHOULD BE REMOVED
-        # INSTEAD USE NX.G. attributes
         self.nodeAttributes = {}
-
-
-        # A simple *cache* to have all cloud  nodes
-        # TODO VERSION 2. THIS VALUE SHOULD BE REMOVED
-        self.cloudNodes = []
-
-
-
         self.logger = logger or logging.getLogger(__name__)
 
 
@@ -100,7 +86,6 @@ class Topology:
         """
         if isinstance(G, nx.classes.graph.Graph):
             self.G = G
-            self.__idNode = len(G.nodes)
         else:
             raise TypeError
 
@@ -116,11 +101,14 @@ class Topology:
         """
         try:
             self.G = nxGraphGenerator(*params)
-            self.__idNode = len(self.G.node)
         except:
             raise Exception
 
     def load(self, data):
+        warnings.warn("The load function will merged with load_all_node_attr function",
+                      FutureWarning,
+                      stacklevel=8
+                      )
         """
             It generates the topology from a JSON file
             see project example: Tutorial_JSONModelling
@@ -141,23 +129,21 @@ class Topology:
         # Correct way to use custom and mandatory topology attributes
 
         valuesIPT = {}
-        valuesRAM = {}
+        # valuesRAM = {}
         for node in data["entity"]:
             try:
                 valuesIPT[node["id"]] = node["IPT"]
             except KeyError:
                 valuesIPT[node["id"]] = 0
-            try:
-                valuesRAM[node["id"]] = node["RAM"]
-            except KeyError:
-                valuesRAM[node["id"]] = 0
+            # try:
+            #     valuesRAM[node["id"]] = node["RAM"]
+            # except KeyError:
+            #     valuesRAM[node["id"]] = 0
 
 
         nx.set_node_attributes(self.G,values=valuesIPT,name="IPT")
-        nx.set_node_attributes(self.G,values=valuesRAM,name="RAM")
+        # nx.set_node_attributes(self.G,values=valuesRAM,name="RAM")
 
-
-        self.__idNode = len(self.G.nodes)
         self.__init_uptimes()
 
     def load_all_node_attr(self,data):
@@ -264,14 +250,3 @@ class Topology:
         return self.size()
 
 
-    def write(self,path):
-        nx.write_gexf(self.G, path)
-
-
-    def draw_png(self,path_file):
-        fig, ax = plt.subplots(nrows=1, ncols=1)
-        pos = nx.spring_layout(self.G)
-        nx.draw(self.G, pos)
-        labels = nx.draw_networkx_labels(self.G, pos)
-        fig.savefig(path_file)  # save the figure to file
-        plt.close(fig)  # close the figure

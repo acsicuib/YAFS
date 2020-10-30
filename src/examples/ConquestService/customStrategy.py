@@ -9,7 +9,7 @@ class CustomStrategy():
         self.pathResults = pathResults
 
     def summarize(self):
-        print "Number of evolutions %i" % self.activations
+        print("Number of evolutions %i" % self.activations)
 
     def deploy_module(self,sim,service,idtopo):
         app_name = service[0:service.index("_")]
@@ -57,9 +57,9 @@ class CustomStrategy():
         example: defaultdict(<type 'list'>, {u'2_19': [15], u'3_22': [5]})
         """
         current_services = sim.get_alloc_entities()
-        current_services = dict((k, v) for k, v in current_services.iteritems() if len(v)>0)
+        current_services = dict((k, v) for k, v in current_services.items() if len(v)>0)
         deployed_services = defaultdict(list)
-        for k,v  in current_services.iteritems():
+        for k,v  in current_services.items():
             for service_name in v:
                 if not "None" in service_name: #[u'2#2_19']
                     deployed_services[service_name[service_name.index("#")+1:]].append(k)
@@ -76,19 +76,19 @@ class CustomStrategy():
 
         # Current utilization of services
         services = defaultdict(list)
-        for k,v in routing.controlServices.iteritems():
+        for k,v in routing.controlServices.items():
             # print k[1]
             services[k[1]].append(v[0])
             # print v #[(node_src, service)] = (path, des)
-        print "Current utilization of services"
-        print services
-        print "-" * 30
+        print("Current utilization of services")
+        print(services)
+        print("-" * 30)
 
         # Current deployed services
-        print "Current deployed services"
+        print("Current deployed services")
         current_services = self.get_current_services(sim)
-        print current_services
-        print "-" * 30
+        print(current_services)
+        print("-" * 30)
 
         # Deployed services not used
         services_not_used = defaultdict(list)
@@ -108,16 +108,17 @@ class CustomStrategy():
                         services_not_used[k].append(service)
 
 
-        print "-- Servicios no usados"
-        print services_not_used
-        print "-"*30
+        print("-- Servicios no usados")
+        print(services_not_used)
+        print("-"*30)
 
-        # # We remove all the services not used but they have been called in a previous step
-        # for service_name,nodes in services_not_used.iteritems():
-        #     for node in nodes:
-        #         app_name = service_name[0:service_name.index("_")]
-        #         print " + Removing module: %s from node: %i"%(service_name,node)
-        #         sim.undeploy_module(app_name,service_name,node)
+        # We remove all the services not used but they have been called in a previous step
+        for service_name,nodes in services_not_used.items():
+            for node in nodes:
+                app_name = service_name[0:service_name.index("_")]
+                print(" + Removing module: %s from node: %i"%(service_name,node))
+                exit()
+                sim.undeploy_module(app_name,service_name,node)
 
         # por cada servicio se toma una decision:
         # clonarse
@@ -133,6 +134,9 @@ class CustomStrategy():
                         nextLocation = path[-2]
                         #TODO capacity control
                         if not self.is_already_deployed(sim,service,nextLocation):
+                            print(service)
+                            print(nextLocation)
+
                             self.deploy_module(sim,service,nextLocation)
 
         # entities = sim.get_alloc_entities()
