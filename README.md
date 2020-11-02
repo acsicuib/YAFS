@@ -4,11 +4,12 @@
 NEWS
 ====
 A new version of YAFS is available in the [branch](https://github.com/acsicuib/YAFS/tree/YAFS3).
-- Supports +Python3.6. 
-- Depends on fewer third libraries. It is lighter and easier to install.
+- It supports +Python3.6. 
+- It depends on fewer third libraries. It is lighter and easier to install.
 - It has 4 awesome "tutorial_scenarios" or skeletons so you can use them to create your scenario with artificial intelligence, rules, neural networks, ... with whatever you want.
-- Note: the examples in folder "examples" is not up to date for this version yet, but the code is kept for you to inspire.
-- Note: some parts of the Doc is not still updated. 
+- Notes:
+  - Previous examples in folder "examples" are not up to date for this version yet, but the code is kept for you to inspire.
+  - Some parts of the Doc are not still updated. 
 
 DESCRIPTION
 ===========
@@ -59,16 +60,15 @@ point for you. You can also try out some of the Examples (https://yafs.readthedo
 YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
 
 
-Installation
-------------
+Installation (updated)
+----------------------
 
-YAFS requires Python 2.7 (Python 3.6 or above is not supported)
+YAFS requires Python +3.6 ~~(Python 3.6 or above is not supported)~~
 
 1. Clone the project in your local folder:
 
 ```bash
     $ git clone --branch YAFS3 https://github.com/acsicuib/YAFS
-
 ```
 
 2. Create one python virtual environment and install dependencies
@@ -82,7 +82,9 @@ YAFS requires Python 2.7 (Python 3.6 or above is not supported)
 Getting started & your first execution
 --------------------------------------
 
+
 To run some folder project you can create a simple bash script, with the following lines (please update the path according with your system) or you can use a python editor such as: Pycharm, Spyder, etc.
+Personally, I recommend you Pycharm since it integrates all the paths.
 
 ```bash
 export PYTHONPATH=$PYTHONPATH:/<your path>/YAFS/src/:src/examples/Tutorial/
@@ -93,33 +95,6 @@ The [YAFS tutorial](https://yafs.readthedocs.io/en/latest/introduction/index.htm
 point for you. You can also try out some of the [Examples](https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
 YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
 
-
-A "SUPER" TIP: creating custom strategies
------------------------------------------
-We try to implement a wonderful tutorial but our time is limited. Thus, we can introduce this simple tip to create a custom strategy in the simulation.
-This example defines a **dynamical** strategy since along the simulation can altered other strategies or even the topology, the applications, or whatever thing that you wish to modify.
-
-For example, in your main.py function, you can declare a custom strategy with a deterministic distribution, and you can include the parameters that you want, i.e. the simulator class, and the routingPath.
-
-```python
-dStart = deterministicDistributionStartPoint(400, 100, name="Deterministic")
-evol= CustomStrategy()
-s.deploy_monitor("EvolutionOfServices",evol,dStart,**{"sim":s,"routing":selectorPath})
-```
-
-And finally you define the CustomStrategy() class:
-
-```python
-class CustomStrategy():
-
-    def __call__(self, sim,routing):
-        sim.print_debug_assignaments()
-        routing.print_control_services()
-        routing.my_var = False
-        #or whatever you want
-
-```
-**Note**: the sim variable is type of core.py, it means, it contains all the variables and strategies: topology, placements, applications, etc.
 
 Graph animations
 ----------------
