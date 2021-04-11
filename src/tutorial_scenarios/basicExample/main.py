@@ -11,6 +11,7 @@ import logging.config
 
 import networkx as nx
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 from yafs.core import Sim
 from yafs.application import create_applications_from_json
@@ -49,6 +50,11 @@ def main(stop_time, it):
     nx.write_gexf(t.G,folder_results+"graph_binomial_tree_%i"%size) # you can export the Graph in multiples format to view in tools like Gephi, and so on.
 
     print(t.G.nodes()) # nodes id can be str or int
+
+    # Plotting the graph
+    pos=nx.spring_layout(t.G)
+    nx.draw_networkx(t.G, pos, with_labels=True)
+    nx.draw_networkx_edge_labels(t.G, pos)
 
 
     """
@@ -122,3 +128,4 @@ if __name__ == '__main__':
         print("\n--- %s seconds ---" % (time.time() - start_time))
 
     print("Simulation Done!")
+    plt.show()
