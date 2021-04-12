@@ -130,7 +130,7 @@ def main(simulated_time):
     dDistribution = deterministic_distribution(name="Deterministic", time=100)
     pop.set_src_control({"model": "sensor-device", "number":1,"message": app.get_message("M.A"), "distribution": dDistribution})#5.1}})
 
-    """--
+    """
     SELECTOR algorithm
     """
     #Their "selector" is actually the shortest way, there is not type of orchestration algorithm.
@@ -145,7 +145,11 @@ def main(simulated_time):
     s = Sim(t, default_results_path=folder_results+"sim_trace")
     s.deploy_app2(app, placement, pop, selectorPath)
 
+    """
+    RUNNING - last step
+    """
     s.run(stop_time,show_progress_monitor=False)
+    s.print_debug_assignaments()
 
     # s.draw_allocated_topology() # for debugging
 
