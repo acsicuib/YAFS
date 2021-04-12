@@ -11,8 +11,11 @@
 
 """
 import random
-
+import networkx as nx
 import argparse
+from pathlib import Path
+import time
+import numpy as np
 
 from yafs.core import Sim
 from yafs.application import Application,Message
@@ -20,13 +23,12 @@ from yafs.application import Application,Message
 from yafs.population import *
 from yafs.topology import Topology
 
+from yafs.stats import Stats
+from yafs.distribution import deterministic_distribution
+from yafs.application import fractional_selectivity
+
 from selection_multipleDeploys import BroadPath,CloudPath_RR
 from placement_Cluster_Edge import CloudPlacement,FogPlacement
-from yafs.distribution import deterministicDistribution
-from yafs.utils import fractional_selectivity
-import time
-import numpy as np
-from yafs.stats import Stats
 
 
 
@@ -60,7 +62,7 @@ def create_application():
     MODULES/SERVICES: Definition of Generators and Consumers (AppEdges and TupleMappings in iFogSim)
     """
     # MODULE SOURCES: only periodic messages
-    dDistribution = deterministicDistribution(name="Deterministic", time=100)
+    dDistribution = deterministic_distribution(name="Deterministic", time=100)
 
     a.add_service_source("Calculator", dDistribution, m_player_game_state) #According with the comments on VRGameFog.java, the period is 100ms
     a.add_service_source("Coordinator", dDistribution, m_global_game_state)
@@ -136,6 +138,9 @@ def main(simulated_time,depth,police):
     #random.seed(RANDOM_SEED)
     #np.random.seed(RANDOM_SEED)
 
+    folder_results = Path("results/")
+    folder_results.mkdir(parents=True, exist_ok=True)
+    folder_results = str(folder_results)+"/"
 
     """
     TOPOLOGY from a json
@@ -148,10 +153,8 @@ def main(simulated_time,depth,police):
 
     t = Topology()
     t_json = create_json_topology(numOfDepts,numOfMobilesPerDept)
-    #print t_json
     t.load(t_json)
-
-    #t.write("network_%s.gexf"%depth)
+    nx.write_gexf(t.G,folder_results+"graph_main") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
 
 
     """
@@ -191,7 +194,7 @@ def main(simulated_time,depth,police):
     pop.set_sink_control({"model": "a","number":1,"module":app.get_sink_modules()})
 
     #In addition, a source includes a distribution function:
-    dDistribution = deterministicDistribution(name="Deterministic", time=100)
+    dDistribution = deterministic_distribution(name="Deterministic", time=100)
     pop.set_src_control({"model": "s", "number":1,"message": app.get_message("M.EGG"), "distribution": dDistribution})
 
     """--
@@ -209,15 +212,22 @@ def main(simulated_time,depth,police):
     """
 
     stop_time = simulated_time
-    s = Sim(t, default_results_path="Results_%s_%i_%i" % (police, stop_time, depth))
-    s.deploy_app(app, placement, pop, selectorPath)
+    s = Sim(t, default_results_path=folder_results+"Results_%s_%i_%i" % (police, stop_time, depth))
+    s.deploy_app2(app, placement, pop, selectorPath)
 
+    """
+    RUNNING - last step
+    """
     s.run(stop_time,test_initial_deploy=False,show_progress_monitor=False)
+    s.print_debug_assignaments()
     # s.draw_allocated_topology() # for debugging
 
 if __name__ == '__main__':
     import logging.config
     import os
+    folder_results = Path("results/")
+    folder_results.mkdir(parents=True, exist_ok=True)
+    folder_results = str(folder_results)+"/"
 
     time_loops = [["M.EGG", "M.Sensor", "M.Concentration"]]
 
@@ -246,12 +256,8 @@ if __name__ == '__main__':
         police = str(args.police)
 
     # police ="edge"
-
-
-    for i in xrange(50):
-
-        main(stop_time,dep,police)
-        s = Stats(defaultPath="Results_%s_%s_%s" % (police, stop_time, dep))
-        print "%f," %(s.valueLoop(stop_time, time_loops=time_loops))
+    main(stop_time,dep,police)
+    s = Stats(defaultPath=folder_results+"Results_%s_%s_%s" % (police, stop_time, dep))
+    print("%f," %(s.valueLoop(stop_time, time_loops=time_loops)))
 
     print("\n--- %s seconds ---" % (time.time() - start_time))
