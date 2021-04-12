@@ -47,5 +47,5 @@ class SimpleDynamicChanges(Population):
         else:
             self.run_times -=1
             # Run whatever you want
-            print "Running Population-Evolution: %i" %self.run_times
+            print("Running Population-Evolution: %i" %self.run_times)
 
