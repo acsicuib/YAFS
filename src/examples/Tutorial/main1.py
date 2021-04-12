@@ -6,8 +6,11 @@
 
 """
 import random
-
+import networkx as nx
 import argparse
+from pathlib import Path
+import time
+import numpy as np
 
 from yafs.core import Sim
 from yafs.application import Application,Message
@@ -18,10 +21,8 @@ from yafs.topology import Topology
 from simpleSelection import MinimunPath
 from simplePlacement import CloudPlacement
 from yafs.stats import Stats
-from yafs.distribution import deterministicDistribution
-from yafs.utils import fractional_selectivity
-import time
-import numpy as np
+from yafs.distribution import deterministic_distribution
+from yafs.application import fractional_selectivity
 
 RANDOM_SEED = 1
 
@@ -90,13 +91,17 @@ def main(simulated_time):
     random.seed(RANDOM_SEED)
     np.random.seed(RANDOM_SEED)
 
+    folder_results = Path("results/")
+    folder_results.mkdir(parents=True, exist_ok=True)
+    folder_results = str(folder_results)+"/"
+
     """
     TOPOLOGY from a json
     """
     t = Topology()
     t_json = create_json_topology()
     t.load(t_json)
-    t.write("network.gexf")
+    nx.write_gexf(t.G,folder_results+"graph_main1") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
 
     """
     APPLICATION
@@ -124,7 +129,7 @@ def main(simulated_time):
     pop.set_sink_control({"model": "actuator-device","number":1,"module":app.get_sink_modules()})
 
     #In addition, a source includes a distribution function:
-    dDistribution = deterministicDistribution(name="Deterministic",time=100)
+    dDistribution = deterministic_distribution(name="Deterministic",time=100)
     pop.set_src_control({"model": "sensor-device", "number":1,"message": app.get_message("M.A"), "distribution": dDistribution})
 
     """--
@@ -139,9 +144,14 @@ def main(simulated_time):
     """
 
     stop_time = simulated_time
-    s = Sim(t, default_results_path="Results")
-    s.deploy_app(app, placement, pop, selectorPath)
-    s.run(stop_time,show_progress_monitor=False)
+    s = Sim(t, default_results_path=folder_results+"sim_trace")
+    s.deploy_app2(app, placement, pop, selectorPath)
+
+    """
+    RUNNING - last step
+    """
+    s.run(stop_time, show_progress_monitor=False)  # To test deployments put test_initial_deploy a TRUE
+    s.print_debug_assignaments()
 
     # s.draw_allocated_topology() # for debugging
 
@@ -160,9 +170,9 @@ if __name__ == '__main__':
     # print "-"*20
     # print "Results:"
     # print "-" * 20
-    m = Stats(defaultPath="Results") #Same name of the results
-    time_loops = [["M.A", "M.B"]]
-    m.showResults2(1000, time_loops=time_loops)
+    # m = Stats(defaultPath="Results") #Same name of the results
+    # time_loops = [["M.A", "M.B"]]
+    # m.showResults2(1000, time_loops=time_loops)
     # print "\t- Network saturation -"
     # print "\t\tAverage waiting messages : %i" % m.average_messages_not_transmitted()
     # print "\t\tPeak of waiting messages : %i" % m.peak_messages_not_transmitted()PartitionILPPlacement

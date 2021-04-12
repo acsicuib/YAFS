@@ -4,8 +4,11 @@
 
 """
 import random
-
+import networkx as nx
 import argparse
+from pathlib import Path
+import time
+import numpy as np
 
 from yafs.core import Sim
 from yafs.application import Application,Message
@@ -13,13 +16,11 @@ from yafs.application import Application,Message
 from yafs.population import *
 from yafs.topology import Topology
 
-from simpleSelection import MinPath_RoundRobin
+from simpleSelection import MinimunPath
 from simplePlacement import CloudPlacement
-from yafs.distribution import deterministicDistribution
-from yafs.utils import fractional_selectivity
 from yafs.stats import Stats
-import time
-import numpy as np
+from yafs.distribution import deterministic_distribution
+from yafs.application import fractional_selectivity
 
 RANDOM_SEED = 1
 
