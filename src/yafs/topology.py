@@ -205,7 +205,7 @@ class Topology:
         Returns:
             A list with the ID of each node that have the same attribute that the value.value
         """
-        keyS = value.keys()[0]
+        keyS = list(value.keys())[0]
 
         result = []
         for key in self.nodeAttributes.keys():
