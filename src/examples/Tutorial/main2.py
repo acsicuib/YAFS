@@ -115,7 +115,8 @@ def main(simulated_time):
     """
     POPULATION algorithm
     """
-    #In ifogsim, during the creation of the application, the Sensors are assigned to the topology, in this case no. As mentioned, YAFS differentiates the adaptive sensors and their topological assignment.
+    #In ifogsim, during the creation of the application, the Sensors are assigned to the topology, in this case no. As mentioned,
+    # YAFS differentiates the adaptive sensors and their topological assignment.
     #In their case, the use a statical assignment.
     pop = Statical("Statical")
     #For each type of sink modules we set a deployment on some type of devices
