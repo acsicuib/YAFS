@@ -7,7 +7,6 @@ Created on Thu Jul  5 12:02:41 2018
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import Series, date_range
 import matplotlib.pyplot as plt
@@ -64,7 +63,7 @@ def getRbyApp(df,dtmp):
         dsv = resp.std()
         dr.loc[ixloc] = [g[0],g[1],avg,dsv,mode,resp,invalid,over]
         ixloc+=1
-        print g,"\t",len(dtmp[g]),"\t",invalid,"\t",over
+        print(g,"\t",len(dtmp[g]),"\t",invalid,"\t",over)
            
     return dr,times
 
@@ -101,8 +100,8 @@ def drawBoxPlot_Both_USER(app,dr,drILP):
     data_a=dr[dr.app==app].r.values
     data_b=drILP[drILP.app==app].r.values
     ticks = list(np.sort(dr[dr.app==app].user.unique()))
-    bpl = plt.boxplot(data_a, positions=np.array(xrange(len(data_a)))*2.0-0.4, sym='', widths=0.6)
-    bpI = plt.boxplot(data_b, positions=np.array(xrange(len(data_b)))*2.0+0.4, sym='', widths=0.6)
+    bpl = plt.boxplot(data_a, positions=np.array(range(len(data_a)))*2.0-0.4, sym='', widths=0.6)
+    bpI = plt.boxplot(data_b, positions=np.array(range(len(data_b)))*2.0+0.4, sym='', widths=0.6)
     set_box_color(bpl, '#5ab4ac') # colors are from http://colorbrewer2.org/
     set_box_color(bpI, '#d8b365')
     # draw temporary red and blue lines and use them to create a legend
@@ -110,7 +109,7 @@ def drawBoxPlot_Both_USER(app,dr,drILP):
     plt.plot([], c='#d8b365', label='ILP') 
     plt.legend()
     
-    plt.xticks(xrange(0, len(ticks) * 2, 2), ticks)
+    plt.xticks(range(0, len(ticks) * 2, 2), ticks)
     plt.xlim(-2, len(ticks)*2)
     #plt.ylim(0, 10000)
 #    plt.ylim(00, 1000)
@@ -129,8 +128,8 @@ def drawBoxPlot_App(dar,darILP,labeldar="Partition",labelILP="ILP"):
     data_b=darILP.r.values
     ticks = list(np.sort(dar.app.unique()))
       
-    bpl = plt.boxplot(data_a, positions=np.array(xrange(len(data_a)))*2.0-0.4, sym='', widths=0.6)
-    bpI = plt.boxplot(data_b, positions=np.array(xrange(len(data_b)))*2.0+0.4, sym='', widths=0.6)
+    bpl = plt.boxplot(data_a, positions=np.array(range(len(data_a)))*2.0-0.4, sym='', widths=0.6)
+    bpI = plt.boxplot(data_b, positions=np.array(range(len(data_b)))*2.0+0.4, sym='', widths=0.6)
     set_box_color(bpl, '#5ab4ac') # colors are from http://colorbrewer2.org/
     set_box_color(bpI, '#d8b365')
     # draw temporary red and blue lines and use them to create a legend
@@ -138,7 +137,7 @@ def drawBoxPlot_App(dar,darILP,labeldar="Partition",labelILP="ILP"):
     plt.plot([], c='#d8b365', label=labelILP) 
     plt.legend()
     
-    plt.xticks(xrange(0, len(ticks) * 2, 2), ticks)
+    plt.xticks(range(0, len(ticks) * 2, 2), ticks)
     plt.xlim(-2, len(ticks)*2)
     #plt.ylim(50, 400)
     #plt.ylim(0, 10000)
@@ -304,11 +303,11 @@ def drawBoxPlot_Both_USER_ax(app,dr,drILP,ax):
     data_a=dr[dr.app==app].r.values
     data_b=drILP[drILP.app==app].r.values
     ticks = list(np.sort(dr[dr.app==app].user.unique()))
-    bpl = ax.boxplot(data_a, positions=np.array(xrange(len(data_a)))*2.0-0.4, sym='', widths=0.6)
-    bpI = ax.boxplot(data_b, positions=np.array(xrange(len(data_b)))*2.0+0.4, sym='', widths=0.6)
+    bpl = ax.boxplot(data_a, positions=np.array(range(len(data_a)))*2.0-0.4, sym='', widths=0.6)
+    bpI = ax.boxplot(data_b, positions=np.array(range(len(data_b)))*2.0+0.4, sym='', widths=0.6)
     set_box_color(bpl, '#5ab4ac')
     set_box_color(bpI, '#d8b365')
-    ax.get_xaxis().set_ticks(xrange(0, len(ticks) * 2, 2))
+    ax.get_xaxis().set_ticks(range(0, len(ticks) * 2, 2))
     ax.set_xticklabels(ticks)
     ax.set_xlim(-2, len(ticks)*2)
     ax.plot([], c='#5ab4ac', label="Partition")

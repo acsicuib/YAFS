@@ -6,20 +6,22 @@
 
 """
 import json
+import numpy as np
+import time
+import random
+import networkx as nx
 
 from yafs.core import Sim
-from yafs.application import Application,Message
+from yafs.application import Application,Message,fractional_selectivity
 from yafs.topology import Topology
 from yafs.placement import JSONPlacement,JSONPlacementOnCloud
 from yafs.distribution import *
-import numpy as np
 
-from yafs.utils import fractional_selectivity
 
 from selection_multipleDeploys import DeviceSpeedAwareRouting
 from jsonPopulation import JSONPopulation
 
-import time
+
 
 RANDOM_SEED = 1
 
@@ -83,14 +85,14 @@ def failureControl(sim,filelog,ids):
 
         keys_DES,someModuleDeployed = getProcessFromThatNode(sim, node_to_remove)
 
-        print "\n\nRemoving node: %i, Total nodes: %i" % (node_to_remove, len(nodes))
-        print "\tStopping some DES processes: %s\n\n"%keys_DES
+        print("\n\nRemoving node: %i, Total nodes: %i" % (node_to_remove, len(nodes)))
+        print("\tStopping some DES processes: %s\n\n"%keys_DES)
         filelog.write("%i,%s,%d\n"%(node_to_remove, someModuleDeployed,sim.env.now))
 
         ##Print some information:
         for des in keys_DES:
             if des in sim.alloc_source.keys():
-                print "Removing a Gtw/User entity\t"*4
+                print("Removing a Gtw/User entity\t"*4)
 
         sim.remove_node(node_to_remove)
         for key in keys_DES:
@@ -109,7 +111,8 @@ def main(simulated_time,experimento,ilpPath):
     t = Topology()
     dataNetwork = json.load(open(experimento+'networkDefinition.json'))
     t.load(dataNetwork)
-    t.write("network.gexf")
+    nx.write_gexf(t.G,"graph_main1") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
+
 
     """
     APPLICATION
@@ -159,7 +162,7 @@ def main(simulated_time,experimento,ilpPath):
 
     #For each deployment the user - population have to contain only its specific sources
     for aName in apps.keys():
-        print "Deploying app: ",aName
+        print("Deploying app: ",aName)
         pop_app = JSONPopulation(name="Statical_%s"%aName,json={})
         data = []
         for element in pop.data["sources"]:
@@ -167,7 +170,7 @@ def main(simulated_time,experimento,ilpPath):
                 data.append(element)
         pop_app.data["sources"]=data
 
-        s.deploy_app(apps[aName], placement, pop_app, selectorPath)
+        s.deploy_app2(apps[aName], placement, pop_app, selectorPath)
 
 
     s.run(stop_time, test_initial_deploy=False, show_progress_monitor=False) #TEST to TRUE
@@ -183,13 +186,13 @@ if __name__ == '__main__':
     logging.config.fileConfig(os.getcwd()+'/logging.ini')
 
     start_time = time.time()
-    print "Running Partition"
+    print("Running Partition")
     main(simulated_time=100000,  experimento=pathExperimento,ilpPath='')
-    print "Running: ILP "
+    print("Running: ILP ")
     main(simulated_time=100000,  experimento=pathExperimento, ilpPath='ILP')
 
 
-    print "Simulation Done"
+    print("Simulation Done")
     print("\n--- %s seconds ---" % (time.time() - start_time))
 
 
