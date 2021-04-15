@@ -4,12 +4,12 @@
 NEWS
 ====
 A new version of YAFS is available in the [branch](https://github.com/acsicuib/YAFS/tree/YAFS3).
-- It supports +Python3.6. 
+- It supports Python 3.6+. 
 - It depends on fewer third-party libraries. It is lighter and easier to install.
-- It has 4 awesome "tutorial_scenarios" or skeletons so you can use them to create your scenario with artificial intelligence, rules, neural networks, ... with whatever you want.
+- It has 4 new awesome "tutorial_scenarios" or skeletons so you can use them to create your scenario with artificial intelligence, rules, neural networks, ... with whatever you want.
 - Notes:
-  - Previous examples in folder "examples" are not up to date for this version yet, but the code is kept for you to inspire.
-  - Some parts of the Doc are still not updated. 
+  - Most of the previous examples in folder "examples" are now up to date for this version, but the code for the examples which are not updated are still kept for you to inspire.
+  - Some parts of the Doc is still not updated. 
 
 DESCRIPTION
 ===========
@@ -63,7 +63,7 @@ YAFS but in any case you have to understand the main concepts of Cloud Computing
 Installation (updated)
 ----------------------
 
-YAFS requires Python +3.6 ~~(Python 3.6 or above is not supported)~~
+YAFS3 (New Branch) requires Python 3.6+ ~~
 
 1. Clone the project in your local folder:
 
