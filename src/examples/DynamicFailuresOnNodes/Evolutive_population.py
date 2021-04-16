@@ -76,7 +76,7 @@ class Pop_and_Failures(Population):
                 is_removable,keys_DES,someModuleDeployed = self.getProcessFromThatNode(sim,node_to_remove)
 
             self.logger.debug("Removing node: %i, Total nodes: %i" % (node_to_remove, len(nodes)))
-            print "\tStopping some DES processes: %s"%keys_DES
+            print("\tStopping some DES processes: %s"%keys_DES)
 
             self.nodes_removed.append({"id":node_to_remove,"module":someModuleDeployed,"time":sim.env.now})
 

@@ -15,7 +15,7 @@ for item in routes:
 
 import matplotlib.pyplot as plt
 import numpy as np
-print np.histogram(lastDevices,bins=range(101))
+print(np.histogram(lastDevices,bins=range(101)))
 plt.hist(lastDevices, bins=100)  # arguments are passed to np.histogram
 plt.title("Selection Histogram")
 plt.show()

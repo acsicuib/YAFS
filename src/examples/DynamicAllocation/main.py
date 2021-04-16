@@ -16,7 +16,7 @@ from yafs.core import Sim
 from yafs.application import Application,Message
 from yafs.topology import Topology
 from yafs.placement import *
-from yafs.distribution import deterministicDistribution,deterministicDistributionStartPoint
+from yafs.distribution import deterministic_distribution,deterministicDistributionStartPoint
 
 from Evolutive_population import Evolutive,Statical
 from selection_multipleDeploys import  CloudPath_RR,BroadPath
@@ -59,14 +59,14 @@ def main(simulated_time):
     li = {x: int(x) for x in ls}
     nx.relabel_nodes(t.G, li, False) #Transform str-labels to int-labels
 
-    print "Nodes: %i" %len(t.G.nodes())
-    print "Edges: %i" %len(t.G.edges())
+    print("Nodes: %i" %len(t.G.nodes()))
+    print("Edges: %i" %len(t.G.edges()))
     #MANDATORY fields of a link
     # Default values =  {"BW": 1, "PR": 1}
-    valuesOne = dict(itertools.izip(t.G.edges(),np.ones(len(t.G.edges()))))
+    attPR_BW = {x: 1 for x in t.G.edges()}
 
-    nx.set_edge_attributes(t.G, name='BW', values=valuesOne)
-    nx.set_edge_attributes(t.G, name='PR', values=valuesOne)
+    nx.set_edge_attributes(t.G, name='BW', values=attPR_BW)
+    nx.set_edge_attributes(t.G, name='PR', values=attPR_BW)
 
     centrality = nx.betweenness_centrality(t.G)
     nx.set_node_attributes(t.G, name="centrality", values=centrality)
@@ -76,11 +76,11 @@ def main(simulated_time):
     top20_devices =  sorted_clustMeasure[:20]
     main_fog_device = copy.copy(top20_devices[0][0])
 
-    print "-" * 20
-    print "Top 20 centralised nodes:"
+    print("-" * 20)
+    print("Top 20 centralised nodes:")
     for item in top20_devices:
-        print item
-    print "-"*20
+        print(item)
+    print("-"*20)
     """
     APPLICATION
     """
@@ -97,9 +97,9 @@ def main(simulated_time):
     POPULATION algorithm
     """
     number_generators = int(len(t.G)*0.1)
-    print number_generators
+    print(number_generators)
     dDistribution = deterministicDistributionStartPoint(3000,300,name="Deterministic")
-    dDistributionSrc = deterministicDistribution(name="Deterministic", time=10)
+    dDistributionSrc = deterministic_distribution(name="Deterministic", time=10)
     pop1 = Evolutive(top20_devices,number_generators,name="top",activation_dist=dDistribution)
     pop1.set_sink_control({"app":app1.name,"number": 1, "module": app1.get_sink_modules()})
     pop1.set_src_control(
@@ -128,7 +128,7 @@ def main(simulated_time):
     """
 
     s = Sim(t, default_results_path="Results_%s_singleApp1" % (simulated_time))
-    s.deploy_app(app1, placement, pop1, selectorPath1)
+    s.deploy_app2(app1, placement, pop1, selectorPath1)
     # s.deploy_app(app2, placement, pop2,  selectorPath2)
 
     s.run(simulated_time,test_initial_deploy=False,show_progress_monitor=False)

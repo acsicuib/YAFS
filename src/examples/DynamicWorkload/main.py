@@ -11,6 +11,14 @@ import random
 """
 
 import argparse
+import itertools
+import time
+import operator
+import copy
+import networkx as nx
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 from yafs.core import Sim
 from yafs.application import Application,Message
@@ -21,14 +29,6 @@ from yafs.distribution import *
 from Evolutive_population import Population_Move
 from selection_multipleDeploys import  CloudPath_RR
 
-import pylab as plt
-import itertools
-import time
-import operator
-import copy
-import networkx as nx
-import numpy as np
-import pandas as pd
 
 RANDOM_SEED = 1
 
@@ -61,14 +61,14 @@ def main(simulated_time):
     li = {x: int(x) for x in ls}
     nx.relabel_nodes(t.G, li, False) #Transform str-labels to int-labels
 
-    print "Nodes: %i" %len(t.G.nodes())
-    print "Edges: %i" %len(t.G.edges())
+    print("Nodes: %i" %len(t.G.nodes()))
+    print("Edges: %i" %len(t.G.edges()))
     #MANDATORY fields of a link
     # Default values =  {"BW": 1, "PR": 1}
-    valuesOne = dict(itertools.izip(t.G.edges(),np.ones(len(t.G.edges()))))
+    attPR_BW = {x: 1 for x in t.G.edges()}
 
-    nx.set_edge_attributes(t.G, name='BW', values=valuesOne)
-    nx.set_edge_attributes(t.G, name='PR', values=valuesOne)
+    nx.set_edge_attributes(t.G, name='BW', values=attPR_BW)
+    nx.set_edge_attributes(t.G, name='PR', values=attPR_BW)
 
     centrality = nx.betweenness_centrality(t.G)
     nx.set_node_attributes(t.G, name="centrality", values=centrality)
@@ -90,9 +90,9 @@ def main(simulated_time):
     # plt.savefig('labels.png')
     # exit()
 
-    print "-" * 20
-    print "Best top centralized device: ",main_fog_device
-    print "-"*20
+    print("-" * 20)
+    print("Best top centralized device: ",main_fog_device)
+    print("-"*20)
 
     """
     APPLICATION
@@ -110,7 +110,7 @@ def main(simulated_time):
     POPULATION algorithm
     """
     number_generators = int(len(t.G)*0.1)
-    print "Number of generators %i"%number_generators
+    print("Number of generators %i"%number_generators)
 
     #you can use whatever funciton to change the topology
     dStart = deterministicDistributionStartPoint(500, 400, name="Deterministic")
@@ -119,7 +119,7 @@ def main(simulated_time):
 
 
 
-    dDistribution = deterministicDistribution(name="Deterministic", time=100)
+    dDistribution = deterministic_distribution(name="Deterministic", time=100)
     pop.set_src_control(
         {"number": 1, "message": app1.get_message("M.Action"), "distribution": dDistribution})
 
@@ -136,7 +136,7 @@ def main(simulated_time):
     SIMULATION ENGINE
     """
     s = Sim(t, default_results_path="Results_%s" % (simulated_time))
-    s.deploy_app(app1, placement, pop, selectorPath)
+    s.deploy_app2(app1, placement, pop, selectorPath)
 
     s.run(simulated_time,test_initial_deploy=False,show_progress_monitor=False)
 

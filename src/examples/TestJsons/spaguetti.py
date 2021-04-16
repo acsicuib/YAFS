@@ -503,20 +503,20 @@ def normalizeIncludePrevious(transitivesClosures):
 
     for n in transitivesClosures:
         if verbose_log:
-            print "level"
-            print n
+            print("level")
+            print(n)
         toInclude = set()
         for i in transitivesClosures[n]:
             current =  createSetFromSetOfSets(transitivesClosures[n])
             for j in previous:
                 if len(j & current)==0:
                     if verbose_log:
-                        print "individual"
-                        print j
+                        print("individual")
+                        print(j)
                     toInclude.add(j)
         if verbose_log:
-            print "final"
-            print toInclude
+            print("final")
+            print(toInclude)
         transitivesClosures[n] = transitivesClosures[n] | toInclude
         previous = transitivesClosures[n]
 
@@ -531,7 +531,7 @@ def getTransitiveClosures(source, app_, transitivesClosures,cycles_, level):
 #        sys.exit("Error message")
 
     if verbose_log:
-        print source
+        print(source)
 #    raw_input()
     neighbords_=list(app_.neighbors(source))
     if not level in transitivesClosures:
@@ -562,7 +562,7 @@ def getTransitiveClosures(source, app_, transitivesClosures,cycles_, level):
 #    print level
     if not tmp in transitivesClosures[level]:
         if verbose_log:
-            print tmp
+            print(tmp)
         transitivesClosures[level].add(tmp)
         if not tmp in cycles_:
 
@@ -602,10 +602,10 @@ def transitiveClosureCalculation(source,app_):
 
     for i in nx.simple_cycles(app_):
         if verbose_log:
-            print i
+            print(i)
         tmp = frozenset(i)
         if verbose_log:
-            print tmp
+            print(tmp)
         cycles_.add(tmp)
 
 
@@ -645,13 +645,13 @@ def devicesFirstFitDescendingOrder(community,clientId,appId):
 
     for devId in community:
         if verbose_log:
-            print "fitness for device "+str(devId)+ " from client "+str(clientId)
+            print("fitness for device "+str(devId)+ " from client "+str(clientId))
         processTime = mips_ / float(devices[devId]['IPT']) # tiempo de ejecutar todos los servicios de la app
         if verbose_log:
-            print processTime
+            print(processTime)
         netTime = nx.shortest_path_length(G,source=clientId,target=devId,weight="weight")    #tiempo de red entre cliente y dispositivo
         if verbose_log:
-            print netTime
+            print(netTime)
         nodeFitness[devId] = processTime + netTime
 
 
@@ -695,18 +695,18 @@ def placeSubAppInCommunity(appId, subAppCommunity, orderedDevices):
 
     for devId in orderedDevices:
         if verbose_log:
-            print "            Testing service set "+str(subAppCommunity)+" of app "+str(appId)+" in device "+str(devId)
+            print("            Testing service set "+str(subAppCommunity)+" of app "+str(appId)+" in device "+str(devId))
         neededResources = 0.0
         for servId in servicesToPlace:
             if service2DevicePlacementMatrix[servId][devId]!=1:
                 neededResources = neededResources + appsResources[appId][servId]
         if availableResourcesNodes[devId] < neededResources:
             if verbose_log:
-                print "            Performed allocation of service set "+str(subAppCommunity)+" of app "+str(appId)+" in device "+str(devId)
+                print("            Performed allocation of service set "+str(subAppCommunity)+" of app "+str(appId)+" in device "+str(devId))
             return True,devId
         else:
             if verbose_log:
-                print "            Not allocatted due to not enough resources in device"
+                print("            Not allocatted due to not enough resources in device")
 
 
     return False,-1
@@ -733,7 +733,7 @@ def placeAppInCommunityOLD(appId, clientId, candidateCommunity):
 
         if appCommu[0] == appCommu[0] & servicesToPlace:  #la comunidad de app que pillo ahora, tiene todos sus servicios pendientes de allocar? comunidad = comunidad INTERSCCION PENDIENTES
             if verbose_log:
-                print "        Testing service set "+str(appCommu)+" of app "+str(appId)+" in community "+str(candidateCommunity)
+                print("        Testing service set "+str(appCommu)+" of app "+str(appId)+" in community "+str(candidateCommunity))
 
             allocat_, devId = placeSubAppInCommunity(appId,appCommu[0],orderedDevices)
             if allocat_:
@@ -749,13 +749,12 @@ def placeAppInCommunityOLD(appId, clientId, candidateCommunity):
 
                 servicesToPlace = servicesToPlace - appCommu[0]
                 if verbose_log:
-                    print "        Allocated. Remaining services "+str(servicesToPlace)
+                    print("        Allocated. Remaining services "+str(servicesToPlace))
                 if len(servicesToPlace)==0:
                     return True,servicePlacement
             else:
                 if verbose_log:
-                    print "        Not allocated"
-
+                    print("        Not allocated")
 
     return False,servicePlacement
 
@@ -807,7 +806,7 @@ def placeAppInCommunity(appId, clientId, candidateCommunity):
                     if availableResourcesNodes[devId]>requiredResources:
                         servicesToPlace = servicesToPlace - serviceSet
                         if verbose_log:
-                            print "        Temp-allocation of services "+str(serviceSet)+" in device "+str(devId)
+                            print("        Temp-allocation of services "+str(serviceSet)+" in device "+str(devId))
                         for service in serviceSet:
                             tempServiceAlloc[service]= devId
                         availableResourcesNodes[devId] = availableResourcesNodes[devId] - requiredResources
@@ -817,8 +816,8 @@ def placeAppInCommunity(appId, clientId, candidateCommunity):
                             return True,tempServiceAlloc
 
     if verbose_log:
-        print "        Rejected the temporal allocations"
-        print "        Application not allocated in community"
+        print("        Rejected the temporal allocations")
+        print("        Application not allocated in community")
     myemptydict = {}
     return False, myemptydict
 
@@ -868,20 +867,20 @@ def placeAppInCommunity2(appId, clientId, candidateCommunity):
             for devId in orderedDevices:
                 if availableResourcesNodes[devId]>requiredResources:
                     if verbose_log:
-                        print "        Temp-allocation of services "+str(serviceSet)+" in device "+str(devId)
+                        print("        Temp-allocation of services "+str(serviceSet)+" in device "+str(devId))
                     for service in serviceSet:
                         tempServiceAlloc[service]= devId
                     availableResourcesNodes[devId] = availableResourcesNodes[devId] - requiredResources
                     break
             else: #este else solo se ejecuta si el for devId... llega a su fin, sin haber encontrado un device con espacio suficiente, es decir si NO ha salido por el break
                 if verbose_log:
-                    print "        Rejected the current allocation"
+                    print("        Rejected the current allocation")
                 break
         else: #este else solo se ejecuta cuando acabamos el bucle for serviceSet in... por haber llegado al final y no haber hecho un break por no tener sitio para algun set of services, es decir, si han allocated todos los conjuntos de servicios
             if verbose_log:
-                print "        Finally we allocate the transitive closure level "+ str(listOfTransitiveClosures)
+                print("        Finally we allocate the transitive closure level "+ str(listOfTransitiveClosures))
             if verbose_log:
-                print "        and the allocation is defined as "+ str(tempServiceAlloc)
+                print("        and the allocation is defined as "+ str(tempServiceAlloc))
             return True,tempServiceAlloc
 
     myemptydict = {}
@@ -1170,7 +1169,7 @@ for i in range(0,TOTALNUMBEROFAPPS):
             myApp['message'].append(myEdge)
             appsSourceMessage.append(myEdge)
             if verbose_log:
-                print "AÑADO MENSAGE SOURCE"
+                print("AÑADO MENSAGE SOURCE")
             for o in APP.edges:
                 if o[0]==source:
                     myTransmission = {}
@@ -1298,7 +1297,7 @@ file.close()
 #****************************************************************************************************
 
 
-service2DevicePlacementMatrix = [[0 for j in xrange(len(G.nodes))] for i in xrange(numberOfServices)]
+service2DevicePlacementMatrix = [[0 for j in range(len(G.nodes))] for i in range(numberOfServices)]
 
 community2AppPlacementDict = {}
 for myCommunity in sortedCommunities:
@@ -1327,7 +1326,7 @@ for i in G.nodes:
 
 sortedAppsDeadlines = sorted(appsDeadlines.items(), key=operator.itemgetter(1))
 
-print "Starting placement policy....."
+print("Starting placement policy.....")
 
 for appToAllocate in sortedAppsDeadlines:
     appId=appToAllocate[0]
@@ -1335,19 +1334,19 @@ for appToAllocate in sortedAppsDeadlines:
     nodesWithClients = appsRequests[appId]
     for clientId in nodesWithClients:
         if verbose_log:
-            print "Starting placement of app "+str(appId)+" for client "+str(clientId)
+            print("Starting placement of app "+str(appId)+" for client "+str(clientId))
         placed_=False
         for myCommunity in sortedCommunities:
             if clientId in myCommunity[0]:
                 if appId in community2AppPlacementDict[myCommunity[0]]:
                     if verbose_log:
-                        print "    App "+str(appId)+" already placed in community "+str(myCommunity[0])
+                        print("    App "+str(appId)+" already placed in community "+str(myCommunity[0]))
                     break
                 else:
                     placed_,servicePlacement=placeAppInCommunity(appId, clientId, myCommunity[0])
                     if placed_:
                         if verbose_log:
-                            print "    Performed allocation of app "+str(appId)+" in community "+str(myCommunity[0])
+                            print("    Performed allocation of app "+str(appId)+" in community "+str(myCommunity[0]))
                         for servId,deviceId in servicePlacement.iteritems():
                             service2DevicePlacementMatrix[servId][deviceId]=1
                             nodeBussyResources[deviceId]=nodeBussyResources[deviceId]+appsResources[appId][servId]
@@ -1363,8 +1362,8 @@ servicesInFog = 0
 
 allAlloc = {}
 myAllocationList = list()
-for idServ in xrange(numberOfServices):
-    for idDevice in xrange(len(G.nodes)):
+for idServ in range(numberOfServices):
+    for idDevice in range(len(G.nodes)):
         if service2DevicePlacementMatrix[idServ][idDevice]==1:
             myAllocation = {}
             myAllocation['app']=mapService2App[idServ]
@@ -1382,8 +1381,8 @@ for idServ in xrange(numberOfServices):
 
 
 
-print "Number of services in cloud (partition) (servicesInCloud): "+str(servicesInCloud)
-print "Number of services in fog (partition) (servicesInFog): "+str(servicesInFog)
+print("Number of services in cloud (partition) (servicesInCloud): "+str(servicesInCloud))
+print("Number of services in fog (partition) (servicesInFog): "+str(servicesInFog))
 
 
 allAlloc['initialAllocation']=myAllocationList
@@ -1392,7 +1391,7 @@ file = open("allocDefinition.json","w")
 file.write(json.dumps(allAlloc))
 file.close()
 
-print str(time.time()-t)+" time for partition-based optimization"
+print(str(time.time()-t)+" time for partition-based optimization")
 
 
 #****************************************************************************************************
@@ -1427,7 +1426,7 @@ if ILPoptimization:
     #    return processTime + netTime
 
 
-    print "Starting ILP optimization...."
+    print("Starting ILP optimization....")
 
     fognodes = list()
     for i in G.nodes:
@@ -1489,14 +1488,14 @@ if ILPoptimization:
     problem = pulp.LpProblem('fog', pulp.LpMinimize)
 
 
-    print "Including variables...."
+    print("Including variables....")
     ## Variables
 
     UserServiceDevAssignment = {comb: pulp.LpVariable('sa_%i_%i_%i' % (comb[0][0],comb[0][1], comb[1]), cat='Binary') for comb in assignCombinations}
 
     ## Objective
 
-    print "Including objectives..."
+    print("Including objectives...")
     problem += pulp.lpSum([
         (
             UserServiceDevAssignment[i] * networkDelay(i)
@@ -1505,7 +1504,7 @@ if ILPoptimization:
 
     # Constraints
 
-    print "Including constraints...."
+    print("Including constraints....")
     # at least one service instantiated for each user
     for usrservId in userServices:
 
@@ -1519,23 +1518,23 @@ if ILPoptimization:
     #    problem += sum([(UserServiceDevAssignment[(usrservId,devId)]* myServicesResources[usrservId[1]] ) for usrservId in userServices])> -1.0, 'DeviceCapacity_' +str(devId)
 
 
-    print "************"
-    print "Number of nodes (myDevices): "+str(len(myDevices))
-    print "Number of services (myServicesResources): "+str(len(myServicesResources))
-    print "Number of gateways (allTheGtws): "+str(len(allTheGtws))
-    print "Number of IoT devices (numIoTDevices): "+str(numIoTDevices)
-    print "Number of IoT devices X services (userServices): "+str(len(userServices))
-    print "Number of ILP variables (assignCombinations): "+str(len(assignCombinations))
-    print "************"
+    print("************")
+    print("Number of nodes (myDevices): "+str(len(myDevices)))
+    print("Number of services (myServicesResources): "+str(len(myServicesResources)))
+    print("Number of gateways (allTheGtws): "+str(len(allTheGtws)))
+    print("Number of IoT devices (numIoTDevices): "+str(numIoTDevices))
+    print("Number of IoT devices X services (userServices): "+str(len(userServices)))
+    print("Number of ILP variables (assignCombinations): "+str(len(assignCombinations)))
+    print("************")
 
-    print "Solving the problem..."
+    print("Solving the problem...")
     problem.solve()
 
 
     allAlloc = {}
     myAllocationList = list()
 
-    print "The ILP finished in status "+str(problem.status)
+    print("The ILP finished in status "+str(problem.status))
 
     servicesInCloud = 0
     servicesInFog = 0
@@ -1544,9 +1543,9 @@ if ILPoptimization:
         for i in assignCombinations:
             if UserServiceDevAssignment[i].value() > 0.0:
                 if verbose_log:
-                    print "-------"
-                    print i
-                    print UserServiceDevAssignment[i].value()
+                    print("-------")
+                    print(i)
+                    print(UserServiceDevAssignment[i].value())
                 assignResult = UserServiceDevAssignment[i].value()
                 myAllocation = {}
                 if i[0][1]==cloudId:
@@ -1560,7 +1559,7 @@ if ILPoptimization:
                     writeStatisticsAllocationILP(i[0][0],i[0][1],i[1]) #clientId, serviceId,devId
                     writeStatisticsDevicesILP(i[0][1],i[1]) #serviceId,devId
 
-        for idServ in xrange(numberOfServices):
+        for idServ in range(numberOfServices):
             #Independientemente de la politica, todos los servicios estan en el cloud
             myAllocation = {}
             myAllocation['app']=mapService2App[idServ]
@@ -1574,9 +1573,8 @@ if ILPoptimization:
         normalizeStatisticsDevicesILP()
 
 
-    print "Number of services in cloud (ILP) (servicesInCloud): "+str(servicesInCloud)
-    print "Number of services in fog (ILP) (servicesInFog): "+str(servicesInFog)
-
+    print("Number of services in cloud (ILP) (servicesInCloud): "+str(servicesInCloud))
+    print("Number of services in fog (ILP) (servicesInFog): "+str(servicesInFog))
 
     allAlloc['initialAllocation']=myAllocationList
 
@@ -1585,7 +1583,7 @@ if ILPoptimization:
     file.close()
 
 
-print str(time.time()-t)+" time for ILP-based optimization"
+print(str(time.time()-t)+" time for ILP-based optimization")
 
 
 #****************************************************************************************************

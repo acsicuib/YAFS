@@ -6,21 +6,21 @@
 
 """
 import json
-
-from yafs.core import Sim
-from yafs.application import Application,Message
-from yafs.topology import Topology
-from yafs.placement import JSONPlacement,JSONPlacementOnCloud
-from yafs.distribution import *
+import random
+import networkx as nx
+import argparse
+from pathlib import Path
+import time
 import numpy as np
-
-from yafs.utils import fractional_selectivity
 
 from selection_multipleDeploys import DeviceSpeedAwareRouting
 from jsonPopulation import JSONPopulation
 
-import time
-
+from yafs.core import Sim
+from yafs.application import Application,Message,fractional_selectivity
+from yafs.topology import Topology
+from yafs.placement import JSONPlacement,JSONPlacementOnCloud
+from yafs.distribution import *
 
 
 def create_applications_from_json(data):
@@ -111,7 +111,7 @@ def main(simulated_time,experimento,ilpPath,it):
     t = Topology()
     dataNetwork = json.load(open(experimento+'network.json'))
     t.load(dataNetwork)
-    t.write("network.gexf")
+    nx.write_gexf(t.G,"graph_main") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
 
     """
     APPLICATION
@@ -119,7 +119,7 @@ def main(simulated_time,experimento,ilpPath,it):
     dataApp = json.load(open(experimento+'appDefinition.json'))
     apps = create_applications_from_json(dataApp)
     for app in apps:
-     print apps[app]
+        print(apps[app])
 
     """
     PLACEMENT algorithm
@@ -175,7 +175,7 @@ def main(simulated_time,experimento,ilpPath,it):
 
     #For each deployment the user - population have to contain only its specific sources
     for aName in apps.keys():
-        print "Deploying app: ",aName
+        print("Deploying app: ",aName)
         pop_app = JSONPopulation(name="Statical_%s"%aName,json={},iteration=it)
         data = []
         for element in pop.data["sources"]:
@@ -183,7 +183,7 @@ def main(simulated_time,experimento,ilpPath,it):
                 data.append(element)
         pop_app.data["sources"]=data
 
-        s.deploy_app(apps[aName], placement, pop_app, selectorPath)
+        s.deploy_app2(apps[aName], placement, pop_app, selectorPath)
 
 
     s.run(stop_time, test_initial_deploy=False, show_progress_monitor=False) #TEST to TRUE
@@ -194,7 +194,7 @@ def main(simulated_time,experimento,ilpPath,it):
     # print selectorPath.cache.values()
 
 
-    failurefilelog.close()
+    #failurefilelog.close()
 
     # #CHECKS
     #print s.topology.G.nodes
@@ -206,7 +206,7 @@ if __name__ == '__main__':
     pathExperimento = "testjsons/"
 
     timeSimulation = 100
-    print os.getcwd()
+    print(os.getcwd())
     # logging.config.fileConfig(os.getcwd()+'/logging.ini')
     for i in range(50):
     #for i in  [0]:
@@ -214,11 +214,11 @@ if __name__ == '__main__':
         random.seed(i)
         np.random.seed(i)
 
-        print "Running Partition"
+        print("Running Partition")
         main(simulated_time=timeSimulation,  experimento=pathExperimento,ilpPath='',it=i)
         print("\n--- %s seconds ---" % (time.time() - start_time))
         start_time = time.time()
 
-    print "Simulation Done"
+    print("Simulation Done")
 
 

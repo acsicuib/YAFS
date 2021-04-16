@@ -20,9 +20,9 @@ from yafs.core import Sim
 from yafs.application import Application, Message
 from yafs.topology import Topology
 from yafs.distribution import *
-from yafs.utils import fractional_selectivity
-
+from yafs.application import fractional_selectivity
 from yafs.placement import JSONPlacement
+
 from customStrategy import CustomStrategy
 from jsonDynamicPopulation import DynamicPopulation
 from selection_multipleDeploys import DeviceSpeedAwareRouting
@@ -115,9 +115,8 @@ def main(simulated_time, path,pathResults,case,it):
     t = Topology()
     dataNetwork = json.load(open(path + 'networkDefinition.json'))
     t.load(dataNetwork)
-    t.write(path +"network.gexf")
+    nx.write_gexf(t.G,path+"graph_main") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
     # t = loadTopology(path + 'test_GLP.gml')
-
 
     """
     APPLICATION
@@ -161,7 +160,7 @@ def main(simulated_time, path,pathResults,case,it):
 
         distribution = exponentialDistribution(name="Exp", lambd=random.randint(100,200), seed= int(aName)*100+it)
         pop_app = DynamicPopulation(name="Dynamic_%s" % aName, data=data, iteration=it, activation_dist=distribution)
-        s.deploy_app(apps[aName], placement, pop_app, selectorPath)
+        s.deploy_app2(apps[aName], placement, pop_app, selectorPath)
 
 
     """

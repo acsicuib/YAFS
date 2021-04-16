@@ -4,23 +4,24 @@
 
 """
 import random
-
+import networkx as nx
 import argparse
+from pathlib import Path
+import time
+import numpy as np
 
 from yafs.core import Sim
 from yafs.application import Application,Message
 
+from yafs.population import *
 from yafs.topology import Topology
 
 from simpleSelection import MinPath_RoundRobin
 from simplePlacement import CloudPlacement
-from evolutivePopulationTopology import SimpleDynamicChanges
-
-from yafs.distribution import deterministicDistribution
-from yafs.utils import fractional_selectivity
 from yafs.stats import Stats
-import time
-import numpy as np
+from yafs.distribution import deterministic_distribution
+from yafs.application import fractional_selectivity
+from evolutivePopulationTopology import SimpleDynamicChanges
 
 RANDOM_SEED = 1
 
@@ -89,8 +90,13 @@ def create_json_topology():
 
 # @profile
 def main(simulated_time):
-    # np.random.seed(RANDOM_SEED)
-    # random.seed(RANDOM_SEED)
+
+    random.seed(RANDOM_SEED)
+    np.random.seed(RANDOM_SEED)
+
+    folder_results = Path("results/")
+    folder_results.mkdir(parents=True, exist_ok=True)
+    folder_results = str(folder_results)+"/"
 
     """
     TOPOLOGY from a json
@@ -98,7 +104,7 @@ def main(simulated_time):
     t = Topology()
     t_json = create_json_topology()
     t.load(t_json)
-    t.write("network.gexf")
+    nx.write_gexf(t.G,folder_results+"graph_main2") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
 
     """
     APPLICATION
@@ -116,7 +122,7 @@ def main(simulated_time):
     """
     #In ifogsim, during the creation of the application, the Sensors are assigned to the topology, in this case no. As mentioned, YAFS differentiates the adaptive sensors and their topological assignment.
     #In its case, they use a statical assignment.
-    dDistribution = deterministicDistribution(name="Deterministic", time=100)
+    dDistribution = deterministic_distribution(name="Deterministic", time=100)
     pop = SimpleDynamicChanges(2,name="Dynamic",activation_dist=dDistribution)
 
     #, activation_dist = deterministicDistribution, time_shift = 100.0)
@@ -129,7 +135,7 @@ def main(simulated_time):
     pop.set_sink_control({"model": "actuator-device","number":2,"module":app.get_sink_modules()})
 
     #In addition, a source includes a distribution function:
-    dDistribution2 = deterministicDistribution(name="Deterministic2", time=100)
+    dDistribution2 = deterministic_distribution(name="Deterministic2", time=100)
     pop.set_src_control({"model": "sensor-device-1", "number":1,"message": app.get_message("M.A"), "distribution": dDistribution2})
 
 
@@ -155,9 +161,15 @@ def main(simulated_time):
 
     stop_time = simulated_time
     s = Sim(t, default_results_path="Results_multiple")
-    s.deploy_app(app, placement, pop, selectorPath)
+    s.deploy_app2(app, placement, pop, selectorPath)
 
+    """
+    RUNNING - last step
+    """
     s.run(stop_time,show_progress_monitor=False)
+    s.print_debug_assignaments()
+
+    # s.draw_allocated_topology() # for debugging
 
     #s.draw_allocated_topology() # This implementation does not work when there is some node not linked
 
@@ -173,20 +185,20 @@ if __name__ == '__main__':
     print("\n--- %s seconds ---" % (time.time() - start_time))
 
     ### Finally, you can analyse the results:
-    print "-"*20
-    print "Results:"
-    print "-" * 20
-    m = Stats(defaultPath="Results_multiple") #Same name of the results
-    time_loops = [["M.A", "M.B"]]
-    m.showResults2(1000, time_loops=time_loops)
-    print "\t- Network saturation -"
-    print "\t\tAverage waiting messages : %i" % m.average_messages_not_transmitted()
-    print "\t\tPeak of waiting messages : %i" % m.peak_messages_not_transmitted()
-    print "\t\tTOTAL messages not transmitted: %i" % m.messages_not_transmitted()
+    # print "-"*20
+    # print "Results:"
+    # print "-" * 20
+    # m = Stats(defaultPath="Results_multiple") #Same name of the results
+    # time_loops = [["M.A", "M.B"]]
+    # m.showResults2(1000, time_loops=time_loops)
+    # print "\t- Network saturation -"
+    # print "\t\tAverage waiting messages : %i" % m.average_messages_not_transmitted()
+    # print "\t\tPeak of waiting messages : %i" % m.peak_messages_not_transmitted()
+    # print "\t\tTOTAL messages not transmitted: %i" % m.messages_not_transmitted()
 
-    print "\n\t- Stats of each service deployed -"
-    print m.get_df_modules()
-    print m.get_df_service_utilization("ServiceA",1000)
+    # print "\n\t- Stats of each service deployed -"
+    # print m.get_df_modules()
+    # print m.get_df_service_utilization("ServiceA",1000)
 
-    print "\n\t- Stats of each DEVICE -"
+    # print "\n\t- Stats of each DEVICE -"
     #TODO

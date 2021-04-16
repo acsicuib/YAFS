@@ -4,12 +4,12 @@
 NEWS
 ====
 A new version of YAFS is available in the [branch](https://github.com/acsicuib/YAFS/tree/YAFS3).
-- It supports +Python3.6. 
-- It depends on fewer third libraries. It is lighter and easier to install.
-- It has 4 awesome "tutorial_scenarios" or skeletons so you can use them to create your scenario with artificial intelligence, rules, neural networks, ... with whatever you want.
+- It supports Python 3.6+. 
+- It depends on fewer third-party libraries. It is lighter and easier to install.
+- It has 4 new awesome "tutorial_scenarios" or skeletons so you can use them to create your scenario with artificial intelligence, rules, neural networks, ... with whatever you want.
 - Notes:
-  - Previous examples in folder "examples" are not up to date for this version yet, but the code is kept for you to inspire.
-  - Some parts of the Doc are not still updated. 
+  - Most of the previous examples in folder "examples" are now up to date for this version, but the code for the examples which are not updated are still kept for you to inspire.
+  - Some parts of the Doc is still not updated. 
 
 DESCRIPTION
 ===========
@@ -18,8 +18,8 @@ YAFS (Yet Another Fog Simulator) is a simulator tool based on Python of architec
 
 
 The **highlights** points of YAFS are:
-* **Dinamyc topology:** entities and network links can be created or removed along the simulation.
-* **Dinamyc creation of messages sources:** sensors can generate messages from different point access along the simulation.
+* **Dynamic topology:** entities and network links can be created or removed along the simulation.
+* **Dynamic creation of messages sources:** sensors can generate messages from different point access along the simulation.
 * And for hence, the **placement allocation algorithm** and **the orchestration algorithm,** that are extended by the user, can run along the simulation.
 * The **topology of the network** is based on [Complex Network theory](https://en.wikipedia.org/wiki/Complex_network). Thus, the algorithms can obtain more valuable indicators from topological features.
 * The **results** are stored in a raw format in a nosql database. The simpler the format, the easier it is to perform any type of statistics.
@@ -63,7 +63,7 @@ YAFS but in any case you have to understand the main concepts of Cloud Computing
 Installation (updated)
 ----------------------
 
-YAFS requires Python +3.6 ~~(Python 3.6 or above is not supported)~~
+YAFS3 (New Branch) requires Python 3.6+ ~~
 
 1. Clone the project in your local folder:
 

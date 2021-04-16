@@ -61,13 +61,13 @@ class BroadPath(Selection):
             return minPath,bestDES
         except nx.NetworkXNoPath as e:
             self.logger.warning("There is no path between two nodes: %s - %s " % (node_src, node_dst))
-            print "Simulation ends?. Time:", sim.env.now
+            print("Simulation ends?. Time:", sim.env.now)
             # sim.stop = True ## You can stop all DES process
             return [], None
 
         except nx.NodeNotFound as e:
             self.logger.warning("Node not found: %s - %s "%(node_src,node_dst))
-            print "Simulation ends?. Time:",sim.env.now
+            print("Simulation ends?. Time:",sim.env.now)
             # sim.stop = True ## You can stop all DES process
             return [],None
 

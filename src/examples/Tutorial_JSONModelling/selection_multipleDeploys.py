@@ -44,7 +44,7 @@ class DeviceSpeedAwareRouting(Selection):
 
         except (nx.NetworkXNoPath, nx.NodeNotFound) as e:
             self.logger.warning("There is no path between two nodes: %s - %s " % (node_src, node_dst))
-            print "Simulation ends?"
+            print("Simulation ends?")
             return [], None
 
     def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):

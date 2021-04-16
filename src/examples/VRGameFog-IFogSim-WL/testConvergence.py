@@ -407,4 +407,4 @@ iFOG16 = [31.44319878979343,
 
 ttt = np.array(iFOG16)
 from scipy import stats
-print stats.describe(ttt)
+print(stats.describe(ttt))

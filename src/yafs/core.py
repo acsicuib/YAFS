@@ -11,6 +11,8 @@ This module unifies the event-discrete simulation environment with the rest of m
 import logging
 import copy
 import simpy
+import warnings
+import random
 
 from yafs.topology import Topology
 from yafs.application import Application
@@ -916,45 +918,45 @@ class Sim:
         # Add Selection control to the App
         self.selector_path[app.name] = selector
 
-    # def deploy_app(self, app, placement, population, selector):
-    #     warnings.warn("deprecated", DeprecationWarning)
-    #
-    #     """
-    #     This process is responsible for linking the *application* to the different algorithms (placement, population, and service)
-    #
-    #     Args:
-    #         app (object): :mod:`Application` class
-    #
-    #         placement (object): :mod:`Placement` class
-    #
-    #         population (object): :mod:`Population` class
-    #
-    #         selector (object): :mod:`Selector` class
-    #     """
-    #     # Application
-    #     self.apps[app.name] = app
-    #
-    #     # Initialization
-    #     self.alloc_module[app.name] = {}
-    #
-    #     # Add Placement controls to the App
-    #     if not placement.name in self.placement_policy.keys():  # First Time
-    #         self.placement_policy[placement.name] = {"placement_policy": placement, "apps": []}
-    #         if placement.activation_dist is not None:
-    #             print("ENV ADD PLACEMENT")
-    #             self.env.process(self.__add_placement_process(placement))
-    #     self.placement_policy[placement.name]["apps"].append(app.name)
-    #
-    #     # Add Population control to the App
-    #
-    #     if not population.name in self.population_policy.keys():  # First Time
-    #         self.population_policy[population.name] = {"population_policy": population, "apps": []}
-    #         if population.activation_dist is not None:
-    #             self.env.process(self.__add_population_process(population))
-    #     self.population_policy[population.name]["apps"].append(app.name)
-    #
-    #     # Add Selection control to the App
-    #     self.selector_path[app.name] = selector
+    def deploy_app2(self, app, placement, population, selector):
+        warnings.warn("deprecated", DeprecationWarning)
+    
+        """
+        This process is responsible for linking the *application* to the different algorithms (placement, population, and service)
+    
+        Args:
+            app (object): :mod:`Application` class
+    
+            placement (object): :mod:`Placement` class
+    
+            population (object): :mod:`Population` class
+    
+            selector (object): :mod:`Selector` class
+        """
+        # Application
+        self.apps[app.name] = app
+    
+        # Initialization
+        self.alloc_module[app.name] = {}
+    
+        # Add Placement controls to the App
+        if not placement.name in self.placement_policy.keys():  # First Time
+            self.placement_policy[placement.name] = {"placement_policy": placement, "apps": []}
+            if placement.activation_dist is not None:
+                print("ENV ADD PLACEMENT")
+                self.env.process(self.__add_placement_process(placement))
+        self.placement_policy[placement.name]["apps"].append(app.name)
+    
+        # Add Population control to the App
+    
+        if not population.name in self.population_policy.keys():  # First Time
+            self.population_policy[population.name] = {"population_policy": population, "apps": []}
+            if population.activation_dist is not None:
+                self.env.process(self.__add_population_process(population))
+        self.population_policy[population.name]["apps"].append(app.name)
+    
+        # Add Selection control to the App
+        self.selector_path[app.name] = selector
 
 
     def get_alloc_entities(self):
