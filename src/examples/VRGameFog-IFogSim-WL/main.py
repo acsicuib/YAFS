@@ -91,11 +91,11 @@ def create_json_topology(numOfDepts,numOfMobilesPerDept):
 
     # CLOUD Abstraction
     id = 0
-    cloud_dev = {"id": id, "model": "Cluster", "IPT": 44800 * 10 ^ 6, "RAM": 40000,
+    cloud_dev = {"id": id, "model": "Cluster", "IPT": 44800 * 10 ** 6, "RAM": 40000,
                  "COST": 3,"WATT":20.0}
     id +=1
     # PROXY DEVICE
-    proxy_dev = {"id":id, "model": "Proxy-server", "IPT": 2800* 10 ^ 6, "RAM": 4000,
+    proxy_dev = {"id":id, "model": "Proxy-server", "IPT": 2800* 10 ** 6, "RAM": 4000,
                  "COST": 3,"WATT":40.0}
 
     topology_json = {"entity": [cloud_dev, proxy_dev], "link": [{"s": 0, "d": 1, "BW": 10000, "PR": 14}]}
@@ -105,14 +105,14 @@ def create_json_topology(numOfDepts,numOfMobilesPerDept):
         #GATEWAY DEVICE
         gw = id
         topology_json["entity"].append(
-            {"id": id, "model": "d-", "IPT": 2800 * 10 ^ 6, "RAM": 4000, "COST": 3,"WATT":40.0})
+            {"id": id, "model": "d-", "IPT": 2800 * 10 ** 6, "RAM": 4000, "COST": 3,"WATT":40.0})
         topology_json["link"].append({"s": 1, "d": id, "BW": 100, "PR": 10})
         id += 1
 
         for idm in range(numOfMobilesPerDept):
             #MOBILE DEVICE
             topology_json["entity"].append(
-                {"id": id, "model": "m-", "IPT": 1000 * 10 ^ 6, "RAM": 1000, "COST": 0,
+                {"id": id, "model": "m-", "IPT": 1000 * 10 ** 6, "RAM": 1000, "COST": 0,
                  "WATT": 40.0})
             topology_json["link"].append({"s": gw, "d": id, "BW": 100, "PR": 2})
             id += 1

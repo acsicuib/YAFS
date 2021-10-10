@@ -188,9 +188,9 @@ topology_json = {}
 topology_json["entity"] = []
 topology_json["link"] = []
 
-cloud_dev    = {"id": 0, "model": "cloud","mytag":"cloud", "IPT": 5000 * 10 ^ 6, "RAM": 40000,"COST": 3,"WATT":20.0, 'x': 2.6484887, 'y': 39.6580786}
-sensor_dev   = {"id": 1, "model": "radar-device1", "IPT": 100* 10 ^ 6, "RAM": 4000,"COST": 3,"WATT":40.0, 'x': 2.645623, 'y': 39.6426471}
-sensor_dev2  = {"id": 2, "model": "radar-device2", "IPT": 100 * 10 ^ 6, "RAM": 4000,"COST": 3, "WATT": 40.0,'x': 2.6507741, 'y': 39.6362394}
+cloud_dev    = {"id": 0, "model": "cloud","mytag":"cloud", "IPT": 5000 * 10 ** 6, "RAM": 40000,"COST": 3,"WATT":20.0, 'x': 2.6484887, 'y': 39.6580786}
+sensor_dev   = {"id": 1, "model": "radar-device1", "IPT": 100* 10 ** 6, "RAM": 4000,"COST": 3,"WATT":40.0, 'x': 2.645623, 'y': 39.6426471}
+sensor_dev2  = {"id": 2, "model": "radar-device2", "IPT": 100 * 10 ** 6, "RAM": 4000,"COST": 3, "WATT": 40.0,'x': 2.6507741, 'y': 39.6362394}
 
 link1 = {"s": 0, "d": 1, "BW": 1, "PR": 10}
 link2 = {"s": 0, "d": 2, "BW": 1, "PR": 1}
