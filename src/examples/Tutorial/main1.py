@@ -38,8 +38,8 @@ def create_application():
     """
     Messages among MODULES (AppEdge in iFogSim)
     """
-    m_a = Message("M.A", "Sensor", "ServiceA", instructions=20*10^6, bytes=1000)
-    m_b = Message("M.B", "ServiceA", "Actuator", instructions=30*10^6, bytes=500)
+    m_a = Message("M.A", "Sensor", "ServiceA", instructions=20*10**6, bytes=1000)
+    m_b = Message("M.B", "ServiceA", "Actuator", instructions=30*10**6, bytes=500)
 
     """
     Defining which messages will be dynamically generated # the generation is controlled by Population algorithm

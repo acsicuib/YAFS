@@ -71,13 +71,13 @@ def create_application():
     """
     Messages among MODULES (AppEdge in iFogSim)
     """
-    m_egg = Message("M.EGG", "EGG", "Client", instructions=2000*10^6, bytes=500)
-    m_sensor = Message("M.Sensor", "Client", "Calculator", instructions=3500*10^6, bytes=500)
-    m_player_game_state = Message("M.Player_Game_State", "Calculator", "Coordinator", instructions=1000*10^6, bytes=1000)
-    m_concentration = Message("M.Concentration", "Calculator", "Client", instructions=14*10^6, bytes=500)           # This message is sent to all client modules
-    m_global_game_state = Message("M.Global_Game_State", "Coordinator", "Client", instructions=28*10^6, bytes=1000, broadcasting=True) # This message is sent to all client modules
-    m_global_state_update = Message("M.Global_State_Update", "Client", "Display",instructions=1000*10^6,bytes=500)
-    m_self_state_update = Message("M.Self_State_Update", "Client", "Display",instructions=1000*10^6,bytes=500)
+    m_egg = Message("M.EGG", "EGG", "Client", instructions=2000*10**6, bytes=500)
+    m_sensor = Message("M.Sensor", "Client", "Calculator", instructions=3500*10**6, bytes=500)
+    m_player_game_state = Message("M.Player_Game_State", "Calculator", "Coordinator", instructions=1000*10**6, bytes=1000)
+    m_concentration = Message("M.Concentration", "Calculator", "Client", instructions=14*10**6, bytes=500)           # This message is sent to all client modules
+    m_global_game_state = Message("M.Global_Game_State", "Coordinator", "Client", instructions=28*10**6, bytes=1000, broadcasting=True) # This message is sent to all client modules
+    m_global_state_update = Message("M.Global_State_Update", "Client", "Display",instructions=1000*10**6,bytes=500)
+    m_self_state_update = Message("M.Self_State_Update", "Client", "Display",instructions=1000*10**6,bytes=500)
 
     """
     Defining which messages will be dynamically generated # the generation is controlled by Population algorithm
