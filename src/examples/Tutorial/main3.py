@@ -37,8 +37,8 @@ def create_application():
     """
     Messages among MODULES (AppEdge in iFogSim)
     """
-    m_a = Message("M.A", "Sensor", "ServiceA", instructions=20*10^6, bytes=1000)
-    m_b = Message("M.B", "ServiceA", "Actuator", instructions=30*10^6, bytes=500,broadcasting=True)
+    m_a = Message("M.A", "Sensor", "ServiceA", instructions=20*10**6, bytes=1000)
+    m_b = Message("M.B", "ServiceA", "Actuator", instructions=30*10**6, bytes=500,broadcasting=True)
 
     """
     Defining which messages will be dynamically generated # the generation is controlled by Population algorithm
@@ -67,11 +67,11 @@ def create_json_topology():
     topology_json["entity"] = []
     topology_json["link"] = []
 
-    cloud_dev    = {"id": 0, "model": "cloud",          "mytag":"cloud", "IPT": 5000 * 10 ^ 6, "RAM": 40000,"COST": 3,"WATT":20.0}
-    sensor_dev1  = {"id": 1, "model": "sensor-device-1", "IPT": 100* 10 ^ 6, "RAM": 4000,"COST": 3,"WATT":40.0}
-    sensor_dev2  = {"id": 2, "model": "sensor-device-2", "IPT": 100 * 10 ^ 6, "RAM": 4000, "COST": 3, "WATT": 40.0}
-    sensor_dev3  = {"id": 3, "model": "sensor-device-3", "IPT": 100 * 10 ^ 6, "RAM": 4000, "COST": 3, "WATT": 40.0}
-    actuator_dev = {"id": 4, "model": "actuator-device", "IPT": 100 * 10 ^ 6, "RAM": 4000,"COST": 3, "WATT": 40.0}
+    cloud_dev    = {"id": 0, "model": "cloud",          "mytag":"cloud", "IPT": 5000 * 10 ** 6, "RAM": 40000,"COST": 3,"WATT":20.0}
+    sensor_dev1  = {"id": 1, "model": "sensor-device-1", "IPT": 100* 10 ** 6, "RAM": 4000,"COST": 3,"WATT":40.0}
+    sensor_dev2  = {"id": 2, "model": "sensor-device-2", "IPT": 100 * 10 ** 6, "RAM": 4000, "COST": 3, "WATT": 40.0}
+    sensor_dev3  = {"id": 3, "model": "sensor-device-3", "IPT": 100 * 10 ** 6, "RAM": 4000, "COST": 3, "WATT": 40.0}
+    actuator_dev = {"id": 4, "model": "actuator-device", "IPT": 100 * 10 ** 6, "RAM": 4000,"COST": 3, "WATT": 40.0}
 
     link1 = {"s": 0, "d": 1, "BW": 1, "PR": 10}
     link2 = {"s": 0, "d": 4, "BW": 1, "PR": 1}
