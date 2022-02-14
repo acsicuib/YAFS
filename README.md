@@ -116,7 +116,8 @@ ffmpeg -i out.mp4 -pix_fmt rgb24  out.gif
 
 <img src="https://github.com/acsicuib/YAFS/raw/master/src/examples/mobileTutorial/exp/results_20190326/out2.gif" width="350" height="350"/></a>
 
-
+- From "[Declarative Application Management in the Fog: A Bacteria-Inspired Decentralised Approach" project](https://github.com/acsicuib/MARIO/tree/MarioII) (click to play in Youtube): 
+[![Watch the video](https://img.youtube.com/vi/Vu9u3DSQdY4/hqdefault.jpg)](https://youtu.be/Vu9u3DSQdY4)
 
 Documentation and Help
 ----------------------
@@ -151,6 +152,8 @@ YAFS is used in the following projects:
 * Isaac Lera, Carlos Guerrero, Carlos Juiz. Availability-aware Service Placement Policy in Fog Computing Based on Graph Partitions. IEEE Internet of Things Journal 2019. 10.1109/JIOT.2018.2889511
 * Isaac Lera, Carlos Guerrero, Carlos Juiz. Analysing the Applicability of a Multi-Criteria Decision Method in Fog Computing
 Placement Problem. FMEC 2019
+* Forti, S, Lera, I, Guerrero, C, Brogi, A. Osmotic management of distributed complex systems: A declarative decentralised approach. J Softw Evol Proc. 2021;e2405. doi:10.1002/smr.2405
+* Brogi, A., Forti, S., Guerrero, C. et al. Declarative Application Management in the Fog. J Grid Computing 19, 45 (2021). https://doi.org/10.1007/s10723-021-09582-y
 
 
 
