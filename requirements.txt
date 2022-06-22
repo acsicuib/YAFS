@@ -1,6 +1,6 @@
 decorator==4.4.2
 networkx==2.5
-numpy==1.19.3
+numpy==1.22.0
 simpy==4.0.1
 pandas==0.25.3
 
