@@ -1,20 +1,7 @@
 
 ![YAFS logo](https://github.com/acsicuib/YAFS/raw/master/docs/_static/yafs_logo.png)
 
-NEWS
-====
-A new version of YAFS is available in the [branch](https://github.com/acsicuib/YAFS/tree/YAFS3).
-- It supports Python 3.6+. 
-- It depends on fewer third-party libraries. It is lighter and easier to install.
-- It has 4 new awesome "tutorial_scenarios" or skeletons so you can use them to create your scenario with artificial intelligence, rules, neural networks, ... with whatever you want.
-- Notes:
-  - Most of the previous examples in folder "examples" are now up to date for this version, but the code for the examples which are not updated are still kept for you to inspire.
-  - Some parts of the Doc is still not updated. 
-
-DESCRIPTION
-===========
-
-YAFS (Yet Another Fog Simulator) is a simulator tool based on Python of architectures such as: [Fog Computing](https://en.wikipedia.org/wiki/Fog_computing) ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ... [IoT environments](https://en.wikipedia.org/wiki/Internet_of_things) are the most evident fact of this type of architecture.
+YAFS (Yet Another Fog Simulator) is a simulator tool based on Python of architectures such as: [Fog Computing](https://en.wikipedia.org/wiki/Fog_computing) ecosystems for several analysis regarding with the placement of resources, cost deployment, network design, ... [IoT environments](https://en.wikipedia.org/wiki/Internet_of_things) are the most evident fact of this type of architecture. YAFS is published at [IEEE](https://ieeexplore.ieee.org/document/8758823).
 
 
 The **highlights** points of YAFS are:
@@ -30,11 +17,12 @@ YAFS is released under the MIT License. However, we would like to know in which 
 **Please consider use this cite when you use YAFS**:
 
 ```bash
-    Isaac Lera, Carlos Guerrero, Carlos Juiz. YAFS: A simulator for IoT scenarios in fog computing. IEEE Access. Vol. 7(1), pages 91745-91758,
-    10.1109/ACCESS.2019.2927895, Jul 10 2019.
+    Isaac Lera, Carlos Guerrero and Carlos Juiz. YAFS: A simulator for IoT scenarios in fog computing. IEEE Access. Vol. 7(1), pages 91745-91758,
+    10.1109/ACCESS.2019.2927895, Jul 10 2019. 
+```
 
-    https://ieeexplore.ieee.org/document/8758823
-
+Bibtex:
+```
     @ARTICLE{8758823,
     author={I. {Lera} and C. {Guerrero} and C. {Juiz}},
     journal={IEEE Access},
@@ -50,7 +38,6 @@ YAFS is released under the MIT License. However, we would like to know in which 
     }
 ```
 
-
 Resources
 ---------
 
@@ -60,36 +47,65 @@ point for you. You can also try out some of the Examples (https://yafs.readthedo
 YAFS but in any case you have to understand the main concepts of Cloud Computing and other related architectures to design and modelling your own model.
 
 
-Installation (updated)
-----------------------
+Installation
+------------
 
-YAFS3 (New Branch) requires Python 3.6+ ~~
+YAFS3 (the branch) supports Python 3.6+ (last compability check on Python 3.9.7)
 
 1. Clone the project in your local folder:
 
 ```bash
-    $ git clone --branch YAFS3 https://github.com/acsicuib/YAFS
+git clone --branch YAFS3 https://github.com/acsicuib/YAFS
 ```
 
-2. Create one python virtual environment and install dependencies
+2. Install dependencies. 
 
 ```bash
-   (venv)$ python -m pip install -r requirements.txt
+cd YAFS/
+pip install -r requirements.txt
 ```
 
-3. I recommend you IDE such as Pycharm (educational licence) to configure Python paths.
 
-Getting started & your first execution
---------------------------------------
+Getting started
+---------------
 
-
-To run some folder project you can create a simple bash script, with the following lines (please update the path according with your system) or you can use a python editor such as: Pycharm, Spyder, etc.
-Personally, I recommend you Pycharm since it integrates all the paths.
+To run tutorial or example projects from a terminal, run the following code (please update the path according with your system). Alternativaly, you can use a python editor such as: Pycharm, Visual Studio, etc.
 
 ```bash
-export PYTHONPATH=$PYTHONPATH:/<your path>/YAFS/src/:src/examples/Tutorial/
-python src/examples/Tutorial/main1.py
+export PYTHONPATH=$PYTHONPATH:~/projects/YAFS/src/
+cd YAFS/tutorial_scenarios/01_basicExample
+python main.py
 ```
+
+The tutorial scenarios are in the folder:
+```
+tutorial_scenarios
+├── 01_basicExample
+├── 02_serviceMovement
+├── 03_topologyChanges
+└── 04_userMovement
+```
+
+More complex examples or published projects are in the folder:
+```
+examples
+├── ConquestService                 # tested. Published at [6]
+├── DynamicAllocation               # tested. Published at [1]
+├── DynamicFailuresOnNodes          # tested. Published at [1]
+├── DynamicWorkload                 # tested. Published at [1]
+├── FogCentrality                   # works on YAFS2 (aka. master branch). Published at [2]
+├── FogTorchPI-Integration          # works on YAFS2. An integration with: https://github.com/di-unipi-socc/FogTorchPI
+├── MCDA                            # works on YAFS2. Published at [5]
+├── MapReduceModel                  # works on YAFS2. Published at [3]
+├── PartitionILPPlacement           # works on YAFS2. Published at [4]
+├── RuleBasedDistributedModel       # works on YAFS2. Project to analyze the feasibility of a more complex proposal: [7,8]
+├── TestJsons                       # works on YAFS2. A basic project to check JSON formats. NM.
+├── Tutorial                        # works on YAFS2. iFogSim examples but in YAFS [1]
+├── Tutorial_JSONModelling          # works on YAFS2. Examples in yafs' readthedocs.
+├── VRGameFog-IFogSim-WL            # works on YAFS2. EGG_GAME by IFogSim implementation [1]
+└── mobileTutorial                  # works on YAFS2. An unpublished extension to incorporate general functions on dynamic connections.
+```
+
 
 The [YAFS tutorial](https://yafs.readthedocs.io/en/latest/introduction/index.html) is a good starting
 point for you. You can also try out some of the [Examples](https://yafs.readthedocs.io/en/latest/examples/index.html) shipped with
@@ -128,8 +144,9 @@ concepts, a number of [examples](https://yafs.readthedocs.io/en/latest/examples/
 
 For more help, contact with the authors or You must dig through the [source code](https://github.com/acsicuib/YAFS)
 
-Improvements
-------------
+Changelog
+-----------
+- jun / 27 / 2022 Fixing bugs in old examples and tested the project in python 3.9.7 version. Improved examples and add code that analyse some basic results.
 - sep. / 12 / 2019 Fixing bugs - All projects work with the attributes defined in the graph var (topology class) using NX library to manage the attributes.
 - may / 23 / 2019 New improvements are included. Highlight that workloads/users and mobile endpoints can be represented through *gpx traces*. Geopositional libraries are required
 - june / 25 / 2018 Bug Fixed - The DES.src metric of the CSV results is fixed. Identifies the DES-process who sends the message
@@ -138,7 +155,8 @@ Improvements
 Acknowledgment
 --------------
 
-Authors acknowledge financial support through grant project ORDCOT with number TIN2017-88547-P (AEI/FEDER, UE)
+- Authors acknowledge financial support through grant project ORDCOT with number TIN2017-88547-P (AEI/FEDER, UE)
+- Thanks to the small community of contributors who have been improving the code and providing new suggestions over the years.
 
 
 REFERENCES
@@ -146,15 +164,16 @@ REFERENCES
 
 YAFS is used in the following projects:
 
-* Isaac Lera, Carlos Guerrero, Carlos Juiz. YAFS: A simulator for IoT scenarios in fog computing. IEEE Access. Vol. 7(1), pages 91745-91758, 10.1109/ACCESS.2019.2927895, Jul 10 2019.
-* Isaac Lera, Carlos Guerrero, Carlos Juiz. Comparing centrality indices for network usage optimization of data placement policies in fog devices. FMEC 2018: 115-122
-* Carlos Guerrero, Isaac Lera, Carlos Juiz. Migration-Aware Genetic Optimization for MapReduce Scheduling and Replica Placement in Hadoop. Journal of Grid Computing 2018. 10.1007/s10723-018-9432-8
-* Isaac Lera, Carlos Guerrero, Carlos Juiz. Availability-aware Service Placement Policy in Fog Computing Based on Graph Partitions. IEEE Internet of Things Journal 2019. 10.1109/JIOT.2018.2889511
-* Isaac Lera, Carlos Guerrero, Carlos Juiz. Analysing the Applicability of a Multi-Criteria Decision Method in Fog Computing
+* [1] Isaac Lera, Carlos Guerrero, Carlos Juiz. YAFS: A simulator for IoT scenarios in fog computing. IEEE Access. Vol. 7(1), pages 91745-91758, 10.1109/ACCESS.2019.2927895, Jul 10 2019.
+* [2] Isaac Lera, Carlos Guerrero, Carlos Juiz. Comparing centrality indices for network usage optimization of data placement policies in fog devices. FMEC 2018: 115-122
+* [3]  Carlos Guerrero, Isaac Lera, Carlos Juiz. Migration-Aware Genetic Optimization for MapReduce Scheduling and Replica Placement in Hadoop. Journal of Grid Computing 2018. 10.1007/s10723-018-9432-8
+* [4] Isaac Lera, Carlos Guerrero, Carlos Juiz. Availability-aware Service Placement Policy in Fog Computing Based on Graph Partitions. IEEE Internet of Things Journal 2019. 10.1109/JIOT.2018.2889511
+* [5] Isaac Lera, Carlos Guerrero, Carlos Juiz. Analysing the Applicability of a Multi-Criteria Decision Method in Fog Computing
 Placement Problem. FMEC 2019
-* Forti, S, Lera, I, Guerrero, C, Brogi, A. Osmotic management of distributed complex systems: A declarative decentralised approach. J Softw Evol Proc. 2021;e2405. doi:10.1002/smr.2405
-* Brogi, A., Forti, S., Guerrero, C. et al. Declarative Application Management in the Fog. J Grid Computing 19, 45 (2021). https://doi.org/10.1007/s10723-021-09582-y
+* [6] Isaac Lera, Carlos Guerrero, and Carlos Juiz. Algoritmo descentralizado para la asignación de servicios en arquitecturas de Fog Computing basado en un proceso expansivo de migración de instancias. Jornadas Sarteco, 2019. 
+* [7] Forti, S, Lera, I, Guerrero, C, Brogi, A. Osmotic management of distributed complex systems: A declarative decentralised approach. J Softw Evol Proc. 2021;e2405. doi:10.1002/smr.2405
+* [8] Brogi, A., Forti, S., Guerrero, C. et al. Declarative Application Management in the Fog. J Grid Computing 19, 45 (2021). https://doi.org/10.1007/s10723-021-09582-y
 
 
 
-Please, [send us your reference to publish it](mailto:isaac.lera@uib.es)!
+Please, [send us your reference to publish it](mailto:isaac.lera@uib.es)! and of course, feel free to add your references or works using YAFS! 
