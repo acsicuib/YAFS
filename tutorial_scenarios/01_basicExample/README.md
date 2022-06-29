@@ -1,7 +1,7 @@
 One way to run the code:
 
 ```
-export PYTHONPATH=$PYTHONPATH:~/projects/YAFS/src/
+export PYTHONPATH=$PYTHONPATH:~/YAFS/src/
 cd YAFS/tutorial_scenarios/01_basicExample
 python main.py
 ```

@@ -130,8 +130,7 @@ if __name__ == '__main__':
         print("\n--- %s seconds ---" % (time.time() - start_time))
 
     print("Simulation Done!")
-    plt.show()
-
+  
     # Analysing the results. 
     dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
     print("Number of total messages between nodes: %i"%len(dfl))
@@ -153,7 +152,7 @@ if __name__ == '__main__':
     # -----------------------
     # PLAY WITH THIS EXAMPLE!
     # -----------------------
-    # Add another app2 instance in allocDefinition.json file adding the next data and run the main.py file again to see the new results:
+    # Add another app2-instance in allocDefinition.json file adding the next data and run the main.py file again to see the new results:
     # {
     #   "module_name": "2_01",
     #   "app": 2,
@@ -163,7 +162,7 @@ if __name__ == '__main__':
     
     # ! IMPORTANT. The scheduler & routing algorithm (aka. selectorPath = DeviceSpeedAwareRouting()) chooses the instance that will attend the request according to the latency -in this case-.
     #  For that reason, the initial instance deployed at node 0 is not used. It is further away than the instance located at node3.
-    # Add another user of app 2 at node 16, add the next json inside of userDefinition.json file and try again. Enjoy it! 
+    # Add another app2-user at node 16, add the next json inside of userDefinition.json file and try again. Enjoy it! 
     # {
     #   "id_resource": 16,
     #   "app": 2,

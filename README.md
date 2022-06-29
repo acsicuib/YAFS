@@ -69,10 +69,10 @@ pip install -r requirements.txt
 Getting started
 ---------------
 
-To run tutorial or example projects from a terminal, run the following code (please update the path according with your system). Alternativaly, you can use a python editor such as: Pycharm, Visual Studio, etc.
+To run tutorial or example projects from a terminal, run the following code (please update the paths according with your system). Alternativaly, you can use a python editor such as: Pycharm, Visual Studio, etc.
 
 ```bash
-export PYTHONPATH=$PYTHONPATH:~/projects/YAFS/src/
+export PYTHONPATH=$PYTHONPATH:~/YAFS/src/
 cd YAFS/tutorial_scenarios/01_basicExample
 python main.py
 ```
