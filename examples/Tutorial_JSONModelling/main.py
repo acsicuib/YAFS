@@ -36,12 +36,12 @@ def create_applications_from_json(data):
 
         ms = {}
         for message in app["message"]:
-            #print "Creando mensaje: %s" %message["name"]
+            #print("Creando mensaje: %s" %message["name"])
             ms[message["name"]] = Message(message["name"],message["s"],message["d"],instructions=message["instructions"],bytes=message["bytes"])
             if message["s"] == "None":
                 a.add_source_messages(ms[message["name"]])
 
-        #print "Total mensajes creados %i" %len(ms.keys())
+        #print("Total mensajes creados %i" %len(ms.keys()))
         for idx, message in enumerate(app["transmission"]):
             if "message_out" in message.keys():
                 a.add_service_module(message["module"],ms[message["message_in"]], ms[message["message_out"]], fractional_selectivity, threshold=1.0)
@@ -89,7 +89,7 @@ def failureControl(sim,filelog,ids):
         print("\tStopping some DES processes: %s\n\n"%keys_DES)
         filelog.write("%i,%s,%d\n"%(node_to_remove, someModuleDeployed,sim.env.now))
 
-        ##Print some information:
+        ##print(some information:)
         for des in keys_DES:
             if des in sim.alloc_source.keys():
                 print("Removing a Gtw/User entity\t"*4)
@@ -120,7 +120,7 @@ def main(simulated_time,experimento,ilpPath):
     dataApp = json.load(open(experimento+'appDefinition.json'))
     apps = create_applications_from_json(dataApp)
     #for app in apps:
-    #  print apps[app]
+    #  print(apps[app])
 
     """
     PLACEMENT algorithm
@@ -134,8 +134,8 @@ def main(simulated_time,experimento,ilpPath):
     # for item in placementJson["initialAllocation"]:
     #     listDevices.append(item["id_resource"])
     # import matplotlib.pyplot as plt
-    # print listDevices
-    # print np.histogram(listDevices,bins=range(101))
+    # print(listDevices)
+    # print(np.histogram(listDevices,bins=range(101)))
     # plt.hist(listDevices, bins=100)  # arguments are passed to np.histogram
     # plt.title("Placement Histogram")
     # plt.show()

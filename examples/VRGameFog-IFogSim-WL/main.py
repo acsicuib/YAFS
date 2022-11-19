@@ -168,12 +168,12 @@ def main(simulated_time,depth,police):
     """
     #In this case: it will deploy all app.modules in the cloud
     if police == "cloud":
-        #print "cloud"
+        #print("cloud")
         placement = CloudPlacement("onCloud")
         placement.scaleService(
             {"Calculator": numOfDepts * numOfMobilesPerDept, "Coordinator": 1})
     else:
-        #print "EDGE"
+        #print("EDGE")
         placement = FogPlacement("onProxies")
         placement.scaleService(
             {"Calculator": numOfMobilesPerDept, "Coordinator": 1})

@@ -552,14 +552,14 @@ def getTransitiveClosures(source, app_, transitivesClosures,cycles_, level):
     tmp=set(nx.descendants(app_,source))
     tmp.add(source)
     tmp = frozenset(tmp)
-#    print "tmp"
-#    print tmp
-#    print "cycles_"
-#    print cycles_
-#    print "transtivesClosures"
-#    print transitivesClosures
-#    print "level"
-#    print level
+#    print("tmp")
+#    print(tmp)
+#    print("cycles_")
+#    print(cycles_)
+#    print("transtivesClosures")
+#    print(transitivesClosures)
+#    print("level")
+#    print(level)
     if not tmp in transitivesClosures[level]:
         if verbose_log:
             print(tmp)
@@ -1347,7 +1347,7 @@ for appToAllocate in sortedAppsDeadlines:
                     if placed_:
                         if verbose_log:
                             print("    Performed allocation of app "+str(appId)+" in community "+str(myCommunity[0]))
-                        for servId,deviceId in servicePlacement.iteritems():
+                        for servId,deviceId in servicePlacement.items():
                             service2DevicePlacementMatrix[servId][deviceId]=1
                             nodeBussyResources[deviceId]=nodeBussyResources[deviceId]+appsResources[appId][servId]
                         community2AppPlacementDict[myCommunity[0]].add(appId)
@@ -2009,7 +2009,7 @@ if generatePlots:
 #
 #
 #for next_level_communities in itertools.islice(communities_generator,100):
-#    print next_level_communities
+#    print(next_level_communities)
 #
 #
 #
@@ -2020,7 +2020,7 @@ if generatePlots:
 #
 #limited = itertools.takewhile(lambda c: True, communities_generator)
 #for myCommunity in limited:
-#        print myCommunity
+#        print(myCommunity)
 #
 #
 #[[0, 1, 2, 3, 4], [5], [6, 7, 8, 9, 10]]

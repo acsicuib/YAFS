@@ -18,10 +18,10 @@ class CloudPath_RR(Selection):
         if message.dst not in self.rr.keys():
             self.rr[message.dst] = 0
 
-        # print "GET PATH"
-        # print "\tNode _ src (id_topology): %i" % node_src
-        # print "\tRequest service: %s " % (message.dst)
-        # print "\tProcess serving that service: %s (pos ID: %i)" % (DES_dst, self.rr[message.dst])
+        # print("GET PATH")
+        # print("\tNode _ src (id_topology): %i" % node_src)
+        # print("\tRequest service: %s " % (message.dst))
+        # print("\tProcess serving that service: %s (pos ID: %i)" % (DES_dst, self.rr[message.dst]))
 
         next_DES_dst =DES_dst[self.rr[message.dst]]
 

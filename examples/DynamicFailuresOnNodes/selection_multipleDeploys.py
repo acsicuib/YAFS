@@ -19,10 +19,10 @@ class CloudPath_RR(Selection):
         if message.dst not in self.rr.keys():
             self.rr[message.dst] = 0
 
-        # print "GET PATH"
-        # print "\tNode _ src (id_topology): %i" % node_src
-        # print "\tRequest service: %s " % (message.dst)
-        # print "\tProcess serving that service: %s (pos ID: %i)" % (DES_dst, self.rr[message.dst])
+        # print("GET PATH")
+        # print("\tNode _ src (id_topology): %i" % node_src)
+        # print("\tRequest service: %s " % (message.dst))
+        # print("\tProcess serving that service: %s (pos ID: %i)" % (DES_dst, self.rr[message.dst]))
 
         next_DES_dst =DES_dst[self.rr[message.dst]]
 
@@ -80,19 +80,19 @@ class BroadPath(Selection):
         #In this case, there is not a cached system.
         node_src = topology_src
 
-        # print "Node (Topo id): %s" %node_src
-        # print "Service DST: %s "%message.dst
+        # print("Node (Topo id): %s" %node_src)
+        # print("Service DST: %s "%message.dst)
         DES_dst = alloc_module[app_name][message.dst]
 
         currentNodes = len(sim.topology.G.nodes())
 
-        # print "DES DST: %s" % DES_dst
+        # print("DES DST: %s" % DES_dst)
 
         if not self.invalid_cache_value == currentNodes:  # Cache updated
             self.invalid_cache_value = copy.copy(currentNodes)
             self.most_near_calculator_to_client = {}
             self.logger.warning("Cache will be updated")
-            # print "Cache updated"
+            # print("Cache updated")
 
         # self.most_near_calculator_to_client = {}
 
@@ -102,32 +102,32 @@ class BroadPath(Selection):
 
         path,des = self.most_near_calculator_to_client[node_src]
 
-            # print "\t NEW DES_DST: %s" % DES_dst
-            # print "PATH ",path
-            # print "DES  ",des
+            # print("\t NEW DES_DST: %s" % DES_dst)
+            # print("PATH ",path)
+            # print("DES  ",des)
 
         return [path],[des]
 
 
     def get_path_from_failure(self, sim, message, link, alloc_DES, alloc_module, traffic, ctime, from_des):
-        # print "Example of enrouting"
-        # print message.path # [86, 242, 160, 164, 130, 301, 281, 216]
-        # print message.dst_int  # 301
-        # print link #(130, 301) link is broken! 301 is unreacheble
+        # print("Example of enrouting")
+        # print(message.path # [86, 242, 160, 164, 130, 301, 281, 216])
+        # print(message.dst_int  # 301)
+        # print(link #(130, 301) link is broken! 301 is unreacheble)
 
         idx = message.path.index(link[0])
-        # print "idx: ", idx
+        # print("idx: ", idx)
 
         if idx == len(message.path):
             # The node who serves ... not possible case
             return [],[]
         else:
             node_src = message.path[idx-1]
-            # print "SRC: ",node_src # 164
+            # print("SRC: ",node_src # 164)
 
             node_dst = message.path[len(message.path)-1]
-            #print "DST: ",node_dst #261
-            #print "INT: ",message.dst_int #301
+            #print("DST: ",node_dst #261)
+            #print("INT: ",message.dst_int #301)
 
 
             path, des = self.get_path(sim, message.app_name, message, node_src, alloc_DES, alloc_module, traffic,
@@ -137,13 +137,13 @@ class BroadPath(Selection):
 
 
             if len(path[0]) > 1:
-                # print "PAHT ",path # [[164, 130, 380, 110, 216]]
-                # print "DES ",des # [40]
+                # print("PAHT ",path # [[164, 130, 380, 110, 216]])
+                # print("DES ",des # [40])
 
                 concPath = message.path[0:message.path.index(path[0][0])] + path[0]
-                # print "CPATH ",concPath # [86, 242, 160, 164, 130, 380, 110, 216]
+                # print("CPATH ",concPath # [86, 242, 160, 164, 130, 380, 110, 216])
                 newINT = path[0][2]
-                # print "NI ",newINT # 380
+                # print("NI ",newINT # 380)
 
                 message.dst_int = newINT
                 return [concPath], des

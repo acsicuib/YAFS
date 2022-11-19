@@ -200,17 +200,17 @@ drAllILPFAILR = getAllR(drILPFAILR)
 
 deadline = {}
 #for app in range(0,20):
-#    print "-"*30
-#    print "APP %i" %app
+#    print("-"*30)
+#    print("APP %i" %app)
 #    val1 = drAll[drAll["app"]==app]["r"].max().max()
 #    val2 = drAllILP[drAllILP["app"]==app]["r"].max().max()
 #    if val1 > val2:
-#        print val1 
-#        print "MAX. Partition"
+#        print(val1 )
+#        print("MAX. Partition")
 #        deadline[app]=val1
 #    else:
-#        print val2
-#        print "MAX. ILP"
+#        print(val2)
+#        print("MAX. ILP")
 #        deadline[app]=val2
 #
 #for k in range(0,20):
@@ -219,9 +219,9 @@ deadline = {}
 #    valILP = drAllILPFAIL[drAllILPFAIL["app"]==k]["r"].max() ## Array
 #    x = valC[~np.isnan(valC)]
 #    y = valILP[~np.isnan(valILP)]
-#    print "APP %i"%k
-#    print "\tPartition Total over deadline= %i / %i"%(np.sum(x>valMax), len(valC) )
-#    print "\tILP    Total over deadline= %i / %i"%(np.sum(y>valMax), len(valILP) )
+#    print("APP %i"%k)
+#    print("\tPartition Total over deadline= %i / %i"%(np.sum(x>valMax), len(valC) ))
+#    print("\tILP    Total over deadline= %i / %i"%(np.sum(y>valMax), len(valILP) ))
 #
 
 
@@ -345,24 +345,24 @@ plt.show()
 
 #
 #if np.all(dr.m == drILP.m):
-#    print "OK"
+#    print("OK")
 #if np.all(dr.m == drCLOUD.m):
-#    print "OK" 
+#    print("OK" )
     
 #np.mean(drAll.iloc[0].r)
 #np.mean(drAllILP.iloc[0].r)
 #np.mean(drAllCloud.iloc[21].r)
 
 #for app in range(0,20):
-#    print "-"*30
-#    print "APP %i" %app
-#    print dr[dr["app"]==app][["avg","std"]]
+#    print("-"*30)
+#    print("APP %i" %app)
+#    print(dr[dr["app"]==app][["avg","std"]])
 #
 #
 #for app in range(0,20):
-#    print "-"*30
-#    print "APP %i" %app
-#    print drILP[drILP["app"]==app][["avg","std"]]
+#    print("-"*30)
+#    print("APP %i" %app)
+#    print(drILP[drILP["app"]==app][["avg","std"]])
 
  
 #drawBoxPlot_User_App(dr,2)

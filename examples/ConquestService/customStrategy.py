@@ -33,7 +33,7 @@ class CustomStrategy():
     #     # Clearing other related structures
     #     for des in sim.alloc_module[app_name][service_name]:
     #         if des in all_des:
-    #               print "REMOVE PROCESS ", des
+    #               print("REMOVE PROCESS ", des)
     #               sim.alloc_module[app_name][service_name].remove(des)
     #               sim.stop_process(des)
     #               del sim.alloc_DES[des]
@@ -77,9 +77,9 @@ class CustomStrategy():
         # Current utilization of services
         services = defaultdict(list)
         for k,v in routing.controlServices.items():
-            # print k[1]
+            # print(k[1])
             services[k[1]].append(v[0])
-            # print v #[(node_src, service)] = (path, des)
+            # print(v #[(node_src, service)] = (path, des))
         print("Current utilization of services")
         print(services)
         print("-" * 30)
@@ -146,7 +146,7 @@ class CustomStrategy():
 
         # if self.activations==2:
         #     sim.print_debug_assignaments()
-        #     print "ESTOOOO "
+        #     print("ESTOOOO ")
         #
         #     exit()
 

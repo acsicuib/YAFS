@@ -51,7 +51,7 @@ class Population_Move(Population):
             # for id_s, service in enumerate(current_services):
             # for node in current_services[service]:
             #     node = sim.alloc_DES[key]
-            #     print "WL in node: ",node
+            #     print("WL in node: ",node)
                 if node != 72:
                     circle2 = plt.Circle(self.pos[node], 40, color="green", alpha=0.8)
                     ax.add_artist(circle2)
@@ -90,7 +90,7 @@ class Population_Move(Population):
             print(path)
             if len(path)>2:
                 next_src_position = path[1]
-                #print path,next_src_position
+                #print(path,next_src_position)
                 sim.alloc_DES[key] =  next_src_position
             else:
                 None
@@ -100,14 +100,14 @@ class Population_Move(Population):
 
         self.activation +=1
 
-        #print "-" * 40
-        #print "DES\t| TOPO \t| Src.Mod \t| Modules"
-        #print "-" * 40
+        #print("-" * 40)
+        #print("DES\t| TOPO \t| Src.Mod \t| Modules")
+        #print("-" * 40)
         #for k in sim.alloc_DES:
-        #    print k, "\t|", self.alloc_DES[k], "\t|", self.alloc_source[k][
+        #    print(k, "\t|", self.alloc_DES[k], "\t|", self.alloc_source[k][)
         #        "module"] if k in self.alloc_source.keys() else "--", "\t\t|", fullAssignation[k][
         #        "Module"] if k in fullAssignation.keys() else "--"
-        #print "-" * 40
+        #print("-" * 40)
 
 
 

@@ -30,7 +30,7 @@ class CloudPlacement(Placement):
         for module in services.keys():
             if "Coordinator" == module:
                 if "Coordinator" in self.scaleServices.keys():
-                    # print self.scaleServices["Coordinator"]
+                    # print(self.scaleServices["Coordinator"])
                     for rep in range(0,self.scaleServices["Coordinator"]):
                         idDES = sim.deploy_module(app_name,module,services[module],id_cluster) #Deploy as many modules as elements in the array
 

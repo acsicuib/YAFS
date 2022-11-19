@@ -38,12 +38,12 @@ def create_applications_from_json(data):
 
         ms = {}
         for message in app["message"]:
-            #print "Creando mensaje: %s" %message["name"]
+            #print("Creando mensaje: %s" %message["name"])
             ms[message["name"]] = Message(message["name"],message["s"],message["d"],instructions=message["instructions"],bytes=message["bytes"])
             if message["s"] == "None":
                 a.add_source_messages(ms[message["name"]])
 
-        #print "Total mensajes creados %i" %len(ms.keys())
+        #print("Total mensajes creados %i" %len(ms.keys()))
         for idx, message in enumerate(app["transmission"]):
             if "message_out" in message.keys():
                 a.add_service_module(message["module"],ms[message["message_in"]], ms[message["message_out"]], fractional_selectivity, threshold=1.0)
@@ -89,14 +89,14 @@ def failureControl(sim,filelog,ids):
 
             keys_DES,someModuleDeployed = getProcessFromThatNode(sim, node_to_remove)
 
-            # print "\n\nRemoving node: %i, Total nodes: %i" % (node_to_remove, len(nodes))
-            # print "\tStopping some DES processes: %s\n\n"%keys_DES
+            # print("\n\nRemoving node: %i, Total nodes: %i" % (node_to_remove, len(nodes)))
+            # print("\tStopping some DES processes: %s\n\n"%keys_DES)
             filelog.write("%i,%s,%d\n"%(node_to_remove, someModuleDeployed,sim.env.now))
 
-            ##Print some information:
+            ##print(some information:)
             # for des in keys_DES:
             #     if des in sim.alloc_source.keys():
-            #         print "Removing a Gtw/User entity\t"*4
+            #         print("Removing a Gtw/User entity\t"*4)
 
             sim.remove_node(node_to_remove)
             for key in keys_DES:
@@ -124,7 +124,7 @@ def main(simulated_time, path,pathResults,case,it):
     dataApp = json.load(open(path + 'appDefinition.json'))
     apps = create_applications_from_json(dataApp)
     # for app in apps:
-    #  print apps[app]
+    #  print(apps[app])
 
     """
     PLACEMENT algorithm
@@ -222,7 +222,7 @@ if __name__ == '__main__':
     # NOTE: ABSOLUTE PATH TO JSON FILES ACCORDING TO THE EXECUTION-PLACE
     # We simplify the path update in our experimentation to external servers (it's a bit precarious but functional)
     runpath = os.getcwd()
-    print (runpath)
+    print((runpath))
     if "/home/uib/" in runpath :
         pathExperimento = "/home/uib/src/YAFS/src/examples/ConquestService/exp/"
     else:

@@ -34,12 +34,12 @@ def create_applications_from_json(data):
 
         ms = {}
         for message in app["message"]:
-            #print "Creando mensaje: %s" %message["name"]
+            #print("Creando mensaje: %s" %message["name"])
             ms[message["name"]] = Message(message["name"],message["s"],message["d"],instructions=message["instructions"],bytes=message["bytes"])
             if message["s"] == "None":
                 a.add_source_messages(ms[message["name"]])
 
-        #print "Total mensajes creados %i" %len(ms.keys())
+        #print("Total mensajes creados %i" %len(ms.keys()))
         for idx, message in enumerate(app["transmission"]):
             if "message_out" in message.keys():
                 a.add_service_module(message["module"],ms[message["message_in"]], ms[message["message_out"]], fractional_selectivity, threshold=1.0)
@@ -85,14 +85,14 @@ def failureControl(sim,filelog,ids):
 
             keys_DES,someModuleDeployed = getProcessFromThatNode(sim, node_to_remove)
 
-            # print "\n\nRemoving node: %i, Total nodes: %i" % (node_to_remove, len(nodes))
-            # print "\tStopping some DES processes: %s\n\n"%keys_DES
+            # print("\n\nRemoving node: %i, Total nodes: %i" % (node_to_remove, len(nodes)))
+            # print("\tStopping some DES processes: %s\n\n"%keys_DES)
             filelog.write("%i,%s,%d\n"%(node_to_remove, someModuleDeployed,sim.env.now))
 
-            ##Print some information:
+            ##print(some information:)
             # for des in keys_DES:
             #     if des in sim.alloc_source.keys():
-            #         print "Removing a Gtw/User entity\t"*4
+            #         print("Removing a Gtw/User entity\t"*4)
 
             sim.remove_node(node_to_remove)
             for key in keys_DES:
@@ -133,8 +133,8 @@ def main(simulated_time,experimento,ilpPath,it):
     # for item in placementJson["initialAllocation"]:
     #     listDevices.append(item["id_resource"])
     # import matplotlib.pyplot as plt
-    # print listDevices
-    # print np.histogram(listDevices,bins=range(101))
+    # print(listDevices)
+    # print(np.histogram(listDevices,bins=range(101)))
     # plt.hist(listDevices, bins=100)  # arguments are passed to np.histogram
     # plt.title("Placement Histogram")
     # plt.show()
@@ -190,14 +190,14 @@ def main(simulated_time,experimento,ilpPath,it):
 
 
     ## Enrouting information
-    # print "Values"
-    # print selectorPath.cache.values()
+    # print("Values")
+    # print(selectorPath.cache.values())
 
 
     #failurefilelog.close()
 
     # #CHECKS
-    #print s.topology.G.nodes
+    #print(s.topology.G.nodes)
     #s.print_debug_assignaments()
 
 idxFControl = 0

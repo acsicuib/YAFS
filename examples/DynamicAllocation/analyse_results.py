@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import Series, date_range
 from matplotlib.ticker import FormatStrFormatter
+import os
+
 # for size in [100,1000,10000,100000,1000000]:
 time_loops = [["M.Action"]]
 
@@ -15,10 +17,8 @@ app2 = "app2"
 
 size = 12000
 
-path = "examples/DynamicAllocation/"
-
 #s = Stats(defaultPath=path+"Results_%s"%(size))
-s1 = Stats(defaultPath=path+"Results_%s_singleApp1" % (size))
+s1 = Stats(defaultPath=os.path.join(os.getcwd(), "Results_%s_singleApp1" % (size)))
 #s2 = Stats(defaultPath=path+"Results_%s_singleApp2" % (size))
 #Network
 #s.showResults2(size, time_loops=time_loops)
@@ -47,7 +47,7 @@ ticksV = np.array(ticks)*300
 #index = dfap1.index
 #rng = pd.date_range('01/01/1970',periods=20,freq="300s")
 
-values = range(len(ticks))
+values = list(range(len(ticks)))
 
 for x in range(len(ticks)):
     if x<10:

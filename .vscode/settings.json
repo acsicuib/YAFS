@@ -1,5 +1,11 @@
 {
     "python.analysis.extraPaths": [
         "./src"
-    ]
+    ],
+    "python.terminal.executeInFileDir": true,
+    "code-runner.fileDirectoryAsCwd": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/yafs.egg-info": true
+    },
 }
