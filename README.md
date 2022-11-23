@@ -86,7 +86,8 @@ tutorial_scenarios
 └── 04_userMovement
 ```
 
-More complex examples or published projects are in the folder:
+More complex examples or published projects are in the folder **examples**:
+Note: they are working with python 3.10.8
 ```
 examples
 ├── ConquestService                 # tested. Published at [6]

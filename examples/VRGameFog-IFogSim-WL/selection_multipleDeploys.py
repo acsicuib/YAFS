@@ -16,10 +16,10 @@ class CloudPath_RR(Selection):
         if message.dst not in self.rr.keys():
             self.rr[message.dst] = 0
 
-        # print "GET PATH"
-        # print "\tNode _ src (id_topology): %i" % node_src
-        # print "\tRequest service: %s " % (message.dst)
-        # print "\tProcess serving that service: %s (pos ID: %i)" % (DES_dst, self.rr[message.dst])
+        # print("GET PATH")
+        # print("\tNode _ src (id_topology): %i" % node_src)
+        # print("\tRequest service: %s " % (message.dst))
+        # print("\tProcess serving that service: %s (pos ID: %i)" % (DES_dst, self.rr[message.dst]))
 
         bestPath = []
         bestDES = []
@@ -85,17 +85,17 @@ class BroadPath(Selection):
                 minLenPath = len(path)
                 minPath = path
 
-        # print "MIN PATH ",minPath
+        # print("MIN PATH ",minPath)
         last_dest_topo = minPath[len(minPath) - 1]
         if last_dest_topo not in self.running_services.keys():
             run_service = []
             for des in DES_dst:
                 if alloc_DES[des] == last_dest_topo:
-                    # print "This process are running in this device: ", des  ### Same times that numOfMobilesPerDept by level
+                    # print("This process are running in this device: ", des  ### Same times that numOfMobilesPerDept by level)
                     run_service.append(des)
             self.running_services[last_dest_topo] = run_service
 
-        # print self.running_services[last_dest_topo]
+        # print(self.running_services[last_dest_topo])
 
         if last_dest_topo not in self.round_robin_module_calculator:
             self.round_robin_module_calculator[last_dest_topo]=0
@@ -112,10 +112,10 @@ class BroadPath(Selection):
         """
         node_src = topology_src  # TOPOLOGY SOURCE where the message is generated
 
-        # print "Node (Topo id): %s" %node_src
-        # print "Service DST: %s "%message.dst
+        # print("Node (Topo id): %s" %node_src)
+        # print("Service DST: %s "%message.dst)
         DES_dst = alloc_module[app_name][message.dst]
-        # print "DES DST: %s" % DES_dst
+        # print("DES DST: %s" % DES_dst)
 
         ## SENSOR enrouting works with ca
         if message.name == "M.Sensor":
@@ -127,8 +127,8 @@ class BroadPath(Selection):
 
             path,des = self.most_near_calculator_to_client[node_src]
 
-            # print "PATH ",path
-            # print "DES  ",des
+            # print("PATH ",path)
+            # print("DES  ",des)
             return [path],[des]
 
         if message.dst == "Coordinator":  # ALL OF THEM ARE IN THE SAME ELEMENT  - CLOUD

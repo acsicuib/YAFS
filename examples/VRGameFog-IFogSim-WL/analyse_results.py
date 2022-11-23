@@ -12,7 +12,7 @@ police = "cloud"
 
 police = "edge"
 
-# print depth
+# print(depth)
 for idx1, depth in enumerate([4, 8, 12, 16]):
 #for idx1, depth in enumerate([2]):
      # 1000, 10000,
@@ -35,10 +35,10 @@ for idx1, depth in enumerate([4, 8, 12, 16]):
          # res = s.showLoops(time_loops)
          # loopstime[depth][idx2]=res[0]
          #
-         # #Print the execution delay
-         # print s.times("time_total_response")
+         # #print(the execution delay)
+         # print(s.times("time_total_response"))
          #
-         # print "Latency Acc: ", s.df_link["latency"].sum()
+         # print("Latency Acc: ", s.df_link["latency"].sum())
          print("*"*40)
 
 

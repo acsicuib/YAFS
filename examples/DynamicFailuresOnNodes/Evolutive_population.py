@@ -43,15 +43,15 @@ class Pop_and_Failures(Population):
             # key = sim.alloc_DES.keys()[sim.alloc_DES.values().index(node_to_remove)]
             for key in keys:
                 # Information
-                # print "\tNode %i - with a DES process: %i" % (node_to_remove, key)
+                # print("\tNode %i - with a DES process: %i" % (node_to_remove, key))
                 # This assignamnet can be a source/sensor module:
                 if key in sim.alloc_source.keys():
-                    # print "\t\t a sensor: %s" % sim.alloc_source[key]["module"]
+                    # print("\t\t a sensor: %s" % sim.alloc_source[key]["module"])
                     ## Sources/Sensors modules are not removed
                     return False,[],False
                 someModuleAssignament = sim.get_assigned_structured_modules_from_DES()
                 if key in someModuleAssignament.keys():
-                    # print "\t\t a module: %s" % someModuleAssignament[key]["module"]
+                    # print("\t\t a module: %s" % someModuleAssignament[key]["module"])
                     if self.count_down<3:
                         return False, [], False
                     else:
@@ -67,7 +67,7 @@ class Pop_and_Failures(Population):
         self.logger.debug("Activiting - Failure -  Removing a topology nodo == a network element, including edges")
         if self.limit >0:
             nodes =list(sim.topology.G.nodes())
-            #print sim.alloc_DES
+            #print(sim.alloc_DES)
             is_removable = False
             node_to_remove = -1
             someModuleDeployed = False

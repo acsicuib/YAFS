@@ -10,7 +10,7 @@ setup(
     description='Yet Another Fog Simulator for Python.',
     long_description='\n\n'.join(
         open(f, 'rb').read().decode('utf-8')
-        for f in ['README.txt', 'CHANGES.txt', 'AUTHORS.txt']),
+        for f in ['README.md', 'CHANGELOG.md', 'AUTHORS.txt']),
     url='https://yafs.readthedocs.io',
     license='MIT License',
     #packages=find_packages(where='src',exclude=("*.tests",)),

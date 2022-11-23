@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import Series, date_range
+import os
 
 # for size in [100,1000,10000,100000,1000000]:
 time_loops = [["M.Action"]]
@@ -11,9 +12,7 @@ time_loops = [["M.Action"]]
 #### ANALYSE FILES YAFS
 size = 10000
 
-path = "examples/DynamicFailuresOnNodes/"
-
-s = Stats(defaultPath=path+"Results_%s_exp"%(size))
+s = Stats(defaultPath=os.path.join(os.getcwd(),"Results_%s_exp"%(size)))
 #Network
 s.showResults2(size, time_loops=time_loops)
 

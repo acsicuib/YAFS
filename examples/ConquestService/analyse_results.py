@@ -17,6 +17,8 @@ import os
 import networkx as nx
 import json
 import time
+import glob
+
 def set_box_color(bp, color):
     plt.setp(bp['boxes'], color=color)
     plt.setp(bp['whiskers'], color=color)
@@ -143,11 +145,12 @@ pathEXP = "exp1/"
 nsimulations = 1
 #datestamp = time.strftime('%Y%m%d')
 datestamp = "20190131"
-pathSimple = pathEXP+"results_"+datestamp+"/"
+
+pathSimple = glob.glob(pathEXP+"results_[0-9]*")[0]
 case ="CQ"
 
 resampleSize = 1000
-tickGeneration =  range(int(timeSimulation/resampleSize / 2.),timeSimulation/resampleSize,int(timeSimulation/resampleSize / 2.0 /10.0))
+tickGeneration =  range(int(timeSimulation/resampleSize // 2.),timeSimulation//resampleSize,int(timeSimulation/resampleSize // 2.0 //10.0))
     
 drs = {}
 color_sequence = ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c',
@@ -157,7 +160,7 @@ color_sequence = ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c',
                   
 for it in range(nsimulations):
     fCSV = "Results_%s_%i_%i.csv"%(case,timeSimulation,it)    
-    df = pd.read_csv(pathSimple+fCSV)
+    df = pd.read_csv(os.path.join(pathSimple, fCSV))
     dtmp = df[df["module.src"]=="None"].groupby(['app','TOPO.src'])['id'].apply(list)
    
     drs = {}
@@ -166,7 +169,6 @@ for it in range(nsimulations):
     for g in dtmp.keys():
         print(g)
         ids = dtmp[g]
-
 
         t = []
         intime = []
@@ -178,7 +180,8 @@ for it in range(nsimulations):
         dr = pd.DataFrame() 
         dr["time"] = t
         dr.index = np.array(intime).astype('datetime64[s]')
-        dr = dr.resample('1000s').agg(dict(time='mean'))   
+        # BUGON: (2,12) gives 549 elems, while should 550
+        dr = dr.resample('1000s').agg(dict(time='mean'))[0:549]  
         maxValue=max(maxValue,dr.time.max())
         ticks = range(len(dr.time.values))
         drs[(g[0],g[1])] = dr.time.values
@@ -221,24 +224,24 @@ for it in range(nsimulations):
         ds["time"] = drs[k]
         msg,mean,std = [],[],[]
 
-        inter = [0]+tickGeneration+[resampleSize]
+        inter = (0, *tickGeneration, resampleSize)
         
         for gen in range(len(inter)-1):
-#            print inter[gen],inter[gen+1]
+#            print(inter[gen],inter[gen+1])
             msg.append(len(ds.time[inter[gen]:inter[gen+1]]))
             mean.append(ds.time[inter[gen]:inter[gen+1]].mean())
             std.append(ds.time[inter[gen]:inter[gen+1]].std())
         
         row = ["S%i on '%i'"%(k[0],k[1])]
-        for i in range((len(listG)-1)/3):
+        for i in range((len(listG)-1)//3):
             row.append(msg[i])
             row.append(mean[i])
             row.append(std[i])
            
         dlat.loc[ixloc] = row
         ixloc +=1
-#    print dlat.columns
-#    print len(dlat.columns)
+#    print(dlat.columns)
+#    print(len(dlat.columns))
     print("MAIN METRICS")
     print(dlat.iloc[:,[0,2,5,32]])
     print("-"*30)
