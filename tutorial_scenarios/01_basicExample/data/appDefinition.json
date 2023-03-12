@@ -205,13 +205,24 @@
     "transmission": [
       {
         "message_in": "M.USER.APP.6",
-        "module": "6_01"
+        "module": "6_01",
+        "message_out": "Trm_Test"
+      },
+      {
+        "message_in": "Trm_Test",
+        "module": "Test_Module"
       }
     ],
     "module": [
       {
         "id": 6,
         "name": "6_01",
+        "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 7,
+        "name": "Test_Module",
         "type": "MODULE",
         "RAM": 1
       }
@@ -222,6 +233,14 @@
         "name": "M.USER.APP.6",
         "s": "None",
         "d": "6_01",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 6,
+        "name": "Trm_Test",
+        "s": "6_01",
+        "d": "Test_Module",
         "bytes": 20,
         "instructions": 30
       }

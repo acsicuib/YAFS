@@ -40,6 +40,11 @@
       "module_name": "6_01",
       "app": 6,
       "id_resource": 6
+    },
+    {
+      "module_name": "Test_Module",
+      "app": 6,
+      "id_resource": 6
     }
   ]
 }
