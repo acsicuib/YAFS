@@ -34,7 +34,12 @@
     {
       "module_name": "6_01",
       "app": 6,
-      "id_resource": 0
+      "id_resource": 1
+    },
+    {
+      "module_name": "6_01",
+      "app": 6,
+      "id_resource": 6
     }
   ]
 }

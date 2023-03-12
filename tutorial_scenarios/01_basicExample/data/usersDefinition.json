@@ -25,10 +25,10 @@
       "lambda": 500
     },
     {
-      "id_resource": 9,
+      "id_resource": 0,
       "app": 6,
       "message": "M.USER.APP.6",
-      "lambda": 10000
+      "lambda": 10
     }
   ]
 }
