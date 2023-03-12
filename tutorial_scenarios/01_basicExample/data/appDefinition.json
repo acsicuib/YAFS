@@ -211,6 +211,10 @@
       {
         "message_in": "Trm_Test",
         "module": "Test_Module"
+      },
+      {
+        "message_in": "Trm_Test",
+        "module": "Test_Module2"
       }
     ],
     "module": [
@@ -223,6 +227,12 @@
       {
         "id": 7,
         "name": "Test_Module",
+        "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 8,
+        "name": "Test_Module2",
         "type": "MODULE",
         "RAM": 1
       }
@@ -241,6 +251,14 @@
         "name": "Trm_Test",
         "s": "6_01",
         "d": "Test_Module",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 7,
+        "name": "Trm_Test",
+        "s": "6_01",
+        "d": "Test_Module2",
         "bytes": 20,
         "instructions": 30
       }
