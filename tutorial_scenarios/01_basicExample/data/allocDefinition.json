@@ -17,6 +17,11 @@
       "id_resource": 0
     },
     {
+      "module_name": "2_01",
+      "app": 2,
+      "id_resource": 3
+    },
+    {
       "module_name": "3_01",
       "app": 3,
       "id_resource": 0
