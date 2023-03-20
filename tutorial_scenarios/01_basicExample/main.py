@@ -33,7 +33,9 @@ def main(stop_time, it,folder_results):
     TOPOLOGY
     """
     t = Topology()
-
+    dataNetwork = json.load(open('data/network.json'))
+    t.load(dataNetwork)
+    '''
     # You also can create a topology using JSONs files. Check out examples folder
     size = 5
     t.G = nx.generators.binomial_tree(size) # In NX-lib there are a lot of Graphs generators
@@ -43,7 +45,7 @@ def main(stop_time, it,folder_results):
     # PR and BW are 1 unit
     attPR_BW = {x: 1 for x in t.G.edges()}
 
-    attPR_BW[(0, 4)] = attPR_BW[(4, 5)] = attPR_BW[(5, 6)] = 1000                                           ##
+    #attPR_BW[(0, 4)] = attPR_BW[(4, 5)] = attPR_BW[(5, 6)] = 1000                                           ##
     #attPR_BW[(0, 1)] = 1000
 
     nx.set_edge_attributes(t.G, name="PR", values=attPR_BW)
@@ -56,7 +58,7 @@ def main(stop_time, it,folder_results):
     attIPT = {x: 100 for x in t.G.nodes()}
 
 
-    attIPT[4] = attIPT[5] = attIPT[6] = 10000
+    #attIPT[4] = attIPT[5] = attIPT[6] = 10000
 
     nx.set_node_attributes(t.G, name="IPT", values=attIPT)
 
@@ -68,7 +70,7 @@ def main(stop_time, it,folder_results):
     pos=nx.spring_layout(t.G)
     nx.draw_networkx(t.G, pos, with_labels=True)
     nx.draw_networkx_edge_labels(t.G, pos,alpha=0.5,font_size=5,verticalalignment="top")
-
+    '''
 
     """
     APPLICATION or SERVICES

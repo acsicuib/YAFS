@@ -111,7 +111,7 @@ def main(simulated_time,experimento,ilpPath,it):
     t = Topology()
     dataNetwork = json.load(open(experimento+'network.json'))
     t.load(dataNetwork)
-    nx.write_gexf(t.G,"graph_main") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
+    nx.write_gexf(t.G, "graph_main") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
 
     """
     APPLICATION

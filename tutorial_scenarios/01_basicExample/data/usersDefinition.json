@@ -28,7 +28,7 @@
       "id_resource": 0,
       "app": 6,
       "message": "M.USER.APP.6",
-      "lambda": 10
+      "lambda": 500
     }
   ]
 }
