@@ -35,6 +35,7 @@ def main(stop_time, it,folder_results):
     t = Topology()
     dataNetwork = json.load(open('data/network.json'))
     t.load(dataNetwork)
+
     '''
     # You also can create a topology using JSONs files. Check out examples folder
     size = 5
