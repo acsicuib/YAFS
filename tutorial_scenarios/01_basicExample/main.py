@@ -95,7 +95,7 @@ if __name__ == '__main__':
     folder_results = str(folder_results)+"/"
 
     nIterations = 1  # iteration for each experiment
-    simulationDuration = 20000  
+    simulationDuration = 20000
 
     # Iteration for each experiment changing the seed of randoms
     for iteration in range(nIterations):
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         print("\n--- %s seconds ---" % (time.time() - start_time))
 
     print("Simulation Done!")
-  
+
     # Analysing the results. 
     dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
     print("Number of total messages between nodes: %i"%len(dfl))
@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     dfapp2 = df[df.app == 2].copy() # a new df with the requests handled by app 2
     print(dfapp2.head())
-    
+
     dfapp2.loc[:,"transmission_time"] = dfapp2.time_emit - dfapp2.time_reception # Transmission time
     dfapp2.loc[:,"service_time"] = dfapp2.time_out - dfapp2.time_in
 
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
-    
+
     # -----------------------
     # PLAY WITH THIS EXAMPLE!
     # -----------------------
@@ -138,7 +138,7 @@ if __name__ == '__main__':
     #   "id_resource": 3
     # },
     ## What has happened to the results? Take a look at the network image available in the results folder to understand the "allocation" of app2-related entities.
-    
+
     # ! IMPORTANT. The scheduler & routing algorithm (aka. selectorPath = DeviceSpeedAwareRouting()) chooses the instance that will attend the request according to the latency -in this case-.
     #  For that reason, the initial instance deployed at node 0 is not used. It is further away than the instance located at node3.
     # Add another app2-user at node 16, add the next json inside of userDefinition.json file and try again. Enjoy it! 
