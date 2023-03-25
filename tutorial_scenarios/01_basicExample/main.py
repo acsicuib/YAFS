@@ -21,7 +21,10 @@ from yafs.application import create_applications_from_json
 from yafs.topology import Topology
 
 from yafs.placement import JSONPlacement
+
 from yafs.path_routing import DeviceSpeedAwareRouting
+from shortest_path import MinimunPath
+
 from yafs.distribution import deterministic_distribution
 
 
@@ -88,7 +91,10 @@ def main(stop_time, it,folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    selectorPath = DeviceSpeedAwareRouting()
+
+    # selectorPath = DeviceSpeedAwareRouting()
+    selectorPath = MinimunPath()
+
 
     """
     SIMULATION ENGINE
@@ -152,7 +158,7 @@ if __name__ == '__main__':
     df = pd.read_csv(folder_results+"sim_trace.csv")
     print("Number of requests handled by deployed services: %i"%len(df))
 
-    dfapp2 = df[df.app == 2].copy() # a new df with the requests handled by app 2
+    dfapp2 = df[df.app == 6].copy() # a new df with the requests handled by app 2
     print(dfapp2.head())
     
     dfapp2.loc[:,"transmission_time"] = dfapp2.time_emit - dfapp2.time_reception # Transmission time

@@ -33,22 +33,17 @@
     {
       "module_name": "6_01",
       "app": 6,
-      "id_resource": 1
+      "id_resource": 6
     },
     {
-      "module_name": "6_01",
+      "module_name": "6_02",
       "app": 6,
       "id_resource": 6
     },
     {
-      "module_name": "Test_Module",
+      "module_name": "6_03",
       "app": 6,
       "id_resource": 6
-    },
-    {
-      "module_name": "Test_Module2",
-      "app": 6,
-      "id_resource": 7
     }
   ]
 }

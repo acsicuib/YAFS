@@ -195,6 +195,7 @@
       }
     ]
   },
+
   {
     "id": 6,
     "name": 6,
@@ -202,19 +203,20 @@
     "MaxReqs": 200,
     "MaxLatency": 50,
 
+
     "transmission": [
       {
         "message_in": "M.USER.APP.6",
         "module": "6_01",
-        "message_out": "Trm_Test"
+        "message_out": "MSG1"
       },
       {
-        "message_in": "Trm_Test",
-        "module": "Test_Module"
+        "message_in": "MSG1",
+        "module": "6_02"
       },
       {
-        "message_in": "Trm_Test",
-        "module": "Test_Module2"
+        "message_in": "MSG1",
+        "module": "6_03"
       }
     ],
     "module": [
@@ -226,14 +228,14 @@
       },
       {
         "id": 7,
-        "name": "Test_Module",
-        "type": "MODULE",
+        "name": "6_02",
+        "type":"MODULE",
         "RAM": 1
       },
       {
         "id": 8,
-        "name": "Test_Module2",
-        "type": "MODULE",
+        "name": "6_03",
+        "type":"MODULE",
         "RAM": 1
       }
     ],
@@ -248,20 +250,21 @@
       },
       {
         "id": 6,
-        "name": "Trm_Test",
+        "name": "MSG1",
         "s": "6_01",
-        "d": "Test_Module",
+        "d": "6_02",
         "bytes": 20,
         "instructions": 30
       },
       {
         "id": 7,
-        "name": "Trm_Test",
+        "name": "MSG1",
         "s": "6_01",
-        "d": "Test_Module2",
+        "d": "6_03",
         "bytes": 20,
         "instructions": 30
       }
+
     ]
   }
 ]
