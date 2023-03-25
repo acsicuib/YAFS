@@ -114,7 +114,6 @@ class DeviceSpeedAwareRouting(Selection):
 
 
 
-
 class MinimunPath(Selection):
 
     def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic,from_des):
