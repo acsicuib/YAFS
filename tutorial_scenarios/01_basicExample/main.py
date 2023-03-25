@@ -52,8 +52,8 @@ def main(stop_time, it,folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    #selectorPath = DeviceSpeedAwareRouting()
-    selectorPath = MinimunPath()
+    selectorPath = DeviceSpeedAwareRouting()
+    minP = MinimunPath()
 
     """
     SIMULATION ENGINE
@@ -65,6 +65,8 @@ def main(stop_time, it,folder_results):
     """
     for aName in apps.keys():
         s.deploy_app(apps[aName], placement, selectorPath) # Note: each app can have a different routing algorithm
+
+    s.deploy_app(apps[4], placement, minP)  # Aplicação 4 passa a ter o algoritmo "Minimum path" enquanto que as outras ficam com a mesma
 
     """
     Deploy users
