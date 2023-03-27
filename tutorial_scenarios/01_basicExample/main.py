@@ -35,7 +35,7 @@ def main(stop_time, it,folder_results):
     t = Topology()
 
     # You also can create a topology using JSONs files. Check out examples folder
-    size = 5
+    size = 3
     t.G = nx.generators.binomial_tree(size) # In NX-lib there are a lot of Graphs generators
 
     # Definition of mandatory attributes of a Topology
