@@ -89,7 +89,6 @@ def main(stop_time, it,folder_results):
     """
     for aName in apps.keys():
         s.deploy_app(apps[aName], placement, selectorPath) # Note: each app can have a different routing algorithm
-
     """
     Deploy users
     """
@@ -101,7 +100,6 @@ def main(stop_time, it,folder_results):
         node = user["id_resource"]
         dist = deterministic_distribution(100, name="Deterministic")
         idDES = s.deploy_source(app_name, id_node=node, msg=msg, distribution=dist)
-
     """
     RUNNING - last step
     """
@@ -109,8 +107,7 @@ def main(stop_time, it,folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
-    #selectorPath.get_path(s, 0, "teste_mensagem", 0, [])
-    #insert get_path here
+    #selectorPath.get_path(s, 0, "teste_mensagem", 0, ...)
 
 if __name__ == '__main__':
     LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'

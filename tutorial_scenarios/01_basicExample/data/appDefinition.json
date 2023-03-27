@@ -15,6 +15,10 @@
       {
         "message_in" : "teste_mensagem",
         "module" : "recetor_teste"
+      },
+      {
+        "message_in" : "teste_mensagem",
+        "module" : "recetor_teste2"
       }
     ],
     "module": [
@@ -27,6 +31,12 @@
       {
         "id": 2,
         "name": "recetor_teste",
+        "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 3,
+        "name": "recetor_teste2",
         "type": "MODULE",
         "RAM": 1
       }
@@ -45,6 +55,14 @@
         "name": "teste_mensagem",
         "s": "0_01",
         "d": "recetor_teste",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 2,
+        "name": "teste_mensagem",
+        "s": "0_01",
+        "d": "recetor_teste2",
         "bytes": 20,
         "instructions": 30
       }

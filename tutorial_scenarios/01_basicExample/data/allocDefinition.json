@@ -45,6 +45,11 @@
       "module_name": "recetor_teste",
       "app" : 0,
       "id_resource": 4
+    },
+    {
+      "module_name": "recetor_teste2",
+      "app" : 0,
+      "id_resource": 5
     }
   ]
 }
