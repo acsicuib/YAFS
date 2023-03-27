@@ -33,7 +33,9 @@ def main(stop_time, it,folder_results):
     TOPOLOGY
     """
     t = Topology()
-
+    dataTop = json.load(open('data/network.json'))
+    t.load(dataTop)
+    '''
     # You also can create a topology using JSONs files. Check out examples folder
     size = 3
     t.G = nx.generators.binomial_tree(size) # In NX-lib there are a lot of Graphs generators
@@ -57,7 +59,7 @@ def main(stop_time, it,folder_results):
     pos=nx.spring_layout(t.G)
     nx.draw_networkx(t.G, pos, with_labels=True)
     nx.draw_networkx_edge_labels(t.G, pos,alpha=0.5,font_size=5,verticalalignment="top")
-
+    '''
 
     """
     APPLICATION or SERVICES
