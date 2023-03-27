@@ -9,13 +9,24 @@
     "transmission": [
       {
         "message_in": "M.USER.APP.0",
-        "module": "0_01"
+        "module": "0_01",
+        "message_out": "teste_mensagem"
+      },
+      {
+        "message_in" : "teste_mensagem",
+        "module" : "recetor_teste"
       }
     ],
     "module": [
       {
         "id": 1,
         "name": "0_01",
+        "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 2,
+        "name": "recetor_teste",
         "type": "MODULE",
         "RAM": 1
       }
@@ -26,6 +37,14 @@
         "name": "M.USER.APP.0",
         "s": "None",
         "d": "0_01",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 1,
+        "name": "teste_mensagem",
+        "s": "0_01",
+        "d": "recetor_teste",
         "bytes": 20,
         "instructions": 30
       }

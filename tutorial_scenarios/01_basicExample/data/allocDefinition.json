@@ -40,6 +40,11 @@
       "module_name": "6_01",
       "app": 6,
       "id_resource": 0
+    },
+    {
+      "module_name": "recetor_teste",
+      "app" : 0,
+      "id_resource": 4
     }
   ]
 }

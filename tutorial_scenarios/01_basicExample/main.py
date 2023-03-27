@@ -60,7 +60,8 @@ def main(stop_time, it,folder_results):
     nx.draw_networkx(t.G, pos, with_labels=True)
     nx.draw_networkx_edge_labels(t.G, pos,alpha=0.5,font_size=5,verticalalignment="top")
     '''
-
+    print("Edges:\n", t.get_edges())
+    print(t.get_nodes())
     """
     APPLICATION or SERVICES
     """
@@ -108,6 +109,8 @@ def main(stop_time, it,folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
+    #selectorPath.get_path(s, 0, "teste_mensagem", 0, [])
+    #insert get_path here
 
 if __name__ == '__main__':
     LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
@@ -150,7 +153,7 @@ if __name__ == '__main__':
 
     print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
-    
+    #plt.show()
     # -----------------------
     # PLAY WITH THIS EXAMPLE!
     # -----------------------
