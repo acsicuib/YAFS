@@ -20,21 +20,3 @@ class FastestRouteSelection(Selection):
 
         # Return the computed path
         return [path], [DES_dst]
-
-    def get_path_from_failure(self, graph, message, failed_link):
-        # Find the path that avoids the failed link and is the fastest
-        path = message.path
-        for i, node in enumerate(path):
-            if node in failed_link:
-                if i == len(path) - 1:
-                    # The failed link is at the destination, so there is no other path
-                    return [], []
-                else:
-                    # Find another path that avoids the failed link and is the fastest
-                    src = path[i - 1]
-                    dst = path[-1]
-                    for alt_path in nx.shortest_simple_paths(graph, source=src, target=dst, weight='bandwidth'):
-                        if set(failed_link).isdisjoint(set(zip(alt_path, alt_path[1:]))):
-                            return [alt_path], []
-        # If no alternative path is found, return empty lists
-        return [], []

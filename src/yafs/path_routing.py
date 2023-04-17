@@ -14,7 +14,7 @@ class DeviceSpeedAwareRouting(Selection):
         # value : a list of idDevices
         super(DeviceSpeedAwareRouting, self).__init__()
 
-    def compute_BEST_DES(self, node_src, alloc_DES, sim, DES_dst,message):
+    def compute_BEST_DES(self, node_src, alloc_DES, sim, DES_dst, message):
         try:
             bestLong = float('inf')
             minPath = []
@@ -23,7 +23,8 @@ class DeviceSpeedAwareRouting(Selection):
             #print len(DES_dst)
             for dev in DES_dst:
                 node_dst = alloc_DES[dev]
-                path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst))
+                #FIXME: utilização do bw
+                path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst, weight="PR"))
                 long = len(path)
 
                 if long < bestLong:
