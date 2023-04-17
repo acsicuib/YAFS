@@ -1,0 +1,110 @@
+[
+  {
+    "id": 0,
+    "name": 0,
+    "HwReqs": 1,
+    "MaxReqs": 200,
+    "MaxLatency": 50,
+
+    "transmission": [
+      {
+        "message_in": "M.USER.APP.0",
+        "module": "0_0",
+        "message_out": "MESSAGE1"
+      },
+      {
+        "message_in": "MESSAGE1",
+        "module": "0_1",
+        "message_out": "MESSAGE2"
+      },
+      {
+        "message_in": "MESSAGE2",
+        "module": "0_2",
+        "message_out": "MESSAGE3"
+      },
+      {
+        "message_in": "MESSAGE3",
+        "module": "0_3",
+        "message_out": "MESSAGE4"
+      },
+      {
+        "message_in": "MESSAGE4",
+        "module": "0_4"
+      }
+    ],
+    "module": [
+      {
+        "id": 1,
+        "name": "0_0",
+        "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 2,
+        "name": "0_1",
+        "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 3,
+        "name": "0_2",
+        "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 4,
+        "name": "0_3",
+        "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 5,
+        "name": "0_4",
+        "type": "MODULE",
+        "RAM": 1
+      }
+    ],
+    "message": [
+      {
+        "id": 0,
+        "name": "M.USER.APP.0",
+        "s": "None",
+        "d": "0_0",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 1,
+        "name": "MESSAGE1",
+        "s": "0_0",
+        "d": "0_1",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 2,
+        "name": "MESSAGE2",
+        "s": "0_1",
+        "d": "0_2",
+        "bytes": 10000,
+        "instructions": 30
+      },
+      {
+        "id": 3,
+        "name": "MESSAGE3",
+        "s": "0_2",
+        "d": "0_3",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 4,
+        "name": "MESSAGE4",
+        "s": "0_3",
+        "d": "0_4",
+        "bytes": 20,
+        "instructions": 30
+      }
+    ]
+  }
+]
