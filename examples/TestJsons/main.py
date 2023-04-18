@@ -64,7 +64,7 @@ def getProcessFromThatNode(sim, node_to_remove):
         for k, v in sim.alloc_DES.items():
             if v == node_to_remove:
                 DES.append(k)
-        return DES,True
+        return DES, True
     else:
         return [],False
 
