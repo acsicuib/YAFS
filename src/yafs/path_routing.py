@@ -23,7 +23,7 @@ class DeviceSpeedAwareRouting(Selection):
             #print len(DES_dst)
             for dev in DES_dst:
                 node_dst = alloc_DES[dev]
-                path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst))
+                path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst, weight='BW'))
                 long = len(path)
 
                 if long < bestLong:

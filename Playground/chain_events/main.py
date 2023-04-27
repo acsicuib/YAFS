@@ -23,7 +23,8 @@ from yafs.topology import Topology
 from yafs.placement import JSONPlacement
 
 from yafs.path_routing import DeviceSpeedAwareRouting
-from shortest_path import MinimunPath
+from yafs.fastestpath_routing import FastestRouteSelection
+# from shortest_path import MinimunPath
 
 from yafs.distribution import deterministic_distribution
 
@@ -59,7 +60,8 @@ def main(stop_time, it,folder_results):
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
 
-    selectorPath = DeviceSpeedAwareRouting()
+    # selectorPath = DeviceSpeedAwareRouting()
+    selectorPath = FastestRouteSelection()
     # selectorPath = MinimunPath()
 
 
