@@ -36,45 +36,12 @@ def main(stop_time, it,folder_results):
     TOPOLOGY
     """
     t = Topology()
-    dataNetwork = json.load(open('data/network.json'))
+    # dataNetwork = json.load(open('data/network.json')) #network em cadeia
+    # dataNetwork = json.load(open('data/network2.json')) #network2 link 1->5->2 and 1->2
+    dataNetwork = json.load(open('data/network3.json')) #network2 link 1->5->2 and 1->6->2
+
     t.load(dataNetwork)
 
-    '''
-    # You also can create a topology using JSONs files. Check out examples folder
-    size = 5
-    t.G = nx.generators.binomial_tree(size) # In NX-lib there are a lot of Graphs generators
-
-    # Definition of mandatory attributes of a Topology
-    ## Attr. on edges
-    # PR and BW are 1 unit
-    attPR_BW = {x: 1 for x in t.G.edges()}
-
-    #attPR_BW[(0, 4)] = attPR_BW[(4, 5)] = attPR_BW[(5, 6)] = 1000                                           ##
-    #attPR_BW[(0, 1)] = 1000
-
-    nx.set_edge_attributes(t.G, name="PR", values=attPR_BW)
-    nx.set_edge_attributes(t.G, name="BW", values=attPR_BW)
-
-
-
-    ## Attr. on nodes
-    # IPT
-    attIPT = {x: 100 for x in t.G.nodes()}
-
-
-    #attIPT[4] = attIPT[5] = attIPT[6] = 10000
-
-    nx.set_node_attributes(t.G, name="IPT", values=attIPT)
-
-    nx.write_gexf(t.G,folder_results+"graph_binomial_tree_%i.gexf"%size) # you can export the Graph in multiples format to view in tools like Gephi, and so on.
-
-    print(t.G.nodes()) # nodes id can be str or int
-
-    # Plotting the graph
-    pos=nx.spring_layout(t.G)
-    nx.draw_networkx(t.G, pos, with_labels=True)
-    nx.draw_networkx_edge_labels(t.G, pos,alpha=0.5,font_size=5,verticalalignment="top")
-    '''
 
     """
     APPLICATION or SERVICES
@@ -92,8 +59,8 @@ def main(stop_time, it,folder_results):
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
 
-    # selectorPath = DeviceSpeedAwareRouting()
-    selectorPath = MinimunPath()
+    selectorPath = DeviceSpeedAwareRouting()
+    # selectorPath = MinimunPath()
 
 
     """
@@ -158,7 +125,7 @@ if __name__ == '__main__':
     df = pd.read_csv(folder_results+"sim_trace.csv")
     print("Number of requests handled by deployed services: %i"%len(df))
 
-    dfapp2 = df[df.app == 6].copy() # a new df with the requests handled by app 2
+    dfapp2 = df[df.app == 0].copy() # a new df with the requests handled by app 0
     print(dfapp2.head())
     
     dfapp2.loc[:,"transmission_time"] = dfapp2.time_emit - dfapp2.time_reception # Transmission time
@@ -169,23 +136,3 @@ if __name__ == '__main__':
     print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
     
-    # -----------------------
-    # PLAY WITH THIS EXAMPLE!
-    # -----------------------
-    # Add another app2-instance in allocDefinition.json file adding the next data and run the main.py file again to see the new results:
-    # {
-    #   "module_name": "2_01",
-    #   "app": 2,
-    #   "id_resource": 3
-    # },
-    ## What has happened to the results? Take a look at the network image available in the results folder to understand the "allocation" of app2-related entities.
-    
-    # ! IMPORTANT. The scheduler & routing algorithm (aka. selectorPath = DeviceSpeedAwareRouting()) chooses the instance that will attend the request according to the latency -in this case-.
-    #  For that reason, the initial instance deployed at node 0 is not used. It is further away than the instance located at node3.
-    # Add another app2-user at node 16, add the next json inside of userDefinition.json file and try again. Enjoy it! 
-    # {
-    #   "id_resource": 16,
-    #   "app": 2,
-    #   "message": "M.USER.APP.2",
-    #   "lambda": 100
-    # },

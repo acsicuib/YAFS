@@ -158,7 +158,7 @@ if __name__ == '__main__':
     df = pd.read_csv(folder_results+"sim_trace.csv")
     print("Number of requests handled by deployed services: %i"%len(df))
 
-    dfapp2 = df[df.app == 6].copy() # a new df with the requests handled by app 2
+    dfapp2 = df[df.app == 0].copy() # a new df with the requests handled by app 0
     print(dfapp2.head())
     
     dfapp2.loc[:,"transmission_time"] = dfapp2.time_emit - dfapp2.time_reception # Transmission time
@@ -169,23 +169,3 @@ if __name__ == '__main__':
     print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
     
-    # -----------------------
-    # PLAY WITH THIS EXAMPLE!
-    # -----------------------
-    # Add another app2-instance in allocDefinition.json file adding the next data and run the main.py file again to see the new results:
-    # {
-    #   "module_name": "2_01",
-    #   "app": 2,
-    #   "id_resource": 3
-    # },
-    ## What has happened to the results? Take a look at the network image available in the results folder to understand the "allocation" of app2-related entities.
-    
-    # ! IMPORTANT. The scheduler & routing algorithm (aka. selectorPath = DeviceSpeedAwareRouting()) chooses the instance that will attend the request according to the latency -in this case-.
-    #  For that reason, the initial instance deployed at node 0 is not used. It is further away than the instance located at node3.
-    # Add another app2-user at node 16, add the next json inside of userDefinition.json file and try again. Enjoy it! 
-    # {
-    #   "id_resource": 16,
-    #   "app": 2,
-    #   "message": "M.USER.APP.2",
-    #   "lambda": 100
-    # },

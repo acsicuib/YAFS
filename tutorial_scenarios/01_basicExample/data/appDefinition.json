@@ -195,6 +195,7 @@
       }
     ]
   },
+
   {
     "id": 6,
     "name": 6,
@@ -202,10 +203,20 @@
     "MaxReqs": 200,
     "MaxLatency": 50,
 
+
     "transmission": [
       {
         "message_in": "M.USER.APP.6",
-        "module": "6_01"
+        "module": "6_01",
+        "message_out": "MSG1"
+      },
+      {
+        "message_in": "MSG1",
+        "module": "6_02"
+      },
+      {
+        "message_in": "MSG1",
+        "module": "6_03"
       }
     ],
     "module": [
@@ -213,6 +224,18 @@
         "id": 6,
         "name": "6_01",
         "type": "MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 7,
+        "name": "6_02",
+        "type":"MODULE",
+        "RAM": 1
+      },
+      {
+        "id": 8,
+        "name": "6_03",
+        "type":"MODULE",
         "RAM": 1
       }
     ],
@@ -224,7 +247,24 @@
         "d": "6_01",
         "bytes": 20,
         "instructions": 30
+      },
+      {
+        "id": 6,
+        "name": "MSG1",
+        "s": "6_01",
+        "d": "6_02",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 7,
+        "name": "MSG1",
+        "s": "6_01",
+        "d": "6_03",
+        "bytes": 20,
+        "instructions": 30
       }
+
     ]
   }
 ]
