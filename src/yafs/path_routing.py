@@ -135,7 +135,7 @@ def _weight_function(G, weight):
     return lambda u, v, data: data.get(weight, 1)
 
 
-
+# bidirectional_shortest_path adaptado para cost = cost 1/cost
 def maxWeightSelector(G, source, target, weight="weight"):
     if source not in G or target not in G:
         msg = f"Either source {source} or target {target} is not in G"
@@ -206,11 +206,6 @@ def maxWeightSelector(G, source, target, weight="weight"):
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
-
-
-
-
-
 
 class MaxBW(Selection):
 
