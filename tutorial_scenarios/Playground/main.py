@@ -21,7 +21,6 @@ from yafs.application import create_applications_from_json
 from yafs.topology import Topology
 
 from yafs.placement import JSONPlacement
-from yafs.path_routing import DeviceSpeedAwareRouting
 from yafs.path_routing import MaxBW
 from yafs.distribution import deterministic_distribution
 
@@ -52,8 +51,7 @@ def main(stop_time, it,folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    selectorPath = DeviceSpeedAwareRouting()
-    minP = MaxBW()
+    selectorPath = MaxBW()
 
     """
     SIMULATION ENGINE
@@ -65,8 +63,6 @@ def main(stop_time, it,folder_results):
     """
     for aName in apps.keys():
         s.deploy_app(apps[aName], placement, selectorPath) # Note: each app can have a different routing algorithm
-
-    s.deploy_app(apps[4], placement, minP)  # Aplicação 4 passa a ter o algoritmo "Minimum path" enquanto que as outras ficam com a mesma
 
     """
     Deploy users
