@@ -66,7 +66,7 @@ class MinPath_RoundRobin(Selection):
                 if self.rr[message.dst]==ix:
                     dst_node = alloc_DES[des]
 
-                    path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dst_node))
+                    path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dst_node, weight="BW"))
 
                     bestPath = [path]
                     bestDES = [des]
