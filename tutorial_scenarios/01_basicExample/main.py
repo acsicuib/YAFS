@@ -110,7 +110,7 @@ def main(stop_time, it,folder_results):
     logging.info(" Performing simulation: %i " % it)
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
-    print("------------------path------------------\n", selectorPath.path_final)
+    #print("------------------path------------------\n", selectorPath.path_final)
     #selectorPath.get_path(s, 0, "teste_mensagem", 0, ...)
 
 if __name__ == '__main__':

@@ -12,7 +12,8 @@ class My_Path_Selector(Selection):
 
         node_src = topology_src #TOPOLOGY SOURCE where the message is generated
         DES_dst = alloc_module[app_name][message.dst]
-        edges = sim.topology.G.edges;
+
+        #matriz de adjacencia
         edges = {}
         for edge in sim.topology.get_edges():
             if edge[0] not in edges.keys():
@@ -38,7 +39,7 @@ class My_Path_Selector(Selection):
             bestPath = [path]
             bestDES  = [des]
             #print (path)
-        print("->>>> ", bestPath)
+        print("------------------path------------------\n", bestPath)
         self.path_final = bestPath
         return bestPath, bestDES
 
