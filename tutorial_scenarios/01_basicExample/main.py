@@ -23,7 +23,7 @@ from yafs.topology import Topology
 from yafs.placement import JSONPlacement
 from yafs.path_routing import DeviceSpeedAwareRouting
 from yafs.selection import First_ShortestPath
-from bw_path_selection import FastestRouteSelection
+from bw_path_selection import My_Path_Selector
 from yafs.distribution import deterministic_distribution
 
 
@@ -80,15 +80,14 @@ def main(stop_time, it,folder_results):
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
     #selectorPath = First_ShortestPath()
-    selectorPath = DeviceSpeedAwareRouting()
-    #selectorPath = FastestRouteSelection()
+    #selectorPath = DeviceSpeedAwareRouting()
+    selectorPath = My_Path_Selector()
 
 
     """
     SIMULATION ENGINE
     """
     s = Sim(t, default_results_path=folder_results+"sim_trace")
-
     """
     Deploy services == APP's modules
     """
@@ -111,7 +110,7 @@ def main(stop_time, it,folder_results):
     logging.info(" Performing simulation: %i " % it)
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
-
+    print("------------------path------------------\n", selectorPath.path_final)
     #selectorPath.get_path(s, 0, "teste_mensagem", 0, ...)
 
 if __name__ == '__main__':
