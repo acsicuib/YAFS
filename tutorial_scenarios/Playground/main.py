@@ -21,13 +21,11 @@ from yafs.application import create_applications_from_json
 from yafs.topology import Topology
 
 from yafs.placement import JSONPlacement
-from yafs.path_routing import MaxBW, MaxBW2
+from yafs.path_routing import MaxBW
 from yafs.distribution import deterministic_distribution
 
 
-
-
-def main(stop_time, it,folder_results):
+def main(stop_time, it, folder_results):
 
     """
     TOPOLOGY
@@ -51,7 +49,7 @@ def main(stop_time, it,folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    selectorPath = MaxBW2()
+    selectorPath = MaxBW()
 
     """
     SIMULATION ENGINE
@@ -103,7 +101,7 @@ if __name__ == '__main__':
 
         start_time = time.time()
         main(stop_time=simulationDuration,
-             it=iteration,folder_results=folder_results)
+             it=iteration, folder_results=folder_results)
 
         print("\n--- %s seconds ---" % (time.time() - start_time))
 
@@ -116,16 +114,16 @@ if __name__ == '__main__':
     df = pd.read_csv(folder_results+"sim_trace.csv")
     print("Number of requests handled by deployed services: %i"%len(df))
 
-    dfapp2 = df[df.app == 2].copy() # a new df with the requests handled by app 2
-    print(dfapp2.head())
+    dfapp = df[df.app == 0].copy() # a new df with the requests handled by app 0
+    print(dfapp.head())
 
-    dfapp2.loc[:,"transmission_time"] = dfapp2.time_emit - dfapp2.time_reception # Transmission time
-    dfapp2.loc[:,"service_time"] = dfapp2.time_out - dfapp2.time_in
+    dfapp.loc[:,"transmission_time"] = dfapp.time_emit - dfapp.time_reception # Transmission time
+    dfapp.loc[:,"service_time"] = dfapp.time_out - dfapp.time_in
 
-    print("The average service time of app2 is: %0.3f "%dfapp2["service_time"].mean())
+    print("The average service time of app0 is: %0.3f "%dfapp["service_time"].mean())
 
-    print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
-    print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
+    print("The app0 is deployed in the folling nodes: %s"%np.unique(dfapp["TOPO.dst"]))
+    print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
 
     # -----------------------
     # PLAY WITH THIS EXAMPLE!

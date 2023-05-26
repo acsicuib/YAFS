@@ -25,7 +25,7 @@ from yafs.path_routing import DeviceSpeedAwareRouting
 from yafs.path_routing import MaxBW
 from yafs.distribution import deterministic_distribution
 
-
+from playground_funcs import data_analysis
 
 
 def main(stop_time, it,folder_results):
@@ -130,6 +130,8 @@ if __name__ == '__main__':
 
     print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
+
+    data_analysis.plot_paths_taken(folder_results)
 
     # -----------------------
     # PLAY WITH THIS EXAMPLE!

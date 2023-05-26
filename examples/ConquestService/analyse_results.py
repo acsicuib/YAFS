@@ -117,7 +117,7 @@ def prepare_results(pathSimple):
    # if not os.path.exists(pathSimple+"dr_%s_%i.pkl"%("CQ",0)):
         for case in ["CQ"]:
             for it in range(nsimulations):
-                fCSV = "Results_%s_%i_%i.csv"%(case,simulationTime,it)
+                fCSV = "Results_%s_%i_%i.csv"%(case,timeSimulation,it)
                 
                 df = pd.read_csv(pathSimple+fCSV)
                 dtmp = df[df["module.src"]=="None"].groupby(['app','TOPO.src'])['id'].apply(list)
@@ -249,4 +249,4 @@ for it in range(nsimulations):
     with open(pathSimple+'mytable_%i.tex'%it,'w') as tf:
        tf.write(dlat.to_latex(index=False))
        
- 
+# plt.show()

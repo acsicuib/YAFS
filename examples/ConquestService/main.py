@@ -176,9 +176,6 @@ def main(simulated_time, path,pathResults,case,it):
     logging.info(" Performing simulation: %s %i "%(case,it))
     s.run(stop_time, test_initial_deploy=False, show_progress_monitor=False)  # TEST to TRUE
 
-
-
-
     """
     Storing results from other strategies
     """
@@ -211,7 +208,6 @@ def main(simulated_time, path,pathResults,case,it):
     # f = open(pathResults + "/file_assignments_%s_%i_%i.pkl" % (case, stop_time, it), "wb")
     # pickle.dump(controlServices, f)
     # f.close()
-
 
 
 if __name__ == '__main__':
