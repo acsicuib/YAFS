@@ -120,10 +120,8 @@ class DeviceSpeedAwareRouting(Selection):
 
 
 
-
-
-
 def _weight_function(G, weight):
+
     if callable(weight):
         return weight
 
@@ -135,14 +133,14 @@ def _weight_function(G, weight):
     return lambda u, v, data: data.get(weight, 1)
 
 
-# bidirectional_dijkstra adaptado para cost = cost 1/cost
+# bidirectional_dijkstra adaptado para cost = 1/cost
 def maxWeightSelector(G, source, target, weight="weight"):
     if source not in G or target not in G:
         msg = f"Either source {source} or target {target} is not in G"
         raise nx.NodeNotFound(msg)
 
     if source == target:
-        return (0, [source])
+        return 0, [source]
 
     weight = _weight_function(G, weight)
     push = heappush
@@ -184,7 +182,7 @@ def maxWeightSelector(G, source, target, weight="weight"):
         for w, d in neighs[dir][v].items():
             # weight(v, w, d) for forward and weight(w, v, d) for back direction
             cost = weight(v, w, d) if dir == 0 else weight(w, v, d)
-            cost = 1/cost                                               # <<<<< alterei aqui
+            cost = 1/cost                                               # <<<<< alterei aqui    ('~')
             if cost is None:
                 continue
             vwLength = dists[dir][v] + cost
@@ -206,6 +204,7 @@ def maxWeightSelector(G, source, target, weight="weight"):
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+
 
 class MaxBW(Selection):
 
@@ -234,10 +233,43 @@ class MaxBW(Selection):
             _, paths = maxWeightSelector(sim.topology.G, node_src, dst_node, "BW")
             path = list(paths)
 
+            # print(path)
+
             bestPath = [path]
             bestDES = [des]
 
         return bestPath, bestDES
 
 
+def inverseBW(_, _2, data):
+    return 1 / data.get('BW', 1)
 
+
+class MaxBW2(Selection):
+
+    def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic,from_des):
+
+        """
+        Computes the minimun path among the source elemento of the topology and the localizations of the module
+
+        Return the path and the identifier of the module deployed in the last element of that path
+        """
+        node_src = topology_src
+        DES_dst = alloc_module[app_name][message.dst]
+
+
+        bestPath = []
+        bestDES = []
+
+        for des in DES_dst: ## In this case, there are only one deployment
+            dst_node = alloc_DES[des]
+            print(("\t\t Looking the path to id_node: %i" %dst_node))
+
+            # path = list(nx.shortest_path(sim.topology.G, source=node_src, target=dst_node, weight='BW'))
+
+            _, path = list(nx.bidirectional_dijkstra(sim.topology.G, source=node_src, target=dst_node, weight=inverseBW))
+
+            bestPath = [path]
+            bestDES = [des]
+
+        return bestPath, bestDES
