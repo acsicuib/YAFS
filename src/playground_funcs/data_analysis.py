@@ -47,10 +47,12 @@ def plot_paths_taken(folder_results):
     fig, ax = plt.subplots()
 
     for en, a in enumerate(apps_deployed):
+        ax.scatter(np.array(dfl[dfl.app == a].src), np.array(dfl[dfl.app == a].dst),
+                   c=(pallet[en]*np.ones(len(dfl[dfl.app == a].src))), cmap='plasma', vmin=0, vmax=100, marker='x',
+                   label=f'App: {a}')
 
-        ax.scatter(np.array(dfl[dfl.app == a].src), np.array(dfl[dfl.app == a].dst), c=(pallet[en]*np.ones(len(dfl[dfl.app == a].src))), cmap='magma', vmin=0, vmax=100, marker='x', label=f'App: {a}')
-
-    ax.set_xlabel("Source nodes")
-    ax.set_ylabel("Destiny nodes")
+    ax.set_xlabel('Source nodes')
+    ax.set_ylabel('Destiny nodes')
+    ax.set_title('Simulation hops')
     ax.legend()
     plt.show()
