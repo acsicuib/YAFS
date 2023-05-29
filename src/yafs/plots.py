@@ -45,8 +45,14 @@ def plot_app_path(folder_results, application, t, pos):
     plt.figure(figsize=(10, 5))
     sml = pd.read_csv(folder_results + "sim_trace_link.csv")
     sm = pd.read_csv(folder_results + "sim_trace.csv")
-    path = sml[(sml.id == 1) & (sml.app == application)]
-    path2 = sm[(sm.id == 1) & (sm.app == application)]
+
+    path = sml[sml.app == application]
+    path = path[sml.at[0, 'id'] == sml.id]
+    # path = sml[(sml.id == 1) & (sml.app == application)]
+
+    path2 = sm[sm.app == application]
+    path2 = sm[sm.at[0, 'id'] == sm.id]
+    # path2 = sm[(sm.id == 1) & (sm.app == application)]
     print(type(path))
 
     highlighted_edges = []
