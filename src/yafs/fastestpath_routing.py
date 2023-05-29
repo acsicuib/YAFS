@@ -39,10 +39,15 @@ class FastestRouteSelection(Selection):
                 node_dst = alloc_DES[dev]
 
                 # flow_value, flow_dict = nx.maximum_flow(sim.topology.G, node_src, node_dst, capacity='BW')
+                if nx.has_path(sim.topology.G, node_src, node_dst):
+                    print("existe path entre", node_src, "e", node_dst)
+                else:
+                    print("NAO existe path entre", node_src, "e", node_dst)
 
-                all_paths = nx.all_simple_paths(sim.topology.G, source=node_src, target=node_dst)  # weight
+                all_paths = list(nx.all_simple_paths(sim.topology.G, source=node_src, target=node_dst))  # weight
 
-                for path in all_paths:
+                # for path in all_paths:
+                for path in nx.all_simple_paths(sim.topology.G, source=node_src, target=node_dst):
                     min_bw = min(sim.topology.G.edges[path[i], path[i + 1]]['BW'] for i in range(len(path) - 1))
                     print("min_bw: %d" % min_bw)
                     print(path)
