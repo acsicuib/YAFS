@@ -131,7 +131,8 @@ if __name__ == '__main__':
     print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
 
-    data_analysis.plot_paths_taken(folder_results)
+    # data_analysis.plot_paths_taken(folder_results)
+
 
     # -----------------------
     # PLAY WITH THIS EXAMPLE!

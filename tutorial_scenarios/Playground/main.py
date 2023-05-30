@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+from playground_funcs import data_analysis
 from yafs.core import Sim
 from yafs.application import create_applications_from_json
 from yafs.topology import Topology
@@ -82,6 +83,8 @@ def main(stop_time, it, folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
+    data_analysis.plot_app_path(folder_results, 0, t)
+
 
 if __name__ == '__main__':
     LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
@@ -124,6 +127,7 @@ if __name__ == '__main__':
 
     print("The app0 is deployed in the folling nodes: %s"%np.unique(dfapp["TOPO.dst"]))
     print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
+
 
     # -----------------------
     # PLAY WITH THIS EXAMPLE!
