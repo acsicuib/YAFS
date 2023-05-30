@@ -22,7 +22,7 @@ from yafs.application import create_applications_from_json
 from yafs.topology import Topology
 
 from yafs.placement import JSONPlacement
-from yafs.path_routing import MaxBW
+from yafs.path_routing import MaxBW, MaxBW_Root
 from yafs.distribution import deterministic_distribution
 
 
@@ -50,7 +50,12 @@ def main(stop_time, it, folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
+    # selectorPath = MaxBW_Root()       # <<< Selector path do ze
+    # graph_file_ = 'root_alg'
+
     selectorPath = MaxBW()
+    graph_file_ = 'networkx_alg'
+
 
     """
     SIMULATION ENGINE
@@ -83,7 +88,9 @@ def main(stop_time, it, folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
-    data_analysis.plot_app_path(folder_results, 0, t)
+    pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
+    data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos)
+
 
 
 if __name__ == '__main__':
@@ -127,25 +134,3 @@ if __name__ == '__main__':
 
     print("The app0 is deployed in the folling nodes: %s"%np.unique(dfapp["TOPO.dst"]))
     print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
-
-
-    # -----------------------
-    # PLAY WITH THIS EXAMPLE!
-    # -----------------------
-    # Add another app2-instance in allocDefinition.json file adding the next data and run the main.py file again to see the new results:
-    # {
-    #   "module_name": "2_01",
-    #   "app": 2,
-    #   "id_resource": 3
-    # },
-    ## What has happened to the results? Take a look at the network image available in the results folder to understand the "allocation" of app2-related entities.
-
-    # ! IMPORTANT. The scheduler & routing algorithm (aka. selectorPath = DeviceSpeedAwareRouting()) chooses the instance that will attend the request according to the latency -in this case-.
-    #  For that reason, the initial instance deployed at node 0 is not used. It is further away than the instance located at node3.
-    # Add another app2-user at node 16, add the next json inside of userDefinition.json file and try again. Enjoy it! 
-    # {
-    #   "id_resource": 16,
-    #   "app": 2,
-    #   "message": "M.USER.APP.2",
-    #   "lambda": 100
-    # },

@@ -32,7 +32,7 @@ def plot_paths_taken(folder_results):
     plt.show()
 
 
-def plot_app_path(folder_results, application, t, pos=None):
+def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_taken'):
     if pos is None:
         pos = nx.spring_layout(t.G)
 
@@ -68,4 +68,5 @@ def plot_app_path(folder_results, application, t, pos=None):
     nx.draw_networkx_edges(t.G, pos, edgelist=highlighted_edges, edge_color='red', arrows=True, arrowstyle='->')
     nx.draw_networkx_edge_labels(t.G, pos, edge_labels=labels, label_pos=0.5, font_size=8, font_family='Arial')
 
+    plt.savefig(graph_file+'.png')
     plt.show()
