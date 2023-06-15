@@ -134,7 +134,6 @@ if __name__ == '__main__':
     # data_analysis.plot_paths_taken(folder_results)
     data_analysis.plot_node_services(folder_results)
 
-
     # -----------------------
     # PLAY WITH THIS EXAMPLE!
     # -----------------------

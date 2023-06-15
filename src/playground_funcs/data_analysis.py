@@ -31,7 +31,8 @@ def plot_paths_taken(folder_results):
     ax.legend()
     plt.show()
 
-def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_taken'):
+
+def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_taken', placement=None):
     if pos is None:
         pos = nx.spring_layout(t.G)
 
@@ -61,7 +62,25 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     total_time = "total time = {:.2f}".format(total_time)
     plt.text(11, 0.3, total_time, fontsize=12, ha='right')
 
-    nx.draw_networkx(t.G, pos, arrows=True)
+    if placement is not None:
+        node_labels = dict()
+
+        for dt in placement.data['initialAllocation']:
+            if int(dt['id_resource']) not in node_labels:
+                node_labels[int(dt['id_resource'])] = ([dt['module_name']], [str(dt['app'])])
+
+            else:
+                node_labels[int(dt['id_resource'])][0].append(dt['module_name'])
+                node_labels[int(dt['id_resource'])][1].append(str(dt['app']))
+
+        for lbl in node_labels:
+            node_labels[lbl] = f"\n\n\n\nModule: {', '.join(node_labels[lbl][0])}\nApp: {', '.join(node_labels[lbl][1])}"
+
+
+        nx.draw_networkx_labels(t.G, pos, labels=node_labels, font_size=8)
+        nx.draw_networkx(t.G, pos, arrows=True)
+    else:
+        nx.draw_networkx(t.G, pos, arrows=True)
     nx.draw_networkx_edges(t.G, pos, edge_color='black')
     # # Draw the highlighted edges in red
     nx.draw_networkx_edges(t.G, pos, edgelist=highlighted_edges, edge_color='red', arrows=True, arrowstyle='->')
@@ -74,16 +93,15 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
 def plot_node_services(folder_results):
     dfl = pd.read_csv(folder_results + "sim_trace.csv")
 
-    # apps_deployed = dfl.module # np.concatenate((dfl.app, dfl.module), axis=0)
     modules_used = dfl.module
 
     unique_values, occurrence_count = np.unique(modules_used, return_counts=True)
 
-    fig, ax = plt.subplot()
+    ax = plt.subplot()
 
     plt.bar(unique_values, occurrence_count)
 
-    ax.set_xlabel('Source nodes')
-    ax.set_ylabel('Destiny nodes')
-    ax.set_title('Simulation hops')
+    ax.set_xlabel('Module')
+    ax.set_ylabel('Times passed')
+    ax.set_title('Times a module is used')
     plt.show()

@@ -1,6 +1,5 @@
 [
-  {
-    "id": 0,
+  {"id": 0,
     "name": 0,
     "HwReqs": 1,
     "MaxReqs": 200,
@@ -9,7 +8,17 @@
     "transmission": [
       {
         "message_in": "M.USER.APP.0",
-        "module": "0_01"
+        "module": "0_01",
+        "message_out": "teste"
+      },
+      {
+        "message_in": "teste",
+        "module": "0_02",
+        "message_out": "teste2"
+      },
+      {
+        "message_in": "teste2",
+        "module": "0_02"
       }
     ],
     "module": [
@@ -26,6 +35,22 @@
         "name": "M.USER.APP.0",
         "s": "None",
         "d": "0_01",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 1,
+        "name": "teste",
+        "s": "0_01",
+        "d": "0_02",
+        "bytes": 20,
+        "instructions": 30
+      },
+      {
+        "id": 2,
+        "name": "teste2",
+        "s": "0_02",
+        "d": "0_02",
         "bytes": 20,
         "instructions": 30
       }
