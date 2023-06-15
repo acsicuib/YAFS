@@ -31,7 +31,6 @@ def plot_paths_taken(folder_results):
     ax.legend()
     plt.show()
 
-
 def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_taken'):
     if pos is None:
         pos = nx.spring_layout(t.G)
@@ -69,4 +68,22 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     nx.draw_networkx_edge_labels(t.G, pos, edge_labels=labels, label_pos=0.5, font_size=8, font_family='Arial')
 
     plt.savefig(graph_file+'.png')
+    plt.show()
+
+
+def plot_node_services(folder_results):
+    dfl = pd.read_csv(folder_results + "sim_trace.csv")
+
+    # apps_deployed = dfl.module # np.concatenate((dfl.app, dfl.module), axis=0)
+    modules_used = dfl.module
+
+    unique_values, occurrence_count = np.unique(modules_used, return_counts=True)
+
+    fig, ax = plt.subplot()
+
+    plt.bar(unique_values, occurrence_count)
+
+    ax.set_xlabel('Source nodes')
+    ax.set_ylabel('Destiny nodes')
+    ax.set_title('Simulation hops')
     plt.show()

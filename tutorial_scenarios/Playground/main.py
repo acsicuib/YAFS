@@ -50,11 +50,11 @@ def main(stop_time, it, folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    # selectorPath = MaxBW_Root()       # <<< Selector path do ze
-    # graph_file_ = 'root_alg'
+    selectorPath = MaxBW_Root()       # <<< Selector path do ze
+    graph_file_ = 'root_alg'
 
-    selectorPath = MaxBW()
-    graph_file_ = 'networkx_alg'
+    # selectorPath = MaxBW()
+    # graph_file_ = 'networkx_alg'
 
 
     """
