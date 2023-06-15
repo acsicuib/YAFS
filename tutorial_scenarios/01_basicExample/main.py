@@ -132,7 +132,7 @@ if __name__ == '__main__':
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
 
     # data_analysis.plot_paths_taken(folder_results)
-    data_analysis.plot_node_services(folder_results)
+    data_analysis.plot_latency(folder_results)
 
     # -----------------------
     # PLAY WITH THIS EXAMPLE!

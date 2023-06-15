@@ -76,7 +76,6 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
         for lbl in node_labels:
             node_labels[lbl] = f"\n\n\n\nModule: {', '.join(node_labels[lbl][0])}\nApp: {', '.join(node_labels[lbl][1])}"
 
-
         nx.draw_networkx_labels(t.G, pos, labels=node_labels, font_size=8)
         nx.draw_networkx(t.G, pos, arrows=True)
     else:
@@ -90,18 +89,48 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     plt.show()
 
 
-def plot_node_services(folder_results):
-    dfl = pd.read_csv(folder_results + "sim_trace.csv")
+def plot_services(folder_results, mode='module'):
+    df = pd.read_csv(folder_results + "sim_trace.csv")
 
-    modules_used = dfl.module
+    if mode == 'module':
+        res_used = df.module
+    elif mode == 'node':
+        res_used = df['TOPO.src'] + df['TOPO.dst']
+    elif mode == 'node_src':
+        res_used = df['TOPO.src']
+    elif mode == 'node_dst':
+        res_used = df['TOPO.dst']
 
-    unique_values, occurrence_count = np.unique(modules_used, return_counts=True)
+    unique_values, occurrence_count = np.unique(res_used, return_counts=True)
 
     ax = plt.subplot()
 
     plt.bar(unique_values, occurrence_count)
 
-    ax.set_xlabel('Module')
-    ax.set_ylabel('Times passed')
-    ax.set_title('Times a module is used')
+    ax.set_xlabel(mode.title())
+    ax.set_ylabel('Occurrences')
+    ax.set_title(f'Times a {mode.title()} is used')
+    plt.show()
+
+
+def plot_latency(folder_results):
+    dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
+
+    apps_deployed = np.unique(dfl.app)
+
+    app_lat = []
+
+    for app_ in apps_deployed:
+        app_lat.append(np.array(dfl[dfl.app == app_].latency))
+
+    app_lat = app_lat
+
+    ax = plt.subplot()
+
+    plt.boxplot(app_lat)
+
+    plt.xticks(range(1, len(apps_deployed)+1), apps_deployed)
+
+    ax.set_xlabel(f'Apps')
+    ax.set_ylabel('Latency')
     plt.show()
