@@ -130,7 +130,6 @@ class MaxBW(Selection):
         node_src = topology_src
         DES_dst = alloc_module[app_name][message.dst]
 
-
         bestPath = []
         bestDES = []
 

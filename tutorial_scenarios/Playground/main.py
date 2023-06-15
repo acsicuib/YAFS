@@ -92,7 +92,7 @@ def main(stop_time, it, folder_results):
 
     # data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
 
-    data_analysis.plot_services(folder_results, mode='node_dst')
+    data_analysis.plot_occurrencies(folder_results, mode='node_dst')
 
 
 

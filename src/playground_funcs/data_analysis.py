@@ -89,7 +89,7 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     plt.show()
 
 
-def plot_services(folder_results, mode='module'):
+def plot_occurrences(folder_results, mode='module'):
     df = pd.read_csv(folder_results + "sim_trace.csv")
 
     if mode == 'module':
