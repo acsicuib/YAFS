@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import networkx as nx
-from math import ceil
+from math import ceil, floor
 
 # from pathlib import Path
 
@@ -134,7 +134,7 @@ def plot_latency(folder_results):
     plt.show()
 
 
-def plot_nodes_per_time_window(folder_results, t, n_wind=30, graph_type=None):
+def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False):
 
     df = pd.read_csv(folder_results + "sim_trace.csv")
 
@@ -146,7 +146,6 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=30, graph_type=None):
     n_nodes = len(t.G.nodes)
 
     for i in range(n_wind):
-        # add = df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)][]
         add = np.unique(np.concatenate((df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)]['TOPO.src'],
                                         df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)]['TOPO.dst'])))
         nodes_per_window.append(add)
@@ -155,10 +154,21 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=30, graph_type=None):
 
     ax = plt.subplot()
 
+    plt.ylim(0, 100)
+
+    x_min, x_max = plt.xlim()
+    y_min, y_max = plt.ylim()
+    plt.text(x_max - 0.02, y_min + 0.02, f'# Topology Nodes: {n_nodes}', fontsize=10, ha='right', va='bottom',
+             transform=plt.gca().transAxes)
+
     if graph_type is None:
         plt.plot(range(len(window_rate)), window_rate)
     elif graph_type == 'bar':
         plt.bar(range(len(window_rate)), window_rate)
+
+    if show_values:
+        for enum, rate in enumerate(window_rate):
+            plt.text(enum, rate, f'{int(floor((rate*n_nodes)/100))}')
 
     ax.set_xlabel(f'Window')
     ax.set_ylabel('% Used Nodes')
