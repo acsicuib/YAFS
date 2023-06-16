@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import networkx as nx
+from math import ceil
 
 # from pathlib import Path
 
@@ -130,4 +131,35 @@ def plot_latency(folder_results):
 
     ax.set_xlabel(f'Apps')
     ax.set_ylabel('Latency')
+    plt.show()
+
+
+def plot_nodes_per_time_window(folder_results, t, n_wind=30, graph_type=None):
+
+    df = pd.read_csv(folder_results + "sim_trace.csv")
+
+    max_time = max(df['time_out'])
+    window_sz = ceil(max_time / n_wind)
+
+    nodes_per_window = []
+    window_rate = []
+    n_nodes = len(t.G.nodes)
+
+    for i in range(n_wind):
+        # add = df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)][]
+        add = np.unique(np.concatenate((df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)]['TOPO.src'],
+                                        df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)]['TOPO.dst'])))
+        nodes_per_window.append(add)
+
+        window_rate.append(len(nodes_per_window[i]) * 100 / n_nodes)
+
+    ax = plt.subplot()
+
+    if graph_type is None:
+        plt.plot(range(len(window_rate)), window_rate)
+    elif graph_type == 'bar':
+        plt.bar(range(len(window_rate)), window_rate)
+
+    ax.set_xlabel(f'Window')
+    ax.set_ylabel('% Used Nodes')
     plt.show()

@@ -90,10 +90,12 @@ def main(stop_time, it, folder_results):
 
     pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
 
-    # data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
+    data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
+    data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10)
 
-    data_analysis.plot_occurrencies(folder_results, mode='node_dst')
 
+    # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
+    data_analysis.plot_latency(folder_results)
 
 
 if __name__ == '__main__':
@@ -138,7 +140,11 @@ if __name__ == '__main__':
     print("The app0 is deployed in the folling nodes: %s"%np.unique(dfapp["TOPO.dst"]))
     print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
 
-    data_analysis.plot_latency(folder_results)
+    # data_analysis.plot_latency(folder_results)
+
+
+
+
 
     # data_analysis.plot_node_services(folder_results)
 

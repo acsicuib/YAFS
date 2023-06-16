@@ -88,6 +88,8 @@ def main(stop_time, it,folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
+    data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None)
+
     # for a in apps:
     #     data_analysis.plot_app_path(folder_results, a, t, pos=None, graph_file='Routes_taken', placement=None)
 
@@ -137,7 +139,7 @@ if __name__ == '__main__':
     # data_analysis.plot_paths_taken(folder_results)
 
     data_analysis.plot_latency(folder_results)
-    data_analysis.plot_occurrences(folder_results, mode='module')
+    # data_analysis.plot_occurrences(folder_results, mode='module')
 
 
     # -----------------------
