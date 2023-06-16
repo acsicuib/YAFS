@@ -11,7 +11,6 @@ import logging.config
 
 import networkx as nx
 from pathlib import Path
-import matplotlib.pyplot as plt
 
 import pandas as pd
 import numpy as np
@@ -53,7 +52,7 @@ def main(stop_time, it,folder_results):
     """
 
     selectorPath = DeviceSpeedAwareRouting()
-    # selectorPath = MaxBW_Root
+    # selectorPath = MaxBW
     # minP = MaxBW()
 
     """
@@ -88,6 +87,9 @@ def main(stop_time, it,folder_results):
     logging.info(" Performing simulation: %i " % it)
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
+
+    # for a in apps:
+    #     data_analysis.plot_app_path(folder_results, a, t, pos=None, graph_file='Routes_taken', placement=None)
 
 
 if __name__ == '__main__':
@@ -135,6 +137,8 @@ if __name__ == '__main__':
     # data_analysis.plot_paths_taken(folder_results)
 
     data_analysis.plot_latency(folder_results)
+    data_analysis.plot_occurrences(folder_results, mode='module')
+
 
     # -----------------------
     # PLAY WITH THIS EXAMPLE!

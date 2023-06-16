@@ -98,7 +98,7 @@ def plot_occurrences(folder_results, mode='module'):
         res_used = df['TOPO.src'] + df['TOPO.dst']
     elif mode == 'node_src':
         res_used = df['TOPO.src']
-    elif mode == 'node_dst':
+    else:                               # elif mode == 'node_dst':
         res_used = df['TOPO.dst']
 
     unique_values, occurrence_count = np.unique(res_used, return_counts=True)
@@ -123,12 +123,9 @@ def plot_latency(folder_results):
     for app_ in apps_deployed:
         app_lat.append(np.array(dfl[dfl.app == app_].latency))
 
-    app_lat = app_lat
-
     ax = plt.subplot()
 
     plt.boxplot(app_lat)
-
     plt.xticks(range(1, len(apps_deployed)+1), apps_deployed)
 
     ax.set_xlabel(f'Apps')
