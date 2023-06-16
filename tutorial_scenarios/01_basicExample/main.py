@@ -25,7 +25,7 @@ from yafs.path_routing import DeviceSpeedAwareRouting
 from yafs.selection import First_ShortestPath
 from bw_path_selection import MyPathSelector
 from yafs.distribution import deterministic_distribution
-from yafs.plot import plot_app_path, plot_latency, plot_services
+from yafs.plot import plot_app_path, plot_latency, plot_messages_node, plot_occurrences
 
 
 
@@ -114,9 +114,12 @@ def main(stop_time, it,folder_results):
     #print("------------------path------------------\n", selectorPath.path_final)
     #selectorPath.get_path(s, 0, "teste_mensagem", 0, ...)
     pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
-    plot_app_path("./results/", 0, t, pos)
+
+    for a in apps:
+        plot_app_path(folder_results, a, t, pos, graph_file='Routes_taken', placement=placement)
     #plot_latency("./results/")
-    plot_services("./results/", "node")
+    plot_occurrences("./results/", 'node')
+    plot_messages_node("./results/")
 
 if __name__ == '__main__':
     LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
