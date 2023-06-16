@@ -34,7 +34,7 @@ class My_Path_Selector(Selection):
         #print ("fun.... ", DES_dst)
         for des in DES_dst:
             dst_node = alloc_DES[des]
-            path = self.dijkstra_with_bw(sim.topology, node_src, dst_node, edges)
+            path = self.dijkstra_with_weight(sim.topology, node_src, dst_node, edges)
             bestPath = [path]
             bestDES  = [des]
             #print (path)
@@ -42,7 +42,7 @@ class My_Path_Selector(Selection):
         self.path_final = bestPath
         return bestPath, bestDES
 
-    def dijkstra_with_bw(self, topology, start_node, end_node, edges):
+    def dijkstra_with_weight(self, topology, start_node, end_node, edges, weight_unit = 'BW'):
         # Create a dictionary to hold the distance from the start node to each node
         distance = {}
         for node in topology.get_nodes():
@@ -77,8 +77,10 @@ class My_Path_Selector(Selection):
                 neighbor = dest
 
                 # Calculate the distance to the neighbor node using the bandwidth as weight
+                # weight = 1/link[weight_unit]
                 # weight = 1/link["BW"]
-                weight = 1/link["PR"]
+                # weight = 1/link["PR"]
+                weight = 1/link["BW"] + link['PR']
 
                 new_distance = current_distance + weight
 

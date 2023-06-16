@@ -8,6 +8,7 @@ import time
 import json
 import random
 import logging.config
+import random
 
 import networkx as nx
 from pathlib import Path
@@ -25,7 +26,9 @@ from yafs.placement import JSONPlacement
 # from yafs.path_routing import DeviceSpeedAwareRouting
 # from yafs.fastestpath_routing import FastestRouteSelection
 # from yafs.selection_multipleDeploys import DeviceSpeedAwareRouting
+
 from yafs.Ze_dijkstra_3000inator import My_Path_Selector
+from yafs.plots import plot_app_path
 # from shortest_path import MinimunPath
 
 from yafs.distribution import deterministic_distribution
@@ -38,40 +41,50 @@ def draw_topology(t, pos):
     plt.show()
 
 
-def plot_app_path(folder_results, application, t, pos):
-    plt.figure(figsize=(10, 5))
-    sml = pd.read_csv(folder_results + "sim_trace_link.csv")
-    sm = pd.read_csv(folder_results + "sim_trace.csv")
-
-    path = sml[sml.app == application]
-    path = path[sml.at[0, 'id'] == sml.id]
-    # path = sml[(sml.id == 1) & (sml.app == application)]
-
-    path2 = sm[sm.app == application]
-    path2 = sm[sm.at[0, 'id'] == sm.id]
-    # path2 = sm[(sm.id == 1) & (sm.app == application)]
-    print(type(path))
-
-    highlighted_edges = []
-    labels = {}
-    for index, hops in path.iterrows():
-        highlighted_edges.append([hops.src, hops.dst])
-        labels[(hops.src, hops.dst)] = "{}\nBW={}\tPR={}".format( hops.message , t.get_edge((hops.src, hops.dst))['BW'], t.get_edge((hops.src, hops.dst))['PR'])
-    print(highlighted_edges)
-
-    print('tempo total')
-
-    total_time = path2.at[path2.index[-1], 'time_out'] - path2.at[0, 'time_in']
-    total_time = "total time = {:.2f}".format(total_time)
-    plt.text(11, 0.3, total_time, fontsize=12, ha='right')
-
-    nx.draw_networkx(t.G, pos, arrows=True)
-    nx.draw_networkx_edges(t.G, pos, edge_color='black')
-    # # Draw the highlighted edges in red
-    nx.draw_networkx_edges(t.G, pos, edgelist=highlighted_edges, edge_color='red', arrows=True, arrowstyle='->')
-    nx.draw_networkx_edge_labels(t.G, pos, edge_labels=labels, label_pos=0.5, font_size=8, font_family='Arial')
-
-    plt.show()
+# def plot_app_path(folder_results, application, t, pos=None):
+#     if pos is None:
+#         # random.seed(38)
+#         pos = nx.spring_layout(t.G, seed=38)
+#
+#     plt.figure(figsize=(10, 10))
+#     sml = pd.read_csv(folder_results + "sim_trace_link.csv")
+#     sm = pd.read_csv(folder_results + "sim_trace.csv")
+#
+#     path = sml[sml.app == application]
+#     path = path[path.at[0, 'id'] == path.id]
+#     # path = sml[(sml.id == 1) & (sml.app == application)]
+#
+#     path2 = sm[sm.app == application]
+#     path2 = path2[path2.at[0, 'id'] == path2.id]
+#     # path2 = sm[(sm.id == 1) & (sm.app == application)]
+#     print(type(path))
+#
+#     highlighted_edges = []
+#     labels = {}
+#     for index, hops in path.iterrows():
+#         highlighted_edges.append([hops.src, hops.dst])
+#         labels[(hops.src, hops.dst)] = "{}\nBW={}\tPR={}".format(hops.message, t.get_edge((hops.src, hops.dst))['BW'],
+#                                                                  t.get_edge((hops.src, hops.dst))['PR'])
+#         print("{}\nBW={}\tPR={}".format(hops.message, t.get_edge((hops.src, hops.dst))['BW'],
+#                                                                  t.get_edge((hops.src, hops.dst))['PR']))
+#     print(highlighted_edges)
+#
+#     x_min, x_max = plt.xlim()
+#     y_min, y_max = plt.ylim()
+#
+#     #TODO: convert the time to secondss -> use node attribute with insetructions per second
+#     total_time = path2.at[path2.index[-1], 'time_out'] - path2.at[0, 'time_in']
+#     plt.text(x_max-0.02, y_min+0.02, total_time, fontsize=12, ha='right', va='bottom', transform=plt.gca().transAxes)
+#     total_time = "total time = {:.2f}".format(total_time)
+#     print(total_time)
+#
+#     nx.draw_networkx(t.G, pos, arrows=True)
+#     nx.draw_networkx_edges(t.G, pos, edge_color='black')
+#     # # Draw the highlighted edges in red
+#     nx.draw_networkx_edges(t.G, pos, edgelist=highlighted_edges, edge_color='red', arrows=True, arrowstyle='->')
+#     nx.draw_networkx_edge_labels(t.G, pos, edge_labels=labels, label_pos=0.5, font_size=8, font_family='Arial')
+#
+#     plt.show()
 
 def main(stop_time, it, folder_results):
     """
@@ -85,8 +98,8 @@ def main(stop_time, it, folder_results):
     t.load(dataNetwork)
 
     # pos = nx.spring_layout(t.G)
-    pos = {0: (0, 1), 1: (2, 1), 2: (6, 1), 3: (8, 1), 4: (10, 1), 5: (4, 0.4), 6: (4, 1.6)}
-    # draw_topology(t, pos)
+    # pos = {0: (0, 1), 1: (2, 1), 2: (6, 1), 3: (8, 1), 4: (10, 1), 5: (4, 0.4), 6: (4, 1.6)}
+
 
 
     """
@@ -141,7 +154,8 @@ def main(stop_time, it, folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
-    plot_app_path("./results/", 0, t, pos)
+    # plot_app_path("./results/", 0, t, pos)
+    plot_app_path("./results/", 0, t)
 
 
 if __name__ == '__main__':
