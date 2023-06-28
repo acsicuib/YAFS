@@ -214,8 +214,6 @@ if __name__ == '__main__':
 
     print("Simulation Done!")
 
-
-
     # Analysing the results. 
     dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
     print("Number of total messages between nodes: %i"%len(dfl))

@@ -169,7 +169,6 @@
     "MaxReqs": 200,
     "MaxLatency": 50,
 
-
     "transmission": [
       {
         "message_in": "M.USER.APP.5",

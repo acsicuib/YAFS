@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
         start_time = time.time()
         main(stop_time=simulationDuration,
-             it=iteration,folder_results=folder_results)
+             it=iteration, folder_results=folder_results)
 
         print("\n--- %s seconds ---" % (time.time() - start_time))
 
@@ -138,7 +138,9 @@ if __name__ == '__main__':
 
     # data_analysis.plot_paths_taken(folder_results)
 
+    data_analysis.plot_avg_latency(folder_results)
     data_analysis.plot_latency(folder_results)
+    # data_analysis.plot_nodes_per_time_window(folder_results, t)
     # data_analysis.plot_occurrences(folder_results, mode='module')
 
 

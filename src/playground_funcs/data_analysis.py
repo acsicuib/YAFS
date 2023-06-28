@@ -133,6 +133,27 @@ def plot_latency(folder_results):
     ax.set_ylabel('Latency')
     plt.show()
 
+def plot_avg_latency(folder_results):
+    dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
+
+    apps_deployed = np.unique(dfl.app)
+
+    app_lat = []
+
+    for app_ in apps_deployed:
+        app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
+
+    ax = plt.subplot()
+
+    # plt.boxplot(app_lat)
+    plt.bar(range(0, len(apps_deployed)), app_lat)
+    plt.xticks(range(0, len(apps_deployed)), apps_deployed)
+
+    ax.set_xlabel(f'Apps')
+    ax.set_ylabel('Latency')
+    ax.set_title('Average Latency')
+    plt.show()
+
 
 def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False):
 
@@ -163,6 +184,7 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, sh
 
     if graph_type is None:
         plt.plot(range(len(window_rate)), window_rate)
+        plt.scatter(range(len(window_rate)), window_rate, marker='x')
     elif graph_type == 'bar':
         plt.bar(range(len(window_rate)), window_rate)
 
