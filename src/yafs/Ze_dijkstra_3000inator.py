@@ -38,7 +38,7 @@ class My_Path_Selector(Selection):
             bestPath = [path]
             bestDES  = [des]
             #print (path)
-        print("->>>> ", bestPath)
+        # print("->>>> ", bestPath)
         self.path_final = bestPath
         return bestPath, bestDES
 

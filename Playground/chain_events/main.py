@@ -29,6 +29,8 @@ from yafs.placement import JSONPlacement
 
 from yafs.Ze_dijkstra_3000inator import My_Path_Selector
 from yafs.plots import plot_app_path
+from yafs.plots import modules_per_node
+from yafs.plots import plot_messages_node
 # from shortest_path import MinimunPath
 
 from yafs.distribution import deterministic_distribution
@@ -155,7 +157,10 @@ def main(stop_time, it, folder_results):
     s.print_debug_assignaments()
 
     # plot_app_path("./results/", 0, t, pos)
-    plot_app_path("./results/", 0, t)
+    plot_app_path("./results/", 0, t, placement=placement)
+    modules_per_node(placement, t)
+    plot_messages_node("./results/")
+
 
 
 if __name__ == '__main__':
