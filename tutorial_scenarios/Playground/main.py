@@ -89,7 +89,7 @@ def main(stop_time, it, folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
-    pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
+    # pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
 
     pos = {0: (0, 1), 1: (1, 2), 2: (2, 1), 3: (1, 0), 4: (3, 1), 5: (4, 2), 6: (5, 1), 7: (4, 0)}
 
@@ -98,11 +98,11 @@ def main(stop_time, it, folder_results):
 
     # teste = nx.algorithms.community.asyn_fluidc(t.G, 2)
     teste = nx.algorithms.community.asyn_fluidc(t.G, 4, max_iter=100, seed=None)
-
-    print(list(teste))
+    teste = nx.pagerank(t.G, alpha=0.85, personalization=None, max_iter=100, tol=1e-06, nstart=None, weight='weight', dangling=None)
+    # print(list(teste))
 
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
-    data_analysis.plot_latency(folder_results)
+    data_analysis.plot_avg_latency(folder_results)
 
 
 if __name__ == '__main__':

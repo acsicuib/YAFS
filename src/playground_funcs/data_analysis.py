@@ -42,8 +42,11 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     sm = pd.read_csv(folder_results + "sim_trace.csv")
 
     path = sml[sml.app == application]
-    path = path[sml.at[0, 'id'] == sml.id]
-    # path = sml[(sml.id == 1) & (sml.app == application)]
+
+    path = path[path.id == min(path.id)]
+    # path = path[sml.at[0, 'id'] == sml.id]            # << antigo
+
+    # Na versao anterior só funcionava se o link com id 1 fosse o da aplicação que se quer ver
 
     path2 = sm[sm.app == application]
     path2 = sm[sm.at[0, 'id'] == sm.id]

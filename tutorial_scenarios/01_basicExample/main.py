@@ -92,6 +92,7 @@ def main(stop_time, it,folder_results):
 
     # for a in apps:
     #     data_analysis.plot_app_path(folder_results, a, t, pos=None, graph_file='Routes_taken', placement=None)
+    data_analysis.plot_app_path(folder_results, 1, t, placement=placement)
 
 
 if __name__ == '__main__':
@@ -138,8 +139,8 @@ if __name__ == '__main__':
 
     # data_analysis.plot_paths_taken(folder_results)
 
-    data_analysis.plot_avg_latency(folder_results)
-    data_analysis.plot_latency(folder_results)
+    # data_analysis.plot_avg_latency(folder_results)
+    # data_analysis.plot_latency(folder_results)
     # data_analysis.plot_nodes_per_time_window(folder_results, t)
     # data_analysis.plot_occurrences(folder_results, mode='module')
 

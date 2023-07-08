@@ -16,7 +16,7 @@
       "id_resource": 3,
       "app": 2,
       "message": "M.USER.APP.2",
-      "lambda": 500
+      "lambda": 50000
     },
     {
       "id_resource": 4,
