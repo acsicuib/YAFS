@@ -3,6 +3,7 @@
 
     @author: Isaac Lera
 """
+import csv
 import os
 import time
 import json
@@ -25,6 +26,29 @@ from yafs.topology import Topology
 from yafs.placement import JSONPlacement
 from yafs.path_routing import MaxBW, MaxBW_Root
 from yafs.distribution import deterministic_distribution
+
+
+def append_results(it, path):
+    if it == 0:
+        with open(path + "sim_trace.csv", "w") as f_nodes, open(path + "sim_trace_link.csv", "w") as f_links:
+            f_links.close()
+            f_nodes.close()
+
+    with open(path + "sim_trace_temp.csv", newline='') as f_src, open(path + 'sim_trace.csv', 'a', newline='') as f_dst:
+        reader = csv.reader(f_src)
+        writer = csv.writer(f_dst)
+        for enum, row in enumerate(reader):
+            if it == 0 or (enum != 0 and enum != 1):
+                converted_row = [int(val) if val.isdigit() else float(val) if val.replace('.', '', 1).isdigit() else val for val in row]
+                writer.writerow(converted_row)
+
+    with open(path + "sim_trace_temp_link.csv", newline='') as f_src, open(path + 'sim_trace_link.csv', 'a', newline='') as f_dst:
+        reader = csv.reader(f_src)
+        writer = csv.writer(f_dst)
+        for enum, row in enumerate(reader):
+            if it == 0 or (enum != 0 and enum != 1):
+                converted_row = [int(val) if val.isdigit() else float(val) if val.replace('.', '', 1).isdigit() else val for val in row]
+                writer.writerow(converted_row)
 
 
 def main(stop_time, it, folder_results):
@@ -61,7 +85,7 @@ def main(stop_time, it, folder_results):
     """
     SIMULATION ENGINE
     """
-    s = Sim(t, default_results_path=folder_results+"sim_trace")
+    s = Sim(t, default_results_path=folder_results+"sim_trace_temp")
 
     """
     Deploy services == APP's modules
@@ -89,6 +113,7 @@ def main(stop_time, it, folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
+    append_results(it, folder_results)
     # pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
 
     pos = {0: (0, 1), 1: (1, 2), 2: (2, 1), 3: (1, 0), 4: (3, 1), 5: (4, 2), 6: (5, 1), 7: (4, 0)}
@@ -102,7 +127,7 @@ def main(stop_time, it, folder_results):
     # print(list(teste))
 
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
-    data_analysis.plot_avg_latency(folder_results)
+    # data_analysis.plot_avg_latency(folder_results)
 
 
 if __name__ == '__main__':
