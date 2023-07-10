@@ -26,10 +26,13 @@ from yafs.topology import Topology
 
 from yafs.placement import JSONPlacement
 from yafs.distribution import deterministic_distribution
+from yafs.path_routing import DeviceSpeedAwareRouting
 
 
 def append_results(it, path):
     if it == 0:
+
+        # Se for a primeria iteração apaga os dados anteriores
         with open(path + "sim_trace.csv", "w") as f_nodes, open(path + "sim_trace_link.csv", "w") as f_links:
             f_links.close()
             f_nodes.close()
@@ -75,7 +78,8 @@ def main(stop_time, it, folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    selectorPath = MaxBW_Root()       # <<< Selector path do ze
+    # selectorPath = MaxBW_Root()       # <<< Selector path do ze
+    selectorPath = DeviceSpeedAwareRouting()
     graph_file_ = 'root_alg'
 
     # selectorPath = MaxBW()
@@ -96,6 +100,7 @@ def main(stop_time, it, folder_results):
     """
     Deploy users
     """
+
     userJSON = json.load(open('data/usersDefinition.json'))
     for user in userJSON["sources"]:
         app_name = user["app"]
@@ -105,8 +110,8 @@ def main(stop_time, it, folder_results):
         dist = deterministic_distribution(100, name="Deterministic")
         idDES = s.deploy_source(app_name, id_node=node, msg=msg, distribution=dist)
 
-    # if it == 1:
-    #     s.topology.remove_node(1)
+    if it == 1:
+        s.topology.remove_node(1)
 
     """
     RUNNING - last step
@@ -121,7 +126,7 @@ def main(stop_time, it, folder_results):
 
     pos = {0: (0, 1), 1: (1, 2), 2: (2, 1), 3: (1, 0), 4: (3, 1), 5: (4, 2), 6: (5, 1), 7: (4, 0)}
 
-    data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
+    # data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
     # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10)
 
     # teste = nx.algorithms.community.asyn_fluidc(t.G, 2)

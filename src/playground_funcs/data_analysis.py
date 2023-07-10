@@ -136,6 +136,7 @@ def plot_latency(folder_results):
     ax.set_ylabel('Latency')
     plt.show()
 
+
 def plot_avg_latency(folder_results):
     dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
 
