@@ -85,20 +85,22 @@ def placement_algorithm(graph, app_def='data/appDefinition.json'):
             temp_dict['app'] = app['id']
 
             if len(comms) != 0:
+
                 # Se ainda existir algum node da comunidade, utiliza-o
                 temp_dict['id_resource'] = min(comms)
                 comms.discard(min(comms))
                 alloc['initialAllocation'].append(temp_dict)
 
             else:
-                # Senao, utilizará um que estiver de sobra
+                # Senao, utilizará um que sobrar
                 alloc_missing.append(temp_dict)
 
         spare_nodes += list(comms)
 
     for remaining in alloc_missing:
         # Atribui um dos nós sem recursos
-        remaining['id_resource'] = spare_nodes.pop(0)
+        remaining['id_resource'] = spare_nodes[0]
+        spare_nodes.append(spare_nodes.pop(0))
         alloc['initialAllocation'].append(remaining)
 
     with open('data/allocDefinition.json', 'w') as f:
