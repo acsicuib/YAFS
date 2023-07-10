@@ -101,6 +101,9 @@ def main(stop_time, it, folder_results):
     dataNetwork = json.load(open('data/network.json'))
     t.load(dataNetwork)
 
+    if it >= 1:
+        t.remove_node(1)
+
     placement_algorithm(t.G)
 
     """
@@ -149,9 +152,6 @@ def main(stop_time, it, folder_results):
         node = user["id_resource"]
         dist = deterministic_distribution(100, name="Deterministic")
         idDES = s.deploy_source(app_name, id_node=node, msg=msg, distribution=dist)
-
-    if it >= 1:
-        s.topology.remove_node(1)
 
     """
     RUNNING - last step
