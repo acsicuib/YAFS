@@ -3,11 +3,6 @@
     {
       "module_name": "0_00",
       "app": 0,
-      "id_resource": 1
-    },
-    {
-      "module_name": "0_01",
-      "app": 1,
       "id_resource": 2
     }
   ]

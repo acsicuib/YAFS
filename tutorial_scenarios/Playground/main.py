@@ -13,7 +13,6 @@ import logging.config
 import networkx as nx
 
 from pathlib import Path
-import matplotlib.pyplot as plt
 
 import pandas as pd
 import numpy as np
@@ -75,10 +74,10 @@ def main(stop_time, it, folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    selectorPath = MaxBW_Root()       # <<< Selector path do ze
+    # selectorPath = MaxBW_Root()       # <<< Selector path do ze
     graph_file_ = 'root_alg'
 
-    # selectorPath = MaxBW()
+    selectorPath = MaxBW()
     # graph_file_ = 'networkx_alg'
 
 
@@ -105,6 +104,8 @@ def main(stop_time, it, folder_results):
         dist = deterministic_distribution(100, name="Deterministic")
         idDES = s.deploy_source(app_name, id_node=node, msg=msg, distribution=dist)
 
+    # if it == 1:
+    #     s.topology.remove_node(1)
 
     """
     RUNNING - last step
@@ -114,6 +115,7 @@ def main(stop_time, it, folder_results):
     s.print_debug_assignaments()
 
     append_results(it, folder_results)
+
     # pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
 
     pos = {0: (0, 1), 1: (1, 2), 2: (2, 1), 3: (1, 0), 4: (3, 1), 5: (4, 2), 6: (5, 1), 7: (4, 0)}
@@ -127,7 +129,7 @@ def main(stop_time, it, folder_results):
     # print(list(teste))
 
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
-    # data_analysis.plot_avg_latency(folder_results)
+    data_analysis.plot_avg_latency(folder_results)
 
 
 if __name__ == '__main__':
@@ -138,7 +140,7 @@ if __name__ == '__main__':
     folder_results.mkdir(parents=True, exist_ok=True)
     folder_results = str(folder_results)+"/"
 
-    nIterations = 1  # iteration for each experiment
+    nIterations = 3  # iteration for each experiment
     simulationDuration = 20000
 
     # Iteration for each experiment changing the seed of randoms
@@ -173,10 +175,5 @@ if __name__ == '__main__':
     print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
 
     # data_analysis.plot_latency(folder_results)
-
-
-
-
-
     # data_analysis.plot_node_services(folder_results)
 

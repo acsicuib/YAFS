@@ -57,7 +57,7 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     labels = {}
     for index, hops in path.iterrows():
         highlighted_edges.append([hops.src, hops.dst])
-        labels[(hops.src, hops.dst)] = "{}\nBW={}\tPR={}".format( hops.message , t.get_edge((hops.src, hops.dst))['BW'], t.get_edge((hops.src, hops.dst))['PR'])
+        labels[(hops.src, hops.dst)] = "{}\nBW={}\tPR={}".format(hops.message , t.get_edge((hops.src, hops.dst))['BW'], t.get_edge((hops.src, hops.dst))['PR'])
     print(highlighted_edges)
 
     print('tempo total')
