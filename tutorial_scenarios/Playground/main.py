@@ -64,6 +64,34 @@ def append_results(it, path):
                 writer.writerow(converted_row)
 
 
+def placement_algorithm(graph, app_def='data/appDefinition.json'):
+
+    # Alloc será o dicionario convertido para json
+    alloc = dict()
+    alloc['initialAllocation'] = list()
+
+    apps = json.load(open(app_def))
+
+    n_comunitties = len(apps)
+    comms = nx.algorithms.community.asyn_fluidc(graph, n_comunitties)#.__next__()
+
+    for app in apps:
+        comms = comms.__next__()
+        for mod in app['module']:
+            temp_dict = dict()
+            temp_dict['module_name'] = mod['name']
+            temp_dict['app'] = app['id']
+            temp_dict['id_resource'] = min(comms)
+            comms.discard(min(comms))
+
+            alloc['initialAllocation'].append(temp_dict)
+
+            print(temp_dict) #
+
+    with open('data/allocDefinition.json', 'w') as f:
+        json.dump(alloc, f)
+
+
 def main(stop_time, it, folder_results):
 
     """
@@ -72,6 +100,8 @@ def main(stop_time, it, folder_results):
     t = Topology()
     dataNetwork = json.load(open('data/network.json'))
     t.load(dataNetwork)
+
+    placement_algorithm(t.G)
 
     """
     APPLICATION or SERVICES
@@ -133,15 +163,13 @@ def main(stop_time, it, folder_results):
     append_results(it, folder_results)
 
     # pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
-
     pos = {0: (0, 1), 1: (1, 2), 2: (2, 1), 3: (1, 0), 4: (3, 1), 5: (4, 2), 6: (5, 1), 7: (4, 0)}
-
-    # data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
-    # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10)
 
     # teste = nx.algorithms.community.asyn_fluidc(t.G, 4, max_iter=100, seed=None)
     # teste = nx.pagerank(t.G, alpha=0.85, personalization=None, max_iter=100, tol=1e-06, nstart=None, weight='weight', dangling=None)
 
+    data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
+    # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10)
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
     # data_analysis.plot_avg_latency(folder_results)
 
