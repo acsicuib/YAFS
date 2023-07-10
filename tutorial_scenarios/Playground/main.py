@@ -18,12 +18,13 @@ import pandas as pd
 import numpy as np
 
 from playground_funcs import data_analysis
+from playground_funcs.routing_algorithms import MaxBW, MaxBW_Root
+
 from yafs.core import Sim
 from yafs.application import create_applications_from_json
 from yafs.topology import Topology
 
 from yafs.placement import JSONPlacement
-from yafs.path_routing import MaxBW, MaxBW_Root
 from yafs.distribution import deterministic_distribution
 
 
@@ -74,10 +75,10 @@ def main(stop_time, it, folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    # selectorPath = MaxBW_Root()       # <<< Selector path do ze
+    selectorPath = MaxBW_Root()       # <<< Selector path do ze
     graph_file_ = 'root_alg'
 
-    selectorPath = MaxBW()
+    # selectorPath = MaxBW()
     # graph_file_ = 'networkx_alg'
 
 
