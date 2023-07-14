@@ -27,7 +27,7 @@ from yafs.distribution import deterministic_distribution
 
 from playground_funcs import data_analysis
 
-from playground_funcs.placement_algorithms import placement_algorithm
+from playground_funcs.placement_algorithms import placement_algorithm_v3
 
 def main(stop_time, it,folder_results):
 
@@ -38,7 +38,7 @@ def main(stop_time, it,folder_results):
     dataNetwork = json.load(open('data/network.json'))
     t.load(dataNetwork)
 
-    placement_algorithm(t.G)
+    placement_algorithm_v3(t.G)
 
     """
     APPLICATION or SERVICES
@@ -97,7 +97,7 @@ def main(stop_time, it,folder_results):
 
     # for a in apps:
     #     data_analysis.plot_app_path(folder_results, a, t, pos=None, graph_file='Routes_taken', placement=None)
-    data_analysis.plot_app_path(folder_results, 1, t, placement=placement)
+    # data_analysis.plot_app_path(folder_results, 1, t, placement=placement)
 
 
 if __name__ == '__main__':
