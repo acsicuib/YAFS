@@ -80,14 +80,15 @@ def placement_algorithm_v3(graph, app_def='data/appDefinition.json'):
 
     apps = json.load(open(app_def))
 
-    max_res = max([len(app['module']) for app in apps])   # /len(apps)
+    max_res = max([len(app['module']) for app in apps])   #
+    min_res = min([len(app['module']) for app in apps])   #
     n_comms = 0
 
     # Decide-se o nr de communities max de forma a conseguir suportar a maior app (caso seja possivel)
     while n_comms < len(graph.nodes):
         temp_comms = nx.algorithms.community.asyn_fluidc(graph, n_comms+1)
 
-        if all(len(x) < max_res for x in temp_comms):
+        if all(len(x) < max_res for x in temp_comms) or any(len(x) < min_res for x in temp_comms):
             break
 
         n_comms += 1
