@@ -4,78 +4,13 @@ import networkx as nx
 import re
 import random
 from math import floor
+import matplotlib.pyplot as plt
+
+import operator
+import json
+import os
 
 def placement_algorithm(graph, app_def='data/appDefinition.json'):
-
-    # Alloc será o dicionario convertido para json
-    alloc = dict()
-    alloc['initialAllocation'] = list()
-
-    apps = json.load(open(app_def))
-
-    n_comunitties = len(apps)
-
-    comms = nx.algorithms.community.asyn_fluidc(graph, n_comunitties)
-    comms = [list(x) for x in list(comms)]
-
-    for en, app in enumerate(apps):
-        for mod in app['module']:
-            temp_dict = dict()
-            temp_dict['module_name'] = mod['name']
-            temp_dict['app'] = app['id']
-
-            temp_dict['id_resource'] = comms[en][0]
-            comms.append(comms.pop(0))
-            alloc['initialAllocation'].append(temp_dict)
-
-    with open('data/allocDefinition.json', 'w') as f:
-        json.dump(alloc, f)
-
-
-def placement_algorithm_v2(graph, app_def='data/appDefinition.json'):
-
-    # Alloc será o dicionario convertido para json
-    alloc = dict()
-    alloc['initialAllocation'] = list()
-
-    apps = json.load(open(app_def))
-
-    n_comunitties = len(apps)
-    comms = nx.algorithms.community.asyn_fluidc(graph, n_comunitties)
-    spare_nodes = []
-    alloc_missing = []
-
-    for app in apps:
-        comms = comms.__next__()
-        for mod in app['module']:
-            temp_dict = dict()
-            temp_dict['module_name'] = mod['name']
-            temp_dict['app'] = app['id']
-
-            if len(comms) != 0:
-
-                # Se ainda existir algum node da comunidade, utiliza-o
-                temp_dict['id_resource'] = min(comms)
-                comms.discard(min(comms))
-                alloc['initialAllocation'].append(temp_dict)
-
-            else:
-                # Senao, utilizará um que sobrar
-                alloc_missing.append(temp_dict)
-
-        spare_nodes += list(comms)
-
-    for remaining in alloc_missing:
-        # Atribui um dos nós sem recursos
-        remaining['id_resource'] = spare_nodes[0]
-        spare_nodes.append(spare_nodes.pop(0))
-        alloc['initialAllocation'].append(remaining)
-
-    with open('data/allocDefinition.json', 'w') as f:
-        json.dump(alloc, f)
-
-
-def placement_algorithm_v3(graph, app_def='data/appDefinition.json'):
 
     # Alloc será o dicionario convertido para json
     alloc = dict()
@@ -123,17 +58,13 @@ def placement_algorithm_v3(graph, app_def='data/appDefinition.json'):
         json.dump(alloc, f)
 
 
-
-
 # func_POWERmax = "random.randint(400,1000)"
 # func_POWERmin = "random.randint(50,300)"
 
 
-
-
 CLOUDCAPACITY = 9999999999999999
 CLOUDSPEED = 10000
-CLOUDBW = 1000                  ## 1000 Mbits/s ou 125000 BYTES / MS ???
+CLOUDBW = 125000                  ## 1000 Mbits/s ou 125000 BYTES / MS ???
 CLOUDPR = 500
 
 PERCENTATGEOFGATEWAYS = 0.25
@@ -161,8 +92,13 @@ func_SERVICERESOURCES = "random.randint(1,5)"  # MB de ram que consume el servic
 func_APPDEADLINE="random.randint(2600,6600)" #MS
 
 
-func_NETWORKGENERATION = "nx.barabasi_albert_graph(n=50, m=2)"
+func_NETWORKGENERATION = "nx.barabasi_albert_graph(n, m=2)"
 
+
+
+
+
+"""
 def networkGeneration(pathTXT, idcloud):
     # ****************************************************************************************************
     # generation of the network topology
@@ -172,6 +108,10 @@ def networkGeneration(pathTXT, idcloud):
 
     cloudgatewaysDevices = list()
     G = eval(func_NETWORKGENERATION)
+
+    # pos = nx.spring_layout(G)
+    # nx.draw(G, pos=pos)
+
     tiers = {}
     
     #with open(pathTXT, "r") as f:
@@ -208,6 +148,18 @@ def networkGeneration(pathTXT, idcloud):
             tiers[node] = 4
             if node != idcloud:
                 cloudgatewaysDevices.append(node)
+
+    plt.figure()
+
+    label_tier = dict()
+    for node in G:
+        label_tier[node] = str(node) + ': ' + str(tiers[node])
+
+    pos = nx.spring_layout(G)
+    nx.draw_networkx_labels(G, pos, labels=label_tier, font_size=8)
+    nx.draw_networkx(G, pos, with_labels=False)
+
+    plt.show()
 
 
     nx.write_gexf(G, "topology/tempora-network.gexf")
@@ -265,7 +217,101 @@ def networkGeneration(pathTXT, idcloud):
     netJson['link'] = myEdges
 
     return netJson, cloudgatewaysDevices, G
+"""
 
 
-x, y, z = networkGeneration('algo.txt', 0)
+
+
+
+
+def networkGeneration(n=20, m=2, path=''):
+    # Generation of the network topology
+
+    # Topology genneration
+
+    G = eval(func_NETWORKGENERATION)
+
+    devices = list()
+
+    nodeResources = {}
+    nodeFreeResources = {}
+    nodeSpeed = {}
+    for i in G.nodes:
+        nodeResources[i] = eval(func_NODERESOURECES)
+        nodeSpeed[i] = eval(func_NODESPEED)
+
+    for e in G.edges:
+        G[e[0]][e[1]]['PR'] = eval(func_PROPAGATIONTIME)
+        G[e[0]][e[1]]['BW'] = eval(func_BANDWITDH)
+
+    # JSON EXPORT
+
+    netJson = {}
+
+    for i in G.nodes:
+        myNode = {}
+        myNode['id'] = i
+        myNode['RAM'] = nodeResources[i]
+        myNode['FRAM'] = nodeResources[i]
+        myNode['IPT'] = nodeSpeed[i]
+        devices.append(myNode)
+
+    myEdges = list()
+    for e in G.edges:
+        myLink = {}
+        myLink['s'] = e[0]
+        myLink['d'] = e[1]
+        myLink['PR'] = G[e[0]][e[1]]['PR']
+        myLink['BW'] = G[e[0]][e[1]]['BW']
+
+        myEdges.append(myLink)
+
+    centralityValuesNoOrdered = nx.betweenness_centrality(G, weight="weight")
+    centralityValues = sorted(centralityValuesNoOrdered.items(), key=operator.itemgetter(1), reverse=True)
+
+    gatewaysDevices = set()
+    cloudgatewaysDevices = set()
+
+    highestCentrality = centralityValues[0][1]
+
+    for device in centralityValues:
+        if device[1] == highestCentrality:
+            cloudgatewaysDevices.add(device[0])
+
+    initialIndx = int(
+        (1 - PERCENTATGEOFGATEWAYS) * len(G.nodes))  # Getting the indexes for the GWs nodes
+
+    for idDev in range(initialIndx, len(G.nodes)):
+        gatewaysDevices.add(centralityValues[idDev][0])
+
+    cloudId = len(G.nodes)
+    myNode = {}
+    myNode['id'] = cloudId
+    myNode['RAM'] = CLOUDCAPACITY
+    myNode['FRAM'] = CLOUDCAPACITY
+    myNode['IPT'] = CLOUDSPEED
+    myNode['type'] = 'CLOUD'
+    devices.append(myNode)
+    # Adding Cloud's resource to nodeResources
+    nodeResources[cloudId] = CLOUDCAPACITY
+
+    for cloudGtw in cloudgatewaysDevices:
+        myLink = {}
+        myLink['s'] = cloudGtw
+        myLink['d'] = cloudId
+        myLink['PR'] = CLOUDPR
+        myLink['BW'] = CLOUDBW
+
+        myEdges.append(myLink)
+
+    netJson['entity'] = devices
+    netJson['link'] = myEdges
+
+    with open(os.path.dirname(__file__) + '\\' + path + "\\netDefinition.json", "w") as netFile:
+        netFile.write(json.dumps(netJson))
+
+    return G
+
+
+x = networkGeneration(5)
 print()
