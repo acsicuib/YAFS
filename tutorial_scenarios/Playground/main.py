@@ -75,6 +75,7 @@ def main(stop_time, it, folder_results):
     """
     t = Topology()
     dataNetwork = json.load(open('data/network.json'))
+
     t.load(dataNetwork)
 
     if it >= 1:
