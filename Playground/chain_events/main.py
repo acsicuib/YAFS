@@ -35,6 +35,7 @@ from yafs.plots import plot_messages_node
 
 from yafs.distribution import deterministic_distribution
 
+
 def draw_topology(t, pos):
     plt.figure(figsize=(7, 3))
     # nx.draw_networkx(t.G, pos, with_labels=True)
@@ -88,6 +89,20 @@ def draw_topology(t, pos):
 #
 #     plt.show()
 
+
+def droplink(env, s):
+    yield env.timeout(10000)
+    s.topology.G.remove_edge(2, 6)
+    print("\naloooooo\n")
+
+
+def deploy_monitor1(env, sim):
+    # Schedule the link removal event at a specific time (e.g., after 1000 time units)
+    yield env.timeout(1000)
+    env.process(droplink(env, sim))
+    print("\nREMOVEDDDDDDDDD\n")
+
+
 def main(stop_time, it, folder_results):
     """
     TOPOLOGY
@@ -101,8 +116,6 @@ def main(stop_time, it, folder_results):
 
     # pos = nx.spring_layout(t.G)
     # pos = {0: (0, 1), 1: (2, 1), 2: (6, 1), 3: (8, 1), 4: (10, 1), 5: (4, 0.4), 6: (4, 1.6)}
-
-
 
     """
     APPLICATION or SERVICES
@@ -149,6 +162,8 @@ def main(stop_time, it, folder_results):
         dist = deterministic_distribution(100, name="Deterministic")
         idDES = s.deploy_source(app_name, id_node=node, msg=msg, distribution=dist)
 
+    s.deploy_monitor = deploy_monitor1
+
     """
     RUNNING - last step
     """
@@ -156,11 +171,14 @@ def main(stop_time, it, folder_results):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
+    # s.env.timeout(1000, droplink(t.G))
+
     # plot_app_path("./results/", 0, t, pos)
+
     plot_app_path("./results/", 0, t, placement=placement)
     modules_per_node(placement, t)
-    plot_messages_node("./results/")
 
+    plot_messages_node("./results/")
 
 
 if __name__ == '__main__':
@@ -185,7 +203,6 @@ if __name__ == '__main__':
 
         print("\n--- %s seconds ---" % (time.time() - start_time))
 
-
     print("Simulation Done!")
 
     # Analysing the results. 
@@ -205,5 +222,3 @@ if __name__ == '__main__':
 
     print("The app2 is deployed in the folling nodes: %s" % np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s" % np.unique(dfapp2["DES.dst"]))
-
-
