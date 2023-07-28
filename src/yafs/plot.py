@@ -5,7 +5,7 @@ from collections import Counter
 import numpy as np
 import pandas as pd
 import networkx as nx
-
+import json
 
 # from pathlib import Path
 
@@ -191,3 +191,26 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=30, graph_type=None):
     ax.set_xlabel(f'Window')
     ax.set_ylabel('% Used Nodes')
     plt.show()
+
+
+def module_placement(alloc_def='data/allocDefinition.json'): #incluir ou não nós sem modulos?
+
+    modules = json.load(open(alloc_def))['initialAllocation']
+
+    nodes = dict()
+    for module in modules:
+        if module['app'] not in nodes.keys():
+            nodes[module['app']] = 0
+
+        nodes[module['app']] += 1
+
+    sorted_nodes = {k: v for k, v in sorted(nodes.items())}
+
+    plt.bar(sorted_nodes.keys(), sorted_nodes.values())
+    plt.xlabel('Nodes')
+    plt.ylabel('Number of Modules')
+    plt.title('Initial Module Allocation')
+    plt.show()
+
+
+
