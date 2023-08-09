@@ -74,6 +74,8 @@ from yafs import Topology
 # print()
 
 
+debug_mode=True
+
 class ExperimentConfiguration:
 
     def __init__(self, lconf):
@@ -109,7 +111,7 @@ class ExperimentConfiguration:
         self.func_NETWORKGENERATION = "nx.barabasi_albert_graph(n, m)"
 
         self.cnf = lconf
-        self.scenario = lconf.myConfiguration
+        # self.scenario = lconf.myConfiguration
 
 
     def networkGeneration(self, n=20, m=2, path='', file_name='netDefinition.json'):
@@ -203,12 +205,11 @@ class ExperimentConfiguration:
         netJson['link'] = myEdges
 
         # Plotting the graph with all the element
-        if True: # TODO
-            tempGraph = self.G  # TODO
-            tempGraph.add_node(self.cloudId)  # TODO
+        if True:
+            tempGraph = self.G
+            tempGraph.add_node(self.cloudId)
             for gw_node in list(self.cloudgatewaysDevices):
                 tempGraph.add_edge(gw_node, self.cloudId, PR=self.CLOUDPR, BW=self.CLOUDBW)
-            # pos = nx.spring_layout(tempGraph, seed=15612357)
             pos = nx.spring_layout(tempGraph)
 
             displacement = -0.09
@@ -228,6 +229,7 @@ class ExperimentConfiguration:
 
     def simpleAppsGeneration(self, path='', file_name='appDefinition.json'):
 
+        random_resources = True # resources available to each module (if False, each module's resources match each node"
         # apps = list()
         self.apps = list()
 
@@ -255,8 +257,10 @@ class ExperimentConfiguration:
                 module['id'] = 1
                 module['name'] = (str(n) + '_01')
                 module['type'] = 'MODULE'
-                module['RAM'] = t.nodeAttributes[n]['RAM']
-
+                if random_resources:
+                    module['RAM'] = self.func_SERVICERESOURCES
+                else:
+                    module['RAM'] = t.nodeAttributes[n]['RAM']
                 app['module'].append(module)
 
                 app['message'] = list()
@@ -276,6 +280,9 @@ class ExperimentConfiguration:
         with open((path + file_name), 'w') as f:
             json.dump(self.apps, f)
         return self.apps
+
+
+
 
     def rec_placement(self, module_index, current_placement):
         if len(current_placement) == len(self.all_modules):
@@ -316,9 +323,9 @@ class ExperimentConfiguration:
 
         # self.rec_placement(0, current_placement)
         self.rec_placement(0, current_placement)
-
-        print(len(self.all_placements))
-        print(self.all_placements)
+        if debug_mode:
+            print(len(self.all_placements))
+            print(self.all_placements)
 
         # first solution
         solution = self.all_placements[0]
@@ -361,9 +368,9 @@ random.seed(15612357)
 
 #
 exp_config = ExperimentConfiguration(conf)
-# exp_config.config_generation(n=10)
+exp_config.config_generation(n=10)
 
-exp_config.networkGeneration(10)
+# exp_config.networkGeneration(10)
 # exp_config.simpleAppsGeneration()
 # exp_config.backtrack_placement()
 # print()
