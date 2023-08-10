@@ -3,6 +3,7 @@ import networkx as nx
 
 import re
 import random
+import time
 from math import floor
 import matplotlib.pyplot as plt
 
@@ -10,7 +11,6 @@ import operator
 import json
 import os
 from yafs import Topology
-
 
 # def placement_algorithm(graph, app_def='data/appDefinition.json'):
 #
@@ -74,7 +74,8 @@ from yafs import Topology
 # print()
 
 
-debug_mode=True
+debug_mode = True
+
 
 class ExperimentConfiguration:
 
@@ -113,6 +114,8 @@ class ExperimentConfiguration:
         self.cnf = lconf
         # self.scenario = lconf.myConfiguration
 
+        current_time = int(time.time())
+        random.seed(current_time)
 
     def networkGeneration(self, n=20, m=2, path='', file_name='netDefinition.json'):
         # Generation of the network topology
@@ -135,7 +138,7 @@ class ExperimentConfiguration:
 
         # JSON EXPORT
 
-        netJson = {}
+        self.netJson = {}
         self.node_labels = {}
 
         for i in self.G.nodes:
@@ -176,8 +179,6 @@ class ExperimentConfiguration:
             self.gatewaysDevices.add(centralityValues[idDev][0])  # lowest centralities
             self.node_labels[centralityValues[idDev][0]] = "gateway"
 
-
-
         self.cloudId = len(self.G.nodes)
         myNode = {}
         myNode['id'] = self.cloudId
@@ -190,8 +191,6 @@ class ExperimentConfiguration:
         self.nodeResources[self.cloudId] = self.CLOUDCAPACITY
         self.node_labels[self.cloudId] = "cloud"
 
-
-
         for cloudGtw in self.cloudgatewaysDevices:
             myLink = {}
             myLink['s'] = cloudGtw
@@ -201,8 +200,8 @@ class ExperimentConfiguration:
 
             myEdges.append(myLink)
 
-        netJson['entity'] = self.devices
-        netJson['link'] = myEdges
+        self.netJson['entity'] = self.devices
+        self.netJson['link'] = myEdges
 
         # Plotting the graph with all the element
         if True:
@@ -217,20 +216,19 @@ class ExperimentConfiguration:
 
             nx.draw(tempGraph, pos)
             nx.draw_networkx_labels(tempGraph, pos, font_size=8)
-            nx.draw_networkx_labels(self.G, label_pos, labels=self.node_labels, font_size=8, horizontalalignment='center' )
+            nx.draw_networkx_labels(self.G, label_pos, labels=self.node_labels, font_size=8,
+                                    horizontalalignment='center')
             plt.show()
 
         # # Win
         # with open(os.path.dirname(__file__) + '\\' + path + file_name, "w") as netFile:
-        #     netFile.write(json.dumps(netJson))
+        #     netFile.write(json.dumps(self.netJson))
         # Unix
         with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
-            netFile.write(json.dumps(netJson))
+            netFile.write(json.dumps(self.netJson))
 
-    def simpleAppsGeneration(self, path='', file_name='appDefinition.json'):
+    def simpleAppsGeneration(self, path='', file_name='appDefinition.json', random_resources = True):  # resources available to each module (if False, each module's resources match each node"
 
-        random_resources = True # resources available to each module (if False, each module's resources match each node"
-        # apps = list()
         self.apps = list()
 
         t = Topology()
@@ -258,7 +256,7 @@ class ExperimentConfiguration:
                 module['name'] = (str(n) + '_01')
                 module['type'] = 'MODULE'
                 if random_resources:
-                    module['RAM'] = self.func_SERVICERESOURCES
+                    module['RAM'] = eval(self.func_SERVICERESOURCES)
                 else:
                     module['RAM'] = t.nodeAttributes[n]['RAM']
                 app['module'].append(module)
@@ -281,12 +279,15 @@ class ExperimentConfiguration:
             json.dump(self.apps, f)
         return self.apps
 
-
-
-
     def rec_placement(self, module_index, current_placement):
+        if self.first_alloc and self.complete_first_allocation:
+            return
+
         if len(current_placement) == len(self.all_modules):
             self.all_placements.append(current_placement.copy())
+            if self.first_alloc:
+                self.complete_first_allocation = True
+                print("first alloc")
             return
 
         current_module = self.all_modules[module_index]
@@ -301,7 +302,10 @@ class ExperimentConfiguration:
                 self.freeNodeResources[node] += current_module['RAM']
                 current_placement.pop(current_module['name'])
 
-    def backtrack_placement(self, path='', file_name='allocDefinition.json'):
+    def backtrack_placement(self, path='', file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json',first_alloc=False):
+
+        self.first_alloc = first_alloc
+        self.complete_first_allocation = False
 
         t = Topology()
         dataNetwork = json.load(open('netDefinition.json'))
@@ -330,6 +334,9 @@ class ExperimentConfiguration:
         # first solution
         solution = self.all_placements[0]
 
+        for module, node in solution.items():
+            self.netJson['entity'][node]['FRAM'] -= self.apps[int(module.split("_")[0])]['module'][int(module.split("_")[1])-1]['RAM']
+
         # Alloc será o dicionario convertido para json
         alloc = dict()
         alloc['initialAllocation'] = list()
@@ -343,22 +350,34 @@ class ExperimentConfiguration:
             alloc['initialAllocation'].append(temp_dict)
 
         # # Win
-        # with open(os.path.dirname(__file__) + '\\' + path + "file_name, "w") as netFile:
-        #     netFile.write(json.dumps(netJson))
+        # with open(os.path.dirname(__file__) + '\\' + path + "file_name, "w") as allocFile:
+        #     allocFile.write(json.dumps(alloc))
         # Unix
         # with open(os.path.dirname(__file__) + '/' + path + "/allocDefinition.json", "w") as netFile:
-        with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
-            netFile.write(json.dumps(alloc))
+        with open(os.path.dirname(__file__) + '/' + path + file_name_alloc, "w") as allocFile:
+            allocFile.write(json.dumps(alloc))
+
+        # # Win
+        # with open(os.path.dirname(__file__) + '\\' + path + file_name, "w") as netFile:
+        #     netFile.write(json.dumps(self.netJson))
+        # Unix
+        with open(os.path.dirname(__file__) + '/' + path + file_name_network, "w") as netFile:
+            netFile.write(json.dumps(self.netJson))
+
 
         # TODO atualizar network definition FRAM
 
     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
         self.networkGeneration(n, m, path_network, file_name_network)
-        self.simpleAppsGeneration(path_apps, file_name_apps)
+        self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=False)
         self.backtrack_placement(path_alloc, file_name_alloc)
 
-
+    def config_generation_random(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
+                      file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
+        self.networkGeneration(n, m, path_network, file_name_network)
+        self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=True)
+        self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True)
 
 
 import myConfig
@@ -368,7 +387,8 @@ random.seed(15612357)
 
 #
 exp_config = ExperimentConfiguration(conf)
-exp_config.config_generation(n=10)
+# exp_config.config_generation(n=10)
+exp_config.config_generation_random(n=10)
 
 # exp_config.networkGeneration(10)
 # exp_config.simpleAppsGeneration()
