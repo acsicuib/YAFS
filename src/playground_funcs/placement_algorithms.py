@@ -283,7 +283,6 @@ class ExperimentConfiguration:
             json.dump(self.apps, f)
         return self.apps
 
-
     def rec_placement(self, module_index, current_placement, limit):
         if limit != 0 and len(self.all_placements) == limit:
             return
@@ -303,6 +302,60 @@ class ExperimentConfiguration:
 
                 self.freeNodeResources[node] += current_module['RAM']
                 current_placement.pop(current_module['name'])
+
+    def randomPlacement(self, path='', file_name='allocDefinition.json'):
+        t = Topology()
+        dataNetwork = json.load(open('netDefinition.json'))
+        t.load(dataNetwork)
+
+        self.freeNodeResources = self.nodeResources
+        # nodes -> self.devices     apps -> self.apps
+        rnd_placement = {}
+
+        for app in self.apps:
+            for module in app['module']:
+                for i in range(50):
+                    index = random.randint(0, (len(dataNetwork['entity']) - 1))
+                    # Se o node 'index' tiver recursos suficientes para alocar o modulo:
+                    if self.freeNodeResources[index] >= module['RAM']:
+                        self.freeNodeResources[index] -= module['RAM']
+                        if app['id'] not in rnd_placement:
+                            rnd_placement[app['id']] = dict()
+                        rnd_placement[app['id']][module['name']] = index
+                        break
+
+                    if i == 49:
+                        print(f"Nao foi possivel alocar o modulo {module} após 50 iterações.")
+
+        # print(rnd_placement)
+        # print(self.freeNodeResources)
+
+        alloc = dict()
+        alloc['initialAllocation'] = list()
+
+        for app in rnd_placement:
+            for mod, res in rnd_placement[app].items():
+                temp_dict = dict()
+                temp_dict["module_name"] = mod
+                temp_dict["app"] = app
+                temp_dict["id_resource"] = res
+
+                alloc['initialAllocation'].append(temp_dict)
+
+        # atualiza valores de FRAM
+        self.updateJsonResources()
+
+        with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
+            netFile.write(json.dumps(alloc))
+
+    def updateJsonResources(self, path='', file_name='netDefinition.json'):
+        net_json = json.load(open(path+file_name))
+
+        for node in net_json['entity']:
+            node['FRAM'] = self.freeNodeResources[node['id']]
+
+        with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
+            netFile.write(json.dumps(net_json))
 
     def backtrack_placement(self, path='', file_name='allocDefinition.json', limit=0):
 
@@ -346,12 +399,12 @@ class ExperimentConfiguration:
             alloc['initialAllocation'].append(temp_dict)
 
         # # Win
-        # with open(os.path.dirname(__file__) + '\\' + path + "file_name, "w") as netFile:
-        #     netFile.write(json.dumps(netJson))
+        with open(os.path.dirname(__file__) + '\\' + path + "file_name", "w") as netFile:
+            netFile.write(json.dumps(alloc))
         # Unix
         # with open(os.path.dirname(__file__) + '/' + path + "/allocDefinition.json", "w") as netFile:
-        with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
-            netFile.write(json.dumps(alloc))
+        # with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
+        #     netFile.write(json.dumps(alloc))
 
         # TODO atualizar network definition FRAM
 
@@ -375,5 +428,6 @@ exp_config = ExperimentConfiguration(conf)
 
 exp_config.networkGeneration(10)
 exp_config.simpleAppsGeneration()
-exp_config.backtrack_placement(limit=1)
+# exp_config.backtrack_placement(limit=1)
+exp_config.randomPlacement()
 # print()

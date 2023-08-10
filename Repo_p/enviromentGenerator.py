@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 
 # Initialization and set up
-randomPlacement = False
-popularityPlacement = True
+randomPlacement = True
+popularityPlacement = False
 heuristicPlacement = False
 firstPlacement = False
 
