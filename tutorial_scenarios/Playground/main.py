@@ -20,7 +20,7 @@ import numpy as np
 # Meus imports
 from playground_funcs import data_analysis
 from playground_funcs.routing_algorithms import MaxBW, MaxBW_Root
-from playground_funcs.placement_algorithms import placement_algorithm_, placement_algorithm_v2, placement_algorithm
+from playground_funcs.placement_algorithms import placement_algorithm_, placement_algorithm_v2, stable_placement
 
 from yafs.core import Sim
 from yafs.application import create_applications_from_json
@@ -81,7 +81,7 @@ def main(stop_time, it, folder_results):
     if it >= 1:
         t.remove_node(1)
 
-    placement_algorithm(t.G)
+    stable_placement(t.G)
 
     """
     APPLICATION or SERVICES

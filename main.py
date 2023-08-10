@@ -27,7 +27,7 @@ from yafs.distribution import deterministic_distribution
 
 from playground_funcs import data_analysis
 
-from playground_funcs.placement_algorithms import placement_algorithm
+from playground_funcs.placement_algorithms import stable_placement
 
 def main(stop_time, it,folder_results):
 
@@ -38,7 +38,7 @@ def main(stop_time, it,folder_results):
     dataNetwork = json.load(open('data/network.json'))
     t.load(dataNetwork)
 
-    placement_algorithm(t.G)
+    stable_placement(t.G)
 
     """
     APPLICATION or SERVICES
