@@ -160,14 +160,14 @@ class ExperimentConfiguration:
             myEdges.append(myLink)
 
         centralityValuesNoOrdered = nx.betweenness_centrality(self.G, weight="weight")
-        centralityValues = sorted(centralityValuesNoOrdered.items(), key=operator.itemgetter(1), reverse=True)
+        self.centralityValues = sorted(centralityValuesNoOrdered.items(), key=operator.itemgetter(1), reverse=True)
 
         self.gatewaysDevices = set()
         self.cloudgatewaysDevices = set()
 
-        highestCentrality = centralityValues[0][1]
+        highestCentrality = self.centralityValues[0][1]
 
-        for device in centralityValues:
+        for device in self.centralityValues:
             if device[1] == highestCentrality:
                 self.cloudgatewaysDevices.add(device[0])  # highest centrality
                 self.node_labels[device[0]] = "cloudgateway"
@@ -176,8 +176,8 @@ class ExperimentConfiguration:
             (1 - self.PERCENTATGEOFGATEWAYS) * len(self.G.nodes))  # Getting the indexes for the GWs nodes
 
         for idDev in range(initialIndx, len(self.G.nodes)):
-            self.gatewaysDevices.add(centralityValues[idDev][0])  # lowest centralities
-            self.node_labels[centralityValues[idDev][0]] = "gateway"
+            self.gatewaysDevices.add(self.centralityValues[idDev][0])  # lowest centralities
+            self.node_labels[self.centralityValues[idDev][0]] = "gateway"
 
         self.cloudId = len(self.G.nodes)
         myNode = {}
@@ -292,7 +292,8 @@ class ExperimentConfiguration:
 
         current_module = self.all_modules[module_index]
 
-        for node in self.G.nodes:
+        # for node in self.G.nodes:
+        for node in self.node_order:
             if self.freeNodeResources[node] >= current_module['RAM']:
                 current_placement[current_module['name']] = node
                 self.freeNodeResources[node] -= current_module['RAM']
@@ -302,7 +303,7 @@ class ExperimentConfiguration:
                 self.freeNodeResources[node] += current_module['RAM']
                 current_placement.pop(current_module['name'])
 
-    def backtrack_placement(self, path='', file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json',first_alloc=False):
+    def backtrack_placement(self, path='', file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json',first_alloc=False, mode = 'FCFS'):
 
         self.first_alloc = first_alloc
         self.complete_first_allocation = False
@@ -321,13 +322,26 @@ class ExperimentConfiguration:
 
         self.freeNodeResources = self.nodeResources
 
+
+
         # nodes -> self.devices     apps -> self.apps
         self.all_placements = []
         current_placement = {}
 
-        # self.rec_placement(0, current_placement)
+
+        if mode == 'FCFS':
+            self.node_order = self.G.nodes
+        elif mode == 'Random':
+            self.node_order = list(self.G.nodes.keys())
+            random.shuffle(self.node_order)
+        elif mode == 'high_centrality':
+            self.node_order = [node[0] for node in self.centralityValues]
+
+
         self.rec_placement(0, current_placement)
         if debug_mode:
+            print(mode , self.node_order)
+            print('\n--placements--')
             print(len(self.all_placements))
             print(self.all_placements)
 
@@ -373,11 +387,11 @@ class ExperimentConfiguration:
         self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=False)
         self.backtrack_placement(path_alloc, file_name_alloc)
 
-    def config_generation_random(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
+    def config_generation_random_resources(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
                       file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
         self.networkGeneration(n, m, path_network, file_name_network)
         self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=True)
-        self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True)
+        self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True, mode='high_centrality') # FCFS - high_centrality - Random
 
 
 import myConfig
@@ -388,7 +402,7 @@ random.seed(15612357)
 #
 exp_config = ExperimentConfiguration(conf)
 # exp_config.config_generation(n=10)
-exp_config.config_generation_random(n=10)
+exp_config.config_generation_random_resources(n=10)
 
 # exp_config.networkGeneration(10)
 # exp_config.simpleAppsGeneration()
