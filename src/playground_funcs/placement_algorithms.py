@@ -408,14 +408,55 @@ class ExperimentConfiguration:
 
         # TODO atualizar network definition FRAM
 
+    def userGeneration(self):
+        # Generation of the IoT devices (users)
+
+        userJson = {}
+
+        self.myUsers = list()
+
+        self.appsRequests = list()
+        for i in range(0, self.TOTALNUMBEROFAPPS):
+            userRequestList = set()
+            probOfRequested = eval(self.func_REQUESTPROB)
+            # probOfRequested = -1
+            atLeastOneAllocated = False
+            for j in self.gatewaysDevices:
+                if random.random() < probOfRequested:
+                    myOneUser = {}
+                    myOneUser['app'] = str(i)
+                    myOneUser['message'] = "M.USER.APP." + str(i)
+                    myOneUser['id_resource'] = j
+                    myOneUser['lambda'] = eval(self.func_USERREQRAT)
+                    userRequestList.add(j)
+                    self.myUsers.append(myOneUser)
+                    atLeastOneAllocated = True
+            if not atLeastOneAllocated:
+                j = random.randint(0, len(self.gatewaysDevices) - 1)
+                myOneUser = {}
+                myOneUser['app'] = str(i)
+                myOneUser['message'] = "M.USER.APP." + str(i)
+                # myOneUser['id_resource'] = j
+                myOneUser['id_resource'] = list(self.gatewaysDevices)[j]  # Random GW to host the request
+                myOneUser['lambda'] = eval(self.func_USERREQRAT)
+                userRequestList.add(list(self.gatewaysDevices)[j])
+                self.myUsers.append(myOneUser)
+            self.appsRequests.append(userRequestList)
+
+        userJson['sources'] = self.myUsers
+
+        # Win
+        userFile = open(self.cnf.resultFolder + "\\usersDefinition.json", "w")
+        # Unix
+        # userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
+        userFile.write(json.dumps(userJson))
+        userFile.close()
+
     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
         self.networkGeneration(n, m, path_network, file_name_network)
         self.simpleAppsGeneration(path_apps, file_name_apps)
         self.backtrack_placement(path_alloc, file_name_alloc)
-
-
-
 
 
 
@@ -430,4 +471,5 @@ exp_config.networkGeneration(10)
 exp_config.simpleAppsGeneration()
 # exp_config.backtrack_placement(limit=1)
 exp_config.randomPlacement()
+exp_config.userGeneration()
 # print()
