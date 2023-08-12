@@ -60,22 +60,6 @@ def stable_placement(graph, app_def='data/appDefinition.json'):
     with open('data/allocDefinition.json', 'w') as f:
         json.dump(alloc, f)
 
-def random_placement(data, app_def='data/appDefinition.json'):
-
-    # Alloc será o dicionario convertido para json
-    alloc = dict()
-    alloc['initialAllocation'] = list()
-
-    apps = json.load(open(app_def))
-
-    # for app in apps:
-    #     for mod in app['module']:
-
-    print()
-
-
-
-
 debug_mode=True
 
 class ExperimentConfiguration:
@@ -102,7 +86,8 @@ class ExperimentConfiguration:
 
         # APP and SERVICES
         self.TOTALNUMBEROFAPPS = 10
-        self.func_APPGENERATION = "nx.gn_graph(random.randint(2,8))"  # algorithm for the generation of the random applications
+        # self.func_APPGENERATION = "nx.gn_graph(random.randint(2,8))"  # algorithm for the generation of the random applications
+        self.func_APPGENERATION = "self.linear_graph(random.randint(2, 4))"  # algorithm for the generation of the random applications (agora linear)
         self.func_SERVICEINSTR = "random.randint(20000,60000)"  # INSTR --> teniedno en cuenta nodespped esto nos da entre 200 y 600 MS
         self.func_SERVICEMESSAGESIZE = "random.randint(1500000,4500000)"  # BYTES y teniendo en cuenta net bandwidth nos da entre 20 y 60 MS
 
@@ -282,6 +267,178 @@ class ExperimentConfiguration:
         with open((path + file_name), 'w') as f:
             json.dump(self.apps, f)
         return self.apps
+
+    def linear_graph(self, size):
+        g = nx.DiGraph()
+        g.add_nodes_from(range(size))
+        g.add_edges_from(tuple(zip(range(size - 1), range(1, size))))
+
+        return g
+
+    def appGeneration(self):
+        # Apps generation
+
+        self.numberOfServices = 0
+        self.apps = list()
+        self.appsDeadlines = {}
+        self.appsResources = list()
+        self.appsSourceService = list()
+        self.appsSourceMessage = list()
+        self.appsTotalMIPS = list()
+        self.appsTotalServices = list()
+        self.mapService2App = list()
+        self.mapServiceId2ServiceName = list()
+
+        appJson = list()
+        appJsonBE = list()
+        appJsonDD = list()
+        self.servicesResources = {}
+
+        for i in range(0, self.TOTALNUMBEROFAPPS):
+            myApp = {}
+            myAppEB = {}
+            myAppDD = {}
+            APP = eval(self.func_APPGENERATION)
+
+            mylabels = {}
+
+            for n in range(0, len(APP.nodes)):
+                mylabels[n] = str(n)
+
+            edgeList_ = list()
+
+            # Reverting the direction of the edges from Source to Modules
+
+            for m in APP.edges:
+                edgeList_.append(m)
+            for m in edgeList_:
+                APP.remove_edge(m[0], m[1])
+                APP.add_edge(m[1], m[0])
+
+            # if self.cnf.graphicTerminal:
+            #     fig, ax = plt.subplots()
+            #     pos = nx.spring_layout(APP, seed=15612357)
+            #     nx.draw(APP, pos, labels=mylabels, font_size=8)
+            #     # Win
+            #     fig.savefig(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\plots\\app_%s.png' % i)
+            #     # Unix
+            #     # fig.savefig(os.path.dirname(__file__) + '/' + self.cnf.resultFolder + '/plots/app_%s.png' % i)
+            #     plt.close(fig)  # close the figure
+            #     plt.show()
+
+            mapping = dict(zip(APP.nodes(), range(self.numberOfServices, self.numberOfServices + len(APP.nodes))))
+            APP = nx.relabel_nodes(APP, mapping)
+
+            self.numberOfServices = self.numberOfServices + len(APP.nodes)
+            self.apps.append(APP)
+            for j in APP.nodes:
+                self.servicesResources[j] = eval(self.func_SERVICERESOURCES)
+            self.appsResources.append(self.servicesResources)
+
+            topologicorder_ = list(nx.topological_sort(APP))
+            source = topologicorder_[0]
+
+            self.appsSourceService.append(source)
+
+            # self.appsDeadlines[i] = self.myDeadlines[i]
+
+            # Copies of the application's graph that will be use to create the extra app definitions
+            APP_EB = APP.copy()
+            APP_DD = APP.copy()
+
+            myApp['id'] = i
+            myApp['name'] = str(i)
+            # myApp['deadline'] = self.appsDeadlines[i]
+
+            myApp['module'] = list()
+
+            edgeNumber = 0
+            myApp['message'] = list()
+
+            myApp['transmission'] = list()
+
+            totalMIPS = 0
+
+            for n in APP.nodes:
+                self.mapService2App.append(str(i))
+                self.mapServiceId2ServiceName.append(str(i) + '_' + str(n))
+                myNode = {}
+                myNode['id'] = n
+                myNode['name'] = str(i) + '_' + str(n)
+                myNode['RAM'] = self.servicesResources[n]
+                # myNode['FRAM'] = self.servicesResources[n]
+                myNode['type'] = 'MODULE'
+                if source == n:
+                    myEdge = {}
+                    myEdge['id'] = edgeNumber
+                    edgeNumber = edgeNumber + 1
+                    myEdge['name'] = "M.USER.APP." + str(i)
+                    myEdge['s'] = "None"
+                    myEdge['d'] = str(i) + '_' + str(n)
+                    myEdge['instructions'] = eval(self.func_SERVICEINSTR)
+                    totalMIPS = totalMIPS + myEdge['instructions']
+                    myEdge['bytes'] = eval(self.func_SERVICEMESSAGESIZE)
+                    myApp['message'].append(myEdge)
+                    self.appsSourceMessage.append(myEdge)
+                    if self.cnf.verbose_log:
+                        print("Adding source message")
+                    for o in APP.edges:
+                        if o[0] == source:
+                            myTransmission = {}
+                            myTransmission['module'] = str(i) + '_' + str(source)
+                            myTransmission['message_in'] = "M.USER.APP." + str(i)
+                            myTransmission['message_out'] = str(i) + '_(' + str(o[0]) + "-" + str(o[1]) + ")"
+                            myApp['transmission'].append(myTransmission)
+
+                myApp['module'].append(myNode)
+
+            for n in APP.edges:
+                myEdge = {}
+                myEdge['id'] = edgeNumber
+                edgeNumber = edgeNumber + 1
+                myEdge['name'] = str(i) + '_(' + str(n[0]) + "-" + str(n[1]) + ")"
+                myEdge['s'] = str(i) + '_' + str(n[0])
+                myEdge['d'] = str(i) + '_' + str(n[1])
+                myEdge['instructions'] = eval(self.func_SERVICEINSTR)
+                totalMIPS = totalMIPS + myEdge['instructions']
+                myEdge['bytes'] = eval(self.func_SERVICEMESSAGESIZE)
+                myApp['message'].append(myEdge)
+                destNode = n[1]
+                for o in APP.edges:
+                    if o[0] == destNode:
+                        myTransmission = {}
+                        myTransmission['module'] = str(i) + '_' + str(n[1])
+                        myTransmission['message_in'] = str(i) + '_(' + str(n[0]) + "-" + str(n[1]) + ")"
+                        myTransmission['message_out'] = str(i) + '_(' + str(o[0]) + "-" + str(o[1]) + ")"
+                        myApp['transmission'].append(myTransmission)
+
+            for n in APP.nodes:
+                outgoingEdges = False
+                for m in APP.edges:
+                    if m[0] == n:
+                        outgoingEdges = True
+                        break
+                if not outgoingEdges:
+                    for m in APP.edges:
+                        if m[1] == n:
+                            myTransmission = {}
+                            myTransmission['module'] = str(i) + '_' + str(n)
+                            myTransmission['message_in'] = str(i) + '_(' + str(m[0]) + "-" + str(m[1]) + ")"
+                            myApp['transmission'].append(myTransmission)
+
+            self.appsTotalMIPS.append(totalMIPS)
+            self.appsTotalServices.append(len(APP.nodes()))
+
+            appJson.append(myApp)
+
+        # Win
+        appFile = open(self.cnf.resultFolder + "\\appDefinition.json", "w")
+        # Unix
+        # appFile = open(self.cnf.resultFolder + "/appDefinition.json", "w")
+        # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
+        appFile.write(json.dumps(appJson))
+        appFile.close()
+
 
     def rec_placement(self, module_index, current_placement, limit):
         if limit != 0 and len(self.all_placements) == limit:
@@ -472,4 +629,5 @@ exp_config.simpleAppsGeneration()
 # exp_config.backtrack_placement(limit=1)
 exp_config.randomPlacement()
 exp_config.userGeneration()
+exp_config.appGeneration()
 # print()
