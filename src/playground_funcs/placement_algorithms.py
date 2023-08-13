@@ -100,6 +100,10 @@ class ExperimentConfiguration:
         self.cnf = lconf
         # self.scenario = lconf.myConfiguration
 
+        self.t = Topology()
+        self.dataNetwork = json.load(open('netDefinition.json'))
+        self.t.load(self.dataNetwork)
+
 
     def networkGeneration(self, n=20, m=2, path='', file_name='netDefinition.json'):
         # Generation of the network topology
@@ -111,6 +115,8 @@ class ExperimentConfiguration:
         self.devices = list()
 
         self.nodeResources = {}
+        self.freeNodeResources = {}
+
         self.nodeSpeed = {}
         for i in self.G.nodes:
             self.nodeResources[i] = eval(self.func_NODERESOURECES)
@@ -176,8 +182,7 @@ class ExperimentConfiguration:
         # Adding Cloud's resource to nodeResources
         self.nodeResources[self.cloudId] = self.CLOUDCAPACITY
         self.node_labels[self.cloudId] = "cloud"
-
-
+        self.freeNodeResources = self.nodeResources
 
         for cloudGtw in self.cloudgatewaysDevices:
             myLink = {}
@@ -220,12 +225,8 @@ class ExperimentConfiguration:
         # apps = list()
         self.apps = list()
 
-        t = Topology()
-        dataNetwork = json.load(open('netDefinition.json'))
-        t.load(dataNetwork)
-
-        for n in t.G.nodes:
-            if 'type' not in t.nodeAttributes[n] or (t.nodeAttributes[n]['type'].upper() != 'CLOUD'):
+        for n in self.t.G.nodes:
+            if 'type' not in self.t.nodeAttributes[n] or (self.t.nodeAttributes[n]['type'].upper() != 'CLOUD'):
                 app = dict()
                 app['id'] = n
                 app['name'] = n
@@ -247,7 +248,7 @@ class ExperimentConfiguration:
                 if random_resources:
                     module['RAM'] = eval(self.func_SERVICERESOURCES)
                 else:
-                    module['RAM'] = t.nodeAttributes[n]['RAM']
+                    module['RAM'] = self.t.nodeAttributes[n]['RAM']
                 app['module'].append(module)
 
                 app['message'] = list()
@@ -441,7 +442,6 @@ class ExperimentConfiguration:
         appFile.write(json.dumps(appJson))
         appFile.close()
 
-
     def rec_placement(self, module_index, current_placement, limit):
         if limit != 0 and len(self.all_placements) == limit:
             return
@@ -463,18 +463,15 @@ class ExperimentConfiguration:
                 current_placement.pop(current_module['name'])
 
     def randomPlacement(self, path='', file_name='allocDefinition.json'):
-        t = Topology()
-        dataNetwork = json.load(open('netDefinition.json'))
-        t.load(dataNetwork)
 
-        self.freeNodeResources = self.nodeResources
+
         # nodes -> self.devices     apps -> self.apps
         rnd_placement = {}
 
         for app in self.apps:
             for module in app['module']:
                 for i in range(50):
-                    index = random.randint(0, (len(dataNetwork['entity']) - 1))
+                    index = random.randint(0, (len(self.dataNetwork['entity']) - 1))
                     # Se o node 'index' tiver recursos suficientes para alocar o modulo:
                     if self.freeNodeResources[index] >= module['RAM']:
                         self.freeNodeResources[index] -= module['RAM']
@@ -518,10 +515,6 @@ class ExperimentConfiguration:
 
     def backtrack_placement(self, path='', file_name='allocDefinition.json', limit=0):
 
-        t = Topology()
-        dataNetwork = json.load(open('netDefinition.json'))
-        t.load(dataNetwork)
-
         # n_modules = len([app['module'] for app in self.apps])
         # self.n_modules = sum(len(app['module']) for app in self.apps)
 
@@ -530,7 +523,7 @@ class ExperimentConfiguration:
             for module in app['module']:
                 self.all_modules.append(module)
 
-        self.freeNodeResources = self.nodeResources
+
 
         # nodes -> self.devices     apps -> self.apps
         self.all_placements = []
@@ -616,6 +609,8 @@ class ExperimentConfiguration:
         self.networkGeneration(n, m, path_network, file_name_network)
         self.simpleAppsGeneration(path_apps, file_name_apps)
         self.backtrack_placement(path_alloc, file_name_alloc)
+
+    # def backtrack_lesser_mods(self, current_p, best_p):
 
 
 
