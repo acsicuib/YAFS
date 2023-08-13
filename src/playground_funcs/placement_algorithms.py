@@ -271,11 +271,13 @@ class ExperimentConfiguration:
     def linear_graph(self, size):
         g = nx.DiGraph()
         g.add_nodes_from(range(size))
-        g.add_edges_from(tuple(zip(range(size - 1), range(1, size))))
+        g.add_edges_from(tuple(zip(range(1, size), range(size - 1))))
 
         return g
 
     def appGeneration(self):
+        self.apps = list()
+
         # Apps generation
 
         self.numberOfServices = 0
