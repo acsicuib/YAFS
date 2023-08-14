@@ -100,9 +100,7 @@ class ExperimentConfiguration:
         self.cnf = lconf
         # self.scenario = lconf.myConfiguration
 
-        self.t = Topology()
-        self.dataNetwork = json.load(open('netDefinition.json'))
-        self.t.load(self.dataNetwork)
+
 
 
     def networkGeneration(self, n=20, m=2, path='', file_name='netDefinition.json'):
@@ -169,8 +167,6 @@ class ExperimentConfiguration:
             self.gatewaysDevices.add(centralityValues[idDev][0])  # lowest centralities
             self.node_labels[centralityValues[idDev][0]] = "gateway"
 
-
-
         self.cloudId = len(self.G.nodes)
         myNode = {}
         myNode['id'] = self.cloudId
@@ -215,6 +211,11 @@ class ExperimentConfiguration:
         # # Win
         with open(os.path.dirname(__file__) + '\\' + path + file_name, "w") as netFile:
             netFile.write(json.dumps(netJson))
+
+        self.t = Topology()
+        self.dataNetwork = json.load(open('netDefinition.json'))
+        self.t.load(self.dataNetwork)
+
         # Unix
         # with open(os.path.dirname(__file__) + '' + path + file_name, "w") as netFile:
         #     netFile.write(json.dumps(netJson))
@@ -463,8 +464,6 @@ class ExperimentConfiguration:
                 current_placement.pop(current_module['name'])
 
     def randomPlacement(self, path='', file_name='allocDefinition.json'):
-
-
         # nodes -> self.devices     apps -> self.apps
         rnd_placement = {}
 
@@ -522,8 +521,6 @@ class ExperimentConfiguration:
         for app in self.apps:
             for module in app['module']:
                 self.all_modules.append(module)
-
-
 
         # nodes -> self.devices     apps -> self.apps
         self.all_placements = []
@@ -610,21 +607,69 @@ class ExperimentConfiguration:
         self.simpleAppsGeneration(path_apps, file_name_apps)
         self.backtrack_placement(path_alloc, file_name_alloc)
 
-    # def backtrack_lesser_mods(self, current_p, best_p):
+    def bt_min_mods(self):
+        available_res = self.freeNodeResources.copy()
+        available_res.pop(max(available_res))
 
+        used_res = list()
+        services = list()
+        best_solution = list()
+
+        apps = json.load(open('appDefinition.json'))
+
+        for app in apps:
+            for mod in app['module']:
+                services.append({'module_name': mod['name'], 'RAM': mod['RAM'], 'app': app['id']})
+
+        best_res = self.bt_min_mods_(available_res, used_res, services, best_solution)
+
+        print()
+
+    def bt_min_mods_(self, available_res, cur_solution, services, best_solution, index=0):
+
+        # Chegando ao fim da arvore de recursao, decide-se qual o melhor placement
+        if index == len(services):
+            # Caso a solucao atual use - que a melhor, ou seja a 1a a existir, é retornada a solucao atual
+            if len(set(cur_solution)) < len(set(best_solution)) or len(best_solution) == 0:
+                return cur_solution.copy()
+
+            # Caso as 2 soluções empatem, desempata-se consoante o menor somatorio do espaço livre dos nodes usados
+            elif len(set(cur_solution)) == len(set(best_solution)) \
+                and sum([available_res[node_index] for node_index in set(cur_solution)]) < \
+                    sum([available_res[node_index] for node_index in set(best_solution)]):
+
+                return cur_solution.copy()
+
+            else:
+                return best_solution
+
+        for node_index in available_res:
+            if available_res[node_index] >= services[index]['RAM']:
+                available_res[node_index] -= services[index]['RAM']
+                cur_solution.append(node_index)
+
+                if len(set(cur_solution)) <= len(set(best_solution)) or len(best_solution) == 0:
+                    best_solution = self.bt_min_mods_(available_res, cur_solution, services, best_solution, index + 1)
+
+                available_res[node_index] += services[index]['RAM']
+                cur_solution.pop(index)
+
+        return best_solution
 
 
 conf = myConfig.myConfig()  # Setting up configuration preferences
 random.seed(15612357)
 
-
 exp_config = ExperimentConfiguration(conf)
 # exp_config.config_generation(n=10)
 
-exp_config.networkGeneration(10)
-exp_config.simpleAppsGeneration()
+exp_config.networkGeneration(3)
+# exp_config.simpleAppsGeneration()
+
+
 # exp_config.backtrack_placement(limit=1)
-exp_config.randomPlacement()
+# exp_config.randomPlacement()
 exp_config.userGeneration()
-exp_config.appGeneration()
+# exp_config.appGeneration()
+exp_config.bt_min_mods()
 # print()
