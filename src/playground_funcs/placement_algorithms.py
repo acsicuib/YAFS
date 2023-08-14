@@ -346,7 +346,7 @@ class ExperimentConfiguration:
 
             # self.appsDeadlines[i] = self.myDeadlines[i]
 
-            # Copies of the application's graph that will be use to create the extra app definitions
+            # Copies of the application's graph that will be used to create the extra app definitions
             APP_EB = APP.copy()
             APP_DD = APP.copy()
 
@@ -607,7 +607,7 @@ class ExperimentConfiguration:
         self.simpleAppsGeneration(path_apps, file_name_apps)
         self.backtrack_placement(path_alloc, file_name_alloc)
 
-    def bt_min_mods(self):
+    def bt_min_mods(self, path=''):
         available_res = self.freeNodeResources.copy()
         available_res.pop(max(available_res))
 
@@ -621,9 +621,24 @@ class ExperimentConfiguration:
             for mod in app['module']:
                 services.append({'module_name': mod['name'], 'RAM': mod['RAM'], 'app': app['id']})
 
-        best_res = self.bt_min_mods_(available_res, used_res, services, best_solution)
+        best_solution = self.bt_min_mods_(available_res, used_res, services, best_solution)
 
-        print()
+        alloc = dict()
+
+        for index, service in enumerate(services):
+            service['id_resource'] = best_solution[index]
+            self.freeNodeResources[service['id_resource']] -= service['RAM']        # Subtrai o recurso usado
+            service.pop('RAM')
+
+        alloc['initialAllocation'] = services
+
+        # # Win
+        with open(os.path.dirname(__file__) + '\\' + path + "allocDefinition.json", "w") as netFile:
+            netFile.write(json.dumps(alloc))
+        # Unix
+        # with open(os.path.dirname(__file__) + '/' + path + "/allocDefinition.json", "w") as netFile:
+        # with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
+        #     netFile.write(json.dumps(alloc))
 
     def bt_min_mods_(self, available_res, cur_solution, services, best_solution, index=0):
 
@@ -636,7 +651,7 @@ class ExperimentConfiguration:
             # Caso as 2 soluções empatem, desempata-se consoante o menor somatorio do espaço livre dos nodes usados
             elif len(set(cur_solution)) == len(set(best_solution)) \
                 and sum([available_res[node_index] for node_index in set(cur_solution)]) < \
-                    sum([available_res[node_index] for node_index in set(best_solution)]):
+                    (sum([available_res[node_index] for node_index in set(best_solution)]) - sum(sv['RAM'] for sv in services)):
 
                 return cur_solution.copy()
 
