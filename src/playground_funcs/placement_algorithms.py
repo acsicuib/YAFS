@@ -62,6 +62,15 @@ def stable_placement(graph, app_def='data/appDefinition.json'):
 
 debug_mode=True
 
+
+def linear_graph(size):
+    g = nx.DiGraph()
+    g.add_nodes_from(range(size))
+    g.add_edges_from(tuple(zip(range(1, size), range(size - 1))))
+
+    return g
+
+
 class ExperimentConfiguration:
 
     def __init__(self, lconf):
@@ -100,10 +109,7 @@ class ExperimentConfiguration:
         self.cnf = lconf
         # self.scenario = lconf.myConfiguration
 
-
-
-
-    def networkGeneration(self, n=20, m=2, path='', file_name='netDefinition.json'):
+    def network_generation(self, n=20, m=2, path='', file_name='netDefinition.json'):
         # Generation of the network topology
 
         # Topology genneration
@@ -220,9 +226,8 @@ class ExperimentConfiguration:
         # with open(os.path.dirname(__file__) + '' + path + file_name, "w") as netFile:
         #     netFile.write(json.dumps(netJson))
 
-    def simpleAppsGeneration(self, path='', file_name='appDefinition.json'):
+    def simple_apps_generation(self, path='', file_name='appDefinition.json', random_resources=True):
 
-        random_resources = True # resources available to each module (if False, each module's resources match each node"
         # apps = list()
         self.apps = list()
 
@@ -270,14 +275,7 @@ class ExperimentConfiguration:
             json.dump(self.apps, f)
         return self.apps
 
-    def linear_graph(self, size):
-        g = nx.DiGraph()
-        g.add_nodes_from(range(size))
-        g.add_edges_from(tuple(zip(range(1, size), range(size - 1))))
-
-        return g
-
-    def appGeneration(self):
+    def app_generation(self):
         self.apps = list()
 
         # Apps generation
@@ -463,55 +461,6 @@ class ExperimentConfiguration:
                 self.freeNodeResources[node] += current_module['RAM']
                 current_placement.pop(current_module['name'])
 
-    def randomPlacement(self, path='', file_name='allocDefinition.json'):
-        # nodes -> self.devices     apps -> self.apps
-        rnd_placement = {}
-
-        for app in self.apps:
-            for module in app['module']:
-                for i in range(50):
-                    index = random.randint(0, (len(self.dataNetwork['entity']) - 1))
-                    # Se o node 'index' tiver recursos suficientes para alocar o modulo:
-                    if self.freeNodeResources[index] >= module['RAM']:
-                        self.freeNodeResources[index] -= module['RAM']
-                        if app['id'] not in rnd_placement:
-                            rnd_placement[app['id']] = dict()
-                        rnd_placement[app['id']][module['name']] = index
-                        break
-
-                    if i == 49:
-                        print(f"Nao foi possivel alocar o modulo {module} após 50 iterações.")
-
-        # print(rnd_placement)
-        # print(self.freeNodeResources)
-
-        alloc = dict()
-        alloc['initialAllocation'] = list()
-
-        for app in rnd_placement:
-            for mod, res in rnd_placement[app].items():
-                temp_dict = dict()
-                temp_dict["module_name"] = mod
-                temp_dict["app"] = app
-                temp_dict["id_resource"] = res
-
-                alloc['initialAllocation'].append(temp_dict)
-
-        # atualiza valores de FRAM
-        self.updateJsonResources()
-
-        with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
-            netFile.write(json.dumps(alloc))
-
-    def updateJsonResources(self, path='', file_name='netDefinition.json'):
-        net_json = json.load(open(path+file_name))
-
-        for node in net_json['entity']:
-            node['FRAM'] = self.freeNodeResources[node['id']]
-
-        with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
-            netFile.write(json.dumps(net_json))
-
     def backtrack_placement(self, path='', file_name='allocDefinition.json', limit=0):
 
         # n_modules = len([app['module'] for app in self.apps])
@@ -557,7 +506,56 @@ class ExperimentConfiguration:
 
         # TODO atualizar network definition FRAM
 
-    def userGeneration(self):
+    def random_placement(self, path='', file_name='allocDefinition.json'):
+        # nodes -> self.devices     apps -> self.apps
+        rnd_placement = {}
+
+        for app in self.apps:
+            for module in app['module']:
+                for i in range(50):
+                    index = random.randint(0, (len(self.dataNetwork['entity']) - 1))
+                    # Se o node 'index' tiver recursos suficientes para alocar o modulo:
+                    if self.freeNodeResources[index] >= module['RAM']:
+                        self.freeNodeResources[index] -= module['RAM']
+                        if app['id'] not in rnd_placement:
+                            rnd_placement[app['id']] = dict()
+                        rnd_placement[app['id']][module['name']] = index
+                        break
+
+                    if i == 49:
+                        print(f"Nao foi possivel alocar o modulo {module} após 50 iterações.")
+
+        # print(rnd_placement)
+        # print(self.freeNodeResources)
+
+        alloc = dict()
+        alloc['initialAllocation'] = list()
+
+        for app in rnd_placement:
+            for mod, res in rnd_placement[app].items():
+                temp_dict = dict()
+                temp_dict["module_name"] = mod
+                temp_dict["app"] = app
+                temp_dict["id_resource"] = res
+
+                alloc['initialAllocation'].append(temp_dict)
+
+        # atualiza valores de FRAM
+        self.update_json_resources()
+
+        with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
+            netFile.write(json.dumps(alloc))
+
+    def update_json_resources(self, path='', file_name='netDefinition.json'):
+        net_json = json.load(open(path+file_name))
+
+        for node in net_json['entity']:
+            node['FRAM'] = self.freeNodeResources[node['id']]
+
+        with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
+            netFile.write(json.dumps(net_json))
+
+    def user_generation(self):
         # Generation of the IoT devices (users)
 
         userJson = {}
@@ -603,8 +601,8 @@ class ExperimentConfiguration:
 
     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
-        self.networkGeneration(n, m, path_network, file_name_network)
-        self.simpleAppsGeneration(path_apps, file_name_apps)
+        self.network_generation(n, m, path_network, file_name_network)
+        self.simple_apps_generation(path_apps, file_name_apps)
         self.backtrack_placement(path_alloc, file_name_alloc)
 
     def bt_min_mods(self, path=''):
@@ -678,13 +676,13 @@ random.seed(15612357)
 exp_config = ExperimentConfiguration(conf)
 # exp_config.config_generation(n=10)
 
-exp_config.networkGeneration(3)
+exp_config.network_generation(3)
 # exp_config.simpleAppsGeneration()
 
 
 # exp_config.backtrack_placement(limit=1)
 # exp_config.randomPlacement()
-exp_config.userGeneration()
+exp_config.user_generation()
 # exp_config.appGeneration()
 exp_config.bt_min_mods()
 # print()
