@@ -199,14 +199,15 @@ def module_placement(alloc_def='data/allocDefinition.json'): #incluir ou n√£o n√
 
     nodes = dict()
     for module in modules:
-        if module['app'] not in nodes.keys():
-            nodes[module['app']] = 0
+        if module['id_resource'] not in nodes.keys():
+            nodes[module['id_resource']] = 0
 
-        nodes[module['app']] += 1
+        nodes[module['id_resource']] += 1
 
     sorted_nodes = {k: v for k, v in sorted(nodes.items())}
 
     plt.bar(sorted_nodes.keys(), sorted_nodes.values())
+    print(sorted_nodes.keys())
     plt.xlabel('Nodes')
     plt.ylabel('Number of Modules')
     plt.title('Initial Module Allocation')
