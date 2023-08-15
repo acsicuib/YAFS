@@ -648,10 +648,10 @@ class ExperimentConfiguration:
             if len(set(cur_solution)) < len(set(best_solution)) or len(best_solution) == 0:
                 return cur_solution.copy()
 
-            # Caso as 2 soluções empatem, desempata-se consoante o menor somatorio do espaço livre dos nodes usados
+            # Caso as 2 soluções empatem, é considerada a opção que utilizar os nodes com - recursos
             elif len(set(cur_solution)) == len(set(best_solution)) \
-                and sum([available_res[node_index] for node_index in set(cur_solution)]) < \
-                    (sum([available_res[node_index] for node_index in set(best_solution)]) - sum(sv['RAM'] for sv in services)):
+                and sum([self.nodeResources[node_index] for node_index in set(cur_solution)]) < \
+                    sum([self.nodeResources[node_index] for node_index in set(best_solution)]):
 
                 return cur_solution.copy()
 
