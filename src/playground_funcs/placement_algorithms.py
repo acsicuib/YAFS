@@ -73,7 +73,9 @@ def linear_graph(size):
 
 class ExperimentConfiguration:
 
-    def __init__(self, lconf):
+    def __init__(self, lconf, lpath=os.path.dirname(__file__)):
+        self.path = lpath
+
         self.CLOUDCAPACITY = 9999999999999999
         self.CLOUDSPEED = 10000
         self.CLOUDBW = 125000  ## 1000 Mbits/s ou 125000 BYTES / MS ???
@@ -215,15 +217,15 @@ class ExperimentConfiguration:
             plt.show()
 
         # # Win
-        with open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(netJson))
 
         self.t = Topology()
-        self.dataNetwork = json.load(open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
+        self.dataNetwork = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
         self.t.load(self.dataNetwork)
 
         # Unix
-        # with open(os.path.dirname(__file__) + '' + path + file_name, "w") as netFile:
+        # with open(self.path + '' + path + file_name, "w") as netFile:
         #     netFile.write(json.dumps(netJson))
 
     def simple_apps_generation(self, file_name_apps='appDefinition.json', random_resources=True):
@@ -271,7 +273,7 @@ class ExperimentConfiguration:
 
                 self.apps.append(app)
 
-        with open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
             json.dump(self.apps, f)
         return self.apps
 
@@ -322,9 +324,9 @@ class ExperimentConfiguration:
             #     pos = nx.spring_layout(APP, seed=15612357)
             #     nx.draw(APP, pos, labels=mylabels, font_size=8)
             #     # Win
-            #     fig.savefig(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\plots\\app_%s.png' % i)
+            #     fig.savefig(self.path + '\\' + self.cnf.resultFolder + '\\plots\\app_%s.png' % i)
             #     # Unix
-            #     # fig.savefig(os.path.dirname(__file__) + '/' + self.cnf.resultFolder + '/plots/app_%s.png' % i)
+            #     # fig.savefig(self.path + '/' + self.cnf.resultFolder + '/plots/app_%s.png' % i)
             #     plt.close(fig)  # close the figure
             #     plt.show()
 
@@ -434,7 +436,7 @@ class ExperimentConfiguration:
             appJson.append(myApp)
 
         # Win
-        appFile = open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
+        appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
         # Unix
         # appFile = open(self.cnf.resultFolder + "/appDefinition.json", "w")
         # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
@@ -497,11 +499,11 @@ class ExperimentConfiguration:
             alloc['initialAllocation'].append(temp_dict)
 
         # # Win
-        with open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
             netFile.write(json.dumps(alloc))
         # Unix
-        # with open(os.path.dirname(__file__) + '/' + path + "/allocDefinition.json", "w") as netFile:
-        # with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
+        # with open(self.path + '/' + path + "/allocDefinition.json", "w") as netFile:
+        # with open(self.path + '/' + path + file_name, "w") as netFile:
         #     netFile.write(json.dumps(alloc))
 
         # TODO atualizar network definition FRAM
@@ -543,16 +545,16 @@ class ExperimentConfiguration:
         # atualiza valores de FRAM
         self.update_json_resources()
 
-        with open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
             netFile.write(json.dumps(alloc))
 
     def update_json_resources(self, file_name_network='netDefinition.json'):
-        net_json = json.load(open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
+        net_json = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
 
         for node in net_json['entity']:
             node['FRAM'] = self.freeNodeResources[node['id']]
 
-        with open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(net_json))
 
     def user_generation(self, file_name_users='usersDefinition.json'):
@@ -593,7 +595,7 @@ class ExperimentConfiguration:
         userJson['sources'] = self.myUsers
 
         # Win
-        userFile = open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
+        userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
         # Unix
         # userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
         userFile.write(json.dumps(userJson))
@@ -613,7 +615,7 @@ class ExperimentConfiguration:
         services = list()
         best_solution = list()
 
-        apps = json.load(open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + '\\' + file_name_apps))
+        apps = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps))
 
         for app in apps:
             for mod in app['module']:
@@ -631,11 +633,11 @@ class ExperimentConfiguration:
         alloc['initialAllocation'] = services
 
         # # Win
-        with open(os.path.dirname(__file__) + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
+        with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
             netFile.write(json.dumps(alloc))
         # Unix
-        # with open(os.path.dirname(__file__) + '/' + path + "/allocDefinition.json", "w") as netFile:
-        # with open(os.path.dirname(__file__) + '/' + path + file_name, "w") as netFile:
+        # with open(self.path + '/' + path + "/allocDefinition.json", "w") as netFile:
+        # with open(self.path + '/' + path + file_name, "w") as netFile:
         #     netFile.write(json.dumps(alloc))
 
     def bt_min_mods_(self, available_res, cur_solution, services, best_solution, index=0):
@@ -670,19 +672,19 @@ class ExperimentConfiguration:
         return best_solution
 
 
-# conf = myConfig.myConfig()  # Setting up configuration preferences
-# random.seed(15612357)
-#
-# exp_config = ExperimentConfiguration(conf)
-# # exp_config.config_generation(n=10)
-#
-# exp_config.network_generation(10)
-# exp_config.simple_apps_generation()
-# exp_config.user_generation()
-# exp_config.random_placement()
-#
-#
+conf = myConfig.myConfig()  # Setting up configuration preferences
+random.seed(15612357)
+
+exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\Playground')
+# exp_config.config_generation(n=10)
+
+exp_config.network_generation(10)
+exp_config.simple_apps_generation()
+exp_config.user_generation()
+exp_config.random_placement()
+
+
 # exp_config.backtrack_placement(limit=1)
-# exp_config.app_generation()
-# exp_config.bt_min_mods()
-# print()
+exp_config.app_generation()
+exp_config.bt_min_mods()
+print('a')
