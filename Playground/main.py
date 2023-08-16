@@ -27,9 +27,24 @@ from yafs.distribution import deterministic_distribution
 
 from playground_funcs import data_analysis
 
-from playground_funcs.placement_algorithms import stable_placement
+from playground_funcs.placement_algorithms import stable_placement, ExperimentConfiguration
+from playground_funcs.myConfig import myConfig
 
 def main(stop_time, it,folder_results):
+
+    conf = myConfig()
+    random.seed(15612357)
+    exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\Playground')
+
+    exp_config.network_generation(10, file_name_network='network.json')         # Def da network
+    exp_config.simple_apps_generation()                                         # Def das apps
+    exp_config.user_generation()                                                # Def dos users
+    # exp_config.app_generation()
+
+    exp_config.random_placement(file_name_network='network.json')
+    # # exp_config.backtrack_placement(limit=1)
+    # exp_config.bt_min_mods()
+
 
     """
     TOPOLOGY

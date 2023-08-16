@@ -201,7 +201,7 @@ class ExperimentConfiguration:
         netJson['link'] = myEdges
 
         # Plotting the graph with all the element
-        if True:
+        if False:
             tempGraph = self.G
             tempGraph.add_node(self.cloudId)
             for gw_node in list(self.cloudgatewaysDevices):
@@ -508,7 +508,7 @@ class ExperimentConfiguration:
 
         # TODO atualizar network definition FRAM
 
-    def random_placement(self, file_name_alloc='allocDefinition.json'):
+    def random_placement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # nodes -> self.devices     apps -> self.apps
         rnd_placement = {}
 
@@ -543,12 +543,12 @@ class ExperimentConfiguration:
                 alloc['initialAllocation'].append(temp_dict)
 
         # atualiza valores de FRAM
-        self.update_json_resources()
+        self.update_json_resources(file_name_network)
 
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
             netFile.write(json.dumps(alloc))
 
-    def update_json_resources(self, file_name_network='netDefinition.json'):
+    def update_json_resources(self, file_name_network):
         net_json = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
 
         for node in net_json['entity']:
@@ -573,7 +573,7 @@ class ExperimentConfiguration:
             for j in self.gatewaysDevices:
                 if random.random() < probOfRequested:
                     myOneUser = {}
-                    myOneUser['app'] = str(i)
+                    myOneUser['app'] = int(i)    #!!!
                     myOneUser['message'] = "M.USER.APP." + str(i)
                     myOneUser['id_resource'] = j
                     myOneUser['lambda'] = eval(self.func_USERREQRAT)
@@ -583,7 +583,7 @@ class ExperimentConfiguration:
             if not atLeastOneAllocated:
                 j = random.randint(0, len(self.gatewaysDevices) - 1)
                 myOneUser = {}
-                myOneUser['app'] = str(i)
+                myOneUser['app'] = int(i)       # !!!
                 myOneUser['message'] = "M.USER.APP." + str(i)
                 # myOneUser['id_resource'] = j
                 myOneUser['id_resource'] = list(self.gatewaysDevices)[j]  # Random GW to host the request
@@ -672,19 +672,18 @@ class ExperimentConfiguration:
         return best_solution
 
 
-conf = myConfig.myConfig()  # Setting up configuration preferences
-random.seed(15612357)
-
-exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\Playground')
-# exp_config.config_generation(n=10)
-
-exp_config.network_generation(10)
-exp_config.simple_apps_generation()
-exp_config.user_generation()
-exp_config.random_placement()
-
-
-# exp_config.backtrack_placement(limit=1)
-exp_config.app_generation()
-exp_config.bt_min_mods()
-print('a')
+# conf = myConfig.myConfig()  # Setting up configuration preferences
+# random.seed(15612357)
+#
+# exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\Playground')
+# # exp_config.config_generation(n=10)
+#
+# exp_config.network_generation(10)
+# exp_config.simple_apps_generation()
+# exp_config.user_generation()
+#
+#
+# exp_config.random_placement()
+# # exp_config.backtrack_placement(limit=1)
+# exp_config.app_generation()
+# exp_config.bt_min_mods()
