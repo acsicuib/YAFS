@@ -134,7 +134,7 @@ class ExperimentConfiguration:
 
         # JSON EXPORT
 
-        netJson = {}
+        self.netJson = {}
         self.node_labels = {}
 
         for i in self.G.nodes:
@@ -197,8 +197,8 @@ class ExperimentConfiguration:
 
             myEdges.append(myLink)
 
-        netJson['entity'] = self.devices
-        netJson['link'] = myEdges
+        self.netJson['entity'] = self.devices
+        self.netJson['link'] = myEdges
 
         # Plotting the graph with all the element
         if False:
@@ -218,11 +218,11 @@ class ExperimentConfiguration:
 
         # # Win
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(netJson))
+            netFile.write(json.dumps(self.netJson))
 
-        self.t = Topology()
-        self.dataNetwork = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
-        self.t.load(self.dataNetwork)
+        # self.t = Topology()
+        # self.dataNetwork = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
+        # self.t.load(self.dataNetwork)
 
         # Unix
         # with open(self.path + '' + path + file_name, "w") as netFile:
@@ -231,19 +231,19 @@ class ExperimentConfiguration:
     def simple_apps_generation(self, file_name_apps='appDefinition.json', random_resources=True):
 
         # apps = list()
-        self.apps = list()
+        self.appJson = list()
 
-        for n in self.t.G.nodes:
-            if 'type' not in self.t.nodeAttributes[n] or (self.t.nodeAttributes[n]['type'].upper() != 'CLOUD'):
+        for node in self.netJson['entity']:
+            if 'type' not in node or (node['type'].upper() != 'CLOUD'):
                 app = dict()
-                app['id'] = n
-                app['name'] = n
+                app['id'] = node['id']
+                app['name'] = node['id']
 
                 app['transmission'] = list()
 
                 transmission = dict()
-                transmission['message_in'] = ('M.USER.APP.' + str(n))
-                transmission['module'] = (str(n) + '_01')
+                transmission['message_in'] = ('M.USER.APP.' + str(node['id']))
+                transmission['module'] = (str(node['id']) + '_0')
 
                 app['transmission'].append(transmission)
 
@@ -251,19 +251,19 @@ class ExperimentConfiguration:
 
                 module = dict()
                 module['id'] = 1
-                module['name'] = (str(n) + '_01')
+                module['name'] = (str(node['id']) + '_0')
                 module['type'] = 'MODULE'
                 if random_resources:
                     module['RAM'] = eval(self.func_SERVICERESOURCES)
                 else:
-                    module['RAM'] = self.t.nodeAttributes[n]['RAM']
+                    module['RAM'] = node['RAM']
                 app['module'].append(module)
 
                 app['message'] = list()
 
                 msg = dict()
                 msg['id'] = 0
-                msg['name'] = 'M.USER.APP.' + str(n)
+                msg['name'] = 'M.USER.APP.' + str(node['id'])
                 msg['s'] = 'None'
                 msg['d'] = module['name']
                 msg['bytes'] = eval(self.func_SERVICEMESSAGESIZE)
@@ -271,11 +271,11 @@ class ExperimentConfiguration:
 
                 app['message'].append(msg)
 
-                self.apps.append(app)
+                self.appJson.append(app)
 
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
-            json.dump(self.apps, f)
-        return self.apps
+            json.dump(self.appJson, f)
+        return self.appJson
 
     def app_generation(self, file_name_apps='appDefinition.json'):
         self.apps = list()
@@ -293,15 +293,15 @@ class ExperimentConfiguration:
         self.mapService2App = list()
         self.mapServiceId2ServiceName = list()
 
-        appJson = list()
-        appJsonBE = list()
-        appJsonDD = list()
+        self.appJson = list()
+        # appJsonBE = list()
+        # appJsonDD = list()
         self.servicesResources = {}
 
         for i in range(0, self.TOTALNUMBEROFAPPS):
             myApp = {}
-            myAppEB = {}
-            myAppDD = {}
+            # myAppEB = {}
+            # myAppDD = {}
             APP = eval(self.func_APPGENERATION)
 
             mylabels = {}
@@ -330,7 +330,7 @@ class ExperimentConfiguration:
             #     plt.close(fig)  # close the figure
             #     plt.show()
 
-            mapping = dict(zip(APP.nodes(), range(self.numberOfServices, self.numberOfServices + len(APP.nodes))))
+            mapping = dict(zip(APP.nodes(), range(0, self.numberOfServices + len(APP.nodes))))
             APP = nx.relabel_nodes(APP, mapping)
 
             self.numberOfServices = self.numberOfServices + len(APP.nodes)
@@ -351,7 +351,7 @@ class ExperimentConfiguration:
             APP_DD = APP.copy()
 
             myApp['id'] = i
-            myApp['name'] = str(i)
+            myApp['name'] = int(i)
             # myApp['deadline'] = self.appsDeadlines[i]
 
             myApp['module'] = list()
@@ -433,43 +433,50 @@ class ExperimentConfiguration:
             self.appsTotalMIPS.append(totalMIPS)
             self.appsTotalServices.append(len(APP.nodes()))
 
-            appJson.append(myApp)
+            self.appJson.append(myApp)
 
         # Win
         appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
         # Unix
         # appFile = open(self.cnf.resultFolder + "/appDefinition.json", "w")
         # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
-        appFile.write(json.dumps(appJson))
+        appFile.write(json.dumps(self.appJson))
         appFile.close()
 
-    def rec_placement(self, module_index, current_placement, limit):
-        if limit != 0 and len(self.all_placements) == limit:
+    def rec_placement(self, module_index, current_placement):
+        if self.first_alloc and self.complete_first_allocation:
             return
 
         if len(current_placement) == len(self.all_modules):
             self.all_placements.append(current_placement.copy())
+            if self.first_alloc:
+                self.complete_first_allocation = True
+                print("first alloc")
             return
 
         current_module = self.all_modules[module_index]
 
-        for node in self.G.nodes:
+        # for node in self.G.nodes:
+        for node in self.node_order:
             if self.freeNodeResources[node] >= current_module['RAM']:
                 current_placement[current_module['name']] = node
                 self.freeNodeResources[node] -= current_module['RAM']
 
-                self.rec_placement(module_index + 1, current_placement, limit)
+                self.rec_placement(module_index + 1, current_placement)
 
                 self.freeNodeResources[node] += current_module['RAM']
                 current_placement.pop(current_module['name'])
 
-    def backtrack_placement(self, file_name_alloc='allocDefinition.json', limit=0):
+    def backtrack_placement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json', first_alloc=False, mode='FCFS'):
 
-        # n_modules = len([app['module'] for app in self.apps])
-        # self.n_modules = sum(len(app['module']) for app in self.apps)
+        self.first_alloc = first_alloc
+        self.complete_first_allocation = False
+
+        # n_modules = len([app['module'] for app in self.appJson])
+        # self.n_modules = sum(len(app['module']) for app in self.appJson)
 
         self.all_modules = []
-        for app in self.apps:
+        for app in self.appJson:
             for module in app['module']:
                 self.all_modules.append(module)
 
@@ -477,14 +484,26 @@ class ExperimentConfiguration:
         self.all_placements = []
         current_placement = {}
 
-        # self.rec_placement(0, current_placement)
-        self.rec_placement(0, current_placement, limit)
+        if mode == 'FCFS':
+            self.node_order = self.G.nodes
+        elif mode == 'Random':
+            self.node_order = list(self.G.nodes.keys())
+            random.shuffle(self.node_order)
+        elif mode == 'high_centrality':
+            self.node_order = [node[0] for node in self.centralityValues]
+
+        self.rec_placement(0, current_placement)
         if debug_mode:
+            print(mode , self.node_order)
+            print('\n--placements--')
             print(len(self.all_placements))
             print(self.all_placements)
 
         # first solution
         solution = self.all_placements[0]
+
+        for module, node in solution.items():
+            self.netJson['entity'][node]['FRAM'] -= self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1])]['RAM']
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
@@ -498,24 +517,22 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        # # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
-            netFile.write(json.dumps(alloc))
-        # Unix
-        # with open(self.path + '/' + path + "/allocDefinition.json", "w") as netFile:
-        # with open(self.path + '/' + path + file_name, "w") as netFile:
-        #     netFile.write(json.dumps(alloc))
+        # Win
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+            allocFile.write(json.dumps(alloc))
 
-        # TODO atualizar network definition FRAM
+        # Win
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+            netFile.write(json.dumps(self.netJson))
 
     def random_placement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # nodes -> self.devices     apps -> self.apps
         rnd_placement = {}
 
-        for app in self.apps:
+        for app in self.appJson:
             for module in app['module']:
                 for i in range(50):
-                    index = random.randint(0, (len(self.dataNetwork['entity']) - 1))
+                    index = random.randint(0, (len(self.netJson['entity']) - 1))
                     # Se o node 'index' tiver recursos suficientes para alocar o modulo:
                     if self.freeNodeResources[index] >= module['RAM']:
                         self.freeNodeResources[index] -= module['RAM']
@@ -526,9 +543,6 @@ class ExperimentConfiguration:
 
                     if i == 49:
                         print(f"Nao foi possivel alocar o modulo {module} após 50 iterações.")
-
-        # print(rnd_placement)
-        # print(self.freeNodeResources)
 
         alloc = dict()
         alloc['initialAllocation'] = list()
@@ -674,16 +688,18 @@ class ExperimentConfiguration:
 
 # conf = myConfig.myConfig()  # Setting up configuration preferences
 # random.seed(15612357)
-#
+# #
 # exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\Playground')
 # # exp_config.config_generation(n=10)
-#
+# #
 # exp_config.network_generation(10)
-# exp_config.simple_apps_generation()
+# # exp_config.simple_apps_generation()
+# exp_config.app_generation()
 # exp_config.user_generation()
-#
-#
-# exp_config.random_placement()
-# # exp_config.backtrack_placement(limit=1)
+# #
+# #
+# # exp_config.random_placement()
+# exp_config.backtrack_placement(first_alloc=True, mode='Random')
+# print()
 # exp_config.app_generation()
 # exp_config.bt_min_mods()

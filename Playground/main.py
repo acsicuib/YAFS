@@ -37,12 +37,13 @@ def main(stop_time, it,folder_results):
     exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\Playground')
 
     exp_config.network_generation(10, file_name_network='network.json')         # Def da network
-    exp_config.simple_apps_generation()                                         # Def das apps
+    exp_config.app_generation()                                                 # Def das apps
     exp_config.user_generation()                                                # Def dos users
-    # exp_config.app_generation()
+    exp_config.backtrack_placement(first_alloc=True, mode='Random')             # Def do alloc
 
-    exp_config.random_placement(file_name_network='network.json')
-    # # exp_config.backtrack_placement(limit=1)
+    #  exp_config.simple_apps_generation()
+
+    # exp_config.random_placement(file_name_network='network.json')
     # exp_config.bt_min_mods()
 
 

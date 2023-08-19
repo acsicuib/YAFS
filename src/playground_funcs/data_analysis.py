@@ -116,7 +116,6 @@ def plot_occurrences(folder_results, mode='module'):
     ax.set_title(f'Times a {mode.title()} is used')
     plt.show()
 
-
 def plot_latency(folder_results):
     dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
 
