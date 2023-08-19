@@ -351,7 +351,7 @@ class ExperimentConfiguration:
             APP_DD = APP.copy()
 
             myApp['id'] = i
-            myApp['name'] = int(i)
+            myApp['name'] = int(i)                              #! antes usavam str mas dava erro na sim
             # myApp['deadline'] = self.appsDeadlines[i]
 
             myApp['module'] = list()

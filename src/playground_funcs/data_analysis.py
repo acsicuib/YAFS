@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 from math import ceil, floor
+from collections import Counter
 
 # from pathlib import Path
 
@@ -116,6 +117,7 @@ def plot_occurrences(folder_results, mode='module'):
     ax.set_title(f'Times a {mode.title()} is used')
     plt.show()
 
+
 def plot_latency(folder_results):
     dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
 
@@ -197,4 +199,50 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, sh
 
     ax.set_xlabel(f'Window')
     ax.set_ylabel('% Used Nodes')
+    plt.show()
+
+
+def modules_per_node(placement, topology):
+    nodes = dict()
+    for n in topology.get_nodes():
+        nodes[int(n)] = 0
+
+    for dt in placement.data['initialAllocation']:
+        # if int(dt['id_resource']) not in nodes:
+        #     nodes[int(dt['id_resource'])] = 1
+        # else:
+        nodes[int(dt['id_resource'])] += 1
+
+    plt.bar(nodes.keys(), nodes.values())
+    plt.yticks(range(0, int(max(nodes.values())) + 1))
+    plt.xlabel('nodes')
+    plt.ylabel('number of modules allocated')
+    plt.show()
+    # print(nodes)
+
+
+def plot_messages_node(folder_results):
+    df = pd.read_csv(folder_results + "sim_trace_link.csv")
+    res_used = df['dst']
+
+    src_nodes = df.drop_duplicates(subset='id')
+    src_nodes = src_nodes['src']
+
+    nodes_used = pd.concat([src_nodes, res_used], axis=0)
+
+    values = Counter(nodes_used)
+    x = [i for i in range(max(values.keys()) + 1)]
+    y = [values[i] if i in values.keys() else 0 for i in x]
+
+    ax = plt.subplot()
+
+    plt.bar(x, y)
+
+    for i in range(len(x)):
+        plt.text(i, y[i] + 0.005 * max(y), y[i], ha='center')
+
+    ax.set_xlabel('Node')
+    ax.set_xticks(x)
+    ax.set_ylabel('Occurrences')
+    ax.set_title('Number of Messages')
     plt.show()
