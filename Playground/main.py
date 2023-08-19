@@ -27,7 +27,7 @@ from yafs.distribution import deterministic_distribution
 
 from playground_funcs import data_analysis
 
-from playground_funcs.placement_algorithms import stable_placement, ExperimentConfiguration
+from playground_funcs.environment_generation import stable_placement, ExperimentConfiguration
 from playground_funcs.myConfig import myConfig
 
 def main(stop_time, it,folder_results):

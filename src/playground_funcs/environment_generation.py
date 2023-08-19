@@ -685,21 +685,63 @@ class ExperimentConfiguration:
 
         return best_solution
 
+    def stable_placement_(self, file_name_apps='appDefinition.json'):
 
-# conf = myConfig.myConfig()  # Setting up configuration preferences
-# random.seed(15612357)
-# #
-# exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\Playground')
-# # exp_config.config_generation(n=10)
-# #
-# exp_config.network_generation(10)
-# # exp_config.simple_apps_generation()
-# exp_config.app_generation()
-# exp_config.user_generation()
-# #
-# #
-# # exp_config.random_placement()
-# exp_config.backtrack_placement(first_alloc=True, mode='Random')
-# print()
-# exp_config.app_generation()
-# exp_config.bt_min_mods()
+        # Alloc será o dicionario convertido para json
+        alloc = dict()
+        alloc['initialAllocation'] = list()
+
+        # apps = json.load(open(app_def))
+
+        max_res = max([len(app['module']) for app in self.appJson])  #
+        min_res = min([len(app['module']) for app in self.appJson])  #
+        n_comms = 0
+
+        # Decide-se o nr de communities max de forma a conseguir suportar a maior app (caso seja possivel)
+        while n_comms < len(self.netJson['entity']):
+            temp_comms = nx.algorithms.community.asyn_fluidc(self.G, n_comms + 1)
+
+            if all(len(x) < max_res for x in temp_comms) or any(len(x) < min_res for x in temp_comms):
+                break
+
+            n_comms += 1
+
+        comms = nx.algorithms.community.asyn_fluidc(self.G, n_comms)
+        comms = [list(x) for x in list(comms)]
+
+        for app in self.appJson:
+            for mod in app['module']:
+
+                # Vai rodando até encontrar uma community que consiga suportar a app inteira
+                while len(app['module']) > len(comms[0]) and n_comms != 1:
+                    comms.append(comms.pop(0))
+
+                temp_dict = dict()
+                temp_dict['module_name'] = mod['name']
+                temp_dict['app'] = app['id']
+                temp_dict['id_resource'] = comms[0][0]
+
+                comms[0].append(comms[0].pop(0))
+
+                alloc['initialAllocation'].append(temp_dict)
+
+            # Se houver mais do que 1 community, roda
+            if n_comms != 1:
+                comms.append(comms.pop(0))
+
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+            json.dump(alloc, f)
+
+
+conf = myConfig.myConfig()  # Setting up configuration preferences
+random.seed(15612357)
+
+exp_config = ExperimentConfiguration(conf)
+# exp_config.config_generation(n=10)
+
+exp_config.network_generation(10)
+# exp_config.simple_apps_generation()
+exp_config.app_generation()
+exp_config.user_generation()
+exp_config.stable_placement_()
+
