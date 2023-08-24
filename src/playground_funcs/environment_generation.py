@@ -12,54 +12,6 @@ from yafs import Topology
 
 from playground_funcs import myConfig
 
-
-def stable_placement(graph, app_def='data/appDefinition.json'):
-
-    # Alloc será o dicionario convertido para json
-    alloc = dict()
-    alloc['initialAllocation'] = list()
-
-    apps = json.load(open(app_def))
-
-    max_res = max([len(app['module']) for app in apps])   #
-    min_res = min([len(app['module']) for app in apps])   #
-    n_comms = 0
-
-    # Decide-se o nr de communities max de forma a conseguir suportar a maior app (caso seja possivel)
-    while n_comms < len(graph.nodes):
-        temp_comms = nx.algorithms.community.asyn_fluidc(graph, n_comms+1)
-
-        if all(len(x) < max_res for x in temp_comms) or any(len(x) < min_res for x in temp_comms):
-            break
-
-        n_comms += 1
-
-    comms = nx.algorithms.community.asyn_fluidc(graph, n_comms)
-    comms = [list(x) for x in list(comms)]
-
-    for app in apps:
-        for mod in app['module']:
-
-            # Vai rodando até encontrar uma community que consiga suportar a app inteira
-            while len(app['module']) > len(comms[0]) and n_comms != 1:
-                comms.append(comms.pop(0))
-
-            temp_dict = dict()
-            temp_dict['module_name'] = mod['name']
-            temp_dict['app'] = app['id']
-            temp_dict['id_resource'] = comms[0][0]
-
-            comms[0].append(comms[0].pop(0))
-
-            alloc['initialAllocation'].append(temp_dict)
-
-        # Se houver mais do que 1 community, roda
-        if n_comms != 1:
-            comms.append(comms.pop(0))
-
-    with open('data/allocDefinition.json', 'w') as f:
-        json.dump(alloc, f)
-
 debug_mode=True
 
 
@@ -96,9 +48,10 @@ class ExperimentConfiguration:
         self.func_USERREQRAT = "random.randint(200,1000)"
 
         # APP and SERVICES
-        self.TOTALNUMBEROFAPPS = 10
-        # self.func_APPGENERATION = "nx.gn_graph(random.randint(2,8))"  # algorithm for the generation of the random applications
-        self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"  # algorithm for the generation of the random applications (agora linear)
+        self.TOTALNUMBEROFAPPS = 3 # 10 ! !!
+        # !!!
+        self.func_APPGENERATION = "nx.gn_graph(random.randint(2,4))"  # algorithm for the generation of the random applications
+        # self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"  # algorithm for the generation of the random applications (agora linear)
         self.func_SERVICEINSTR = "random.randint(20000,60000)"  # INSTR --> teniedno en cuenta nodespped esto nos da entre 200 y 600 MS
         self.func_SERVICEMESSAGESIZE = "random.randint(1500000,4500000)"  # BYTES y teniendo en cuenta net bandwidth nos da entre 20 y 60 MS
 
@@ -186,7 +139,7 @@ class ExperimentConfiguration:
         # Adding Cloud's resource to nodeResources
         self.nodeResources[self.cloudId] = self.CLOUDCAPACITY
         self.node_labels[self.cloudId] = "cloud"
-        self.freeNodeResources = self.nodeResources
+        self.freeNodeResources = self.nodeResources.copy()          #!!!!
 
         for cloudGtw in self.cloudgatewaysDevices:
             myLink = {}
@@ -347,11 +300,11 @@ class ExperimentConfiguration:
             # self.appsDeadlines[i] = self.myDeadlines[i]
 
             # Copies of the application's graph that will be used to create the extra app definitions
-            APP_EB = APP.copy()
-            APP_DD = APP.copy()
+            # APP_EB = APP.copy()
+            # APP_DD = APP.copy()
 
             myApp['id'] = i
-            myApp['name'] = int(i)                              #! antes usavam str mas dava erro na sim
+            myApp['name'] = int(i)                              #! int() -> str()    (antes dava erro na sim)
             # myApp['deadline'] = self.appsDeadlines[i]
 
             myApp['module'] = list()
@@ -395,6 +348,10 @@ class ExperimentConfiguration:
                             myApp['transmission'].append(myTransmission)
 
                 myApp['module'].append(myNode)
+
+            # Acrescentei isto para utilizar nos algoritmos de placement
+            nx.set_node_attributes(APP, dict(zip(range(len(myApp['module'])), [node['name'] for node in myApp['module']])), "module")
+            nx.set_node_attributes(APP, dict(zip(range(len(myApp['module'])), [node['RAM'] for node in myApp['module']])), "cost")
 
             for n in APP.edges:
                 myEdge = {}
@@ -615,11 +572,11 @@ class ExperimentConfiguration:
         userFile.write(json.dumps(userJson))
         userFile.close()
 
-    def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
-                          file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
-        self.network_generation(n, m, path_network, file_name_network)
-        self.simple_apps_generation(path_apps, file_name_apps)
-        self.backtrack_placement(path_alloc, file_name_alloc)
+    def config_generation(self, n=20, m=2, file_name_network='netDefinition.json',
+                          file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
+        self.network_generation(n, m, file_name_network)
+        self.simple_apps_generation(file_name_apps)
+        self.backtrack_placement(file_name_alloc=file_name_alloc)
 
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
@@ -685,16 +642,15 @@ class ExperimentConfiguration:
 
         return best_solution
 
-    def stable_placement_(self, file_name_apps='appDefinition.json'):
+    def resilient_placement(self, file_name_apps='appDefinition.json'):
+        # Nota: Este algoritmo de placement tinha em conta que um node só poderia ter um module
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
         alloc['initialAllocation'] = list()
 
-        # apps = json.load(open(app_def))
-
-        max_res = max([len(app['module']) for app in self.appJson])  #
-        min_res = min([len(app['module']) for app in self.appJson])  #
+        max_res = max([len(app['module']) for app in self.appJson])         # Obtem-se o # max e min de modulos de uma app
+        min_res = min([len(app['module']) for app in self.appJson])         #
         n_comms = 0
 
         # Decide-se o nr de communities max de forma a conseguir suportar a maior app (caso seja possivel)
@@ -729,8 +685,122 @@ class ExperimentConfiguration:
             if n_comms != 1:
                 comms.append(comms.pop(0))
 
+        # Win
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
             json.dump(alloc, f)
+
+        # # Unix
+        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+        #     json.dump(alloc, f)
+
+    def near_GW_placement(self, file_name_alloc='allocDefinition.json'):
+
+        alloc = dict()
+        module2app_map = dict()
+
+        shortest_paths = dict()
+
+        for app_i, app in enumerate(self.apps):
+            for nd in app:
+
+                length = len(nx.shortest_path(app, 0, nd)) - 1
+
+                if length not in shortest_paths:
+                    shortest_paths[length] = dict()
+
+                if app_i not in shortest_paths[length]:
+                    shortest_paths[length][app_i] = list()
+
+                shortest_paths[length][app_i].append(nd)
+
+        max_branch_len = max(shortest_paths.keys())
+
+        for length in range(max_branch_len + 1):
+            for app_i, app in enumerate(self.apps):
+                if length == 0:
+                    cost = app.nodes[0]['cost']
+
+                    # Array com os nodes que conseguem abarcar o 1o modulo da app
+                    candidate_nodes = [nd['id'] for nd in self.netJson['entity']
+                                       if nd['FRAM'] >= cost and ('type' not in nd or nd['type'].upper() != 'CLOUD')]
+
+                    # Calcula-se o sumatorio das distancias aos GW's
+                    GW_dists = [sum(len(nx.shortest_path(self.G, n, nd)) for n in self.gatewaysDevices) for nd in
+                                candidate_nodes]
+
+                    # Dentro destes, escolhe-se os com distancia <
+                    candidate_nodes = [node for i, node in enumerate(candidate_nodes) if GW_dists[i] == min(GW_dists)]
+
+                    chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
+
+                    # Dentro destes, escolhe-se o com FRAM >
+                    chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+
+                    self.freeNodeResources[chosen_node] -= cost
+                    app.nodes[0]['id_resource'] = chosen_node
+
+                    alloc[app.nodes[0]['module']] = chosen_node
+                    module2app_map[app.nodes[0]['module']] = app_i
+
+                else:
+                    # Verifica se existe algum elemento desse comprimento na app
+                    if app_i in shortest_paths[length]:
+
+                        for app_node in shortest_paths[length][app_i]:
+                            parent_app_nd = [edge[0] for edge in app.edges()][0]
+                            parent_id_res = alloc[app.nodes[parent_app_nd]['module']]
+
+                            candidate_nodes = [parent_id_res]
+                            visited_nodes = list()
+
+                            while True:
+                                if len(candidate_nodes) == 0:
+                                    chosen_node = self.cloudId
+                                    chosen_node_FRAM = self.freeNodeResources[chosen_node]
+                                    break
+
+                                chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
+
+                                if chosen_node_FRAM >= app.nodes[app_node]['cost']:
+                                    chosen_node = [nd for nd in candidate_nodes
+                                                   if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                                    break
+
+                                else:
+                                    # Atualiza a lista de nodes já visitados
+                                    visited_nodes += candidate_nodes
+
+                                    # Vao se buscar os nodes vizinhos dos candidate anteriores
+                                    candidate_nodes = [e[1] for e in self.G.edges if e[0] in candidate_nodes] + \
+                                                      [e[0] for e in self.G.edges if e[1] in candidate_nodes]
+
+                                    # Removem-se elementos repetidos (vizinhos em comum) e os já vistos
+                                    candidate_nodes = list(set(candidate_nodes))
+                                    candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes]
+
+                            self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
+
+                            app.nodes[app_node]['id_resource'] = chosen_node
+                            alloc[app.nodes[app_node]['module']] = chosen_node
+                            module2app_map[app.nodes[app_node]['module']] = app_i
+
+        allocDef = list()
+        for mod, id_res in alloc.items():
+            temp_dict = dict()
+
+            temp_dict['module_name'] = mod
+            temp_dict['id_resource'] = id_res
+            temp_dict['app'] = module2app_map[mod]
+
+            allocDef.append(temp_dict)
+
+        # Win
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
+            json.dump(allocDef, f)
+
+        # # Unix
+        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+        #     json.dump(alloc, f)
 
 
 conf = myConfig.myConfig()  # Setting up configuration preferences
@@ -743,5 +813,8 @@ exp_config.network_generation(10)
 # exp_config.simple_apps_generation()
 exp_config.app_generation()
 exp_config.user_generation()
-exp_config.stable_placement_()
+
+# exp_config.closer_placement()
+exp_config.near_GW_placement()
+# exp_config.resilient_placement()
 
