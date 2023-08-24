@@ -1,4 +1,6 @@
 import json
+from operator import itemgetter
+
 import networkx as nx
 
 import re
@@ -6,6 +8,7 @@ import random
 import time
 from math import floor
 import matplotlib.pyplot as plt
+import copy
 
 import operator
 import json
@@ -111,6 +114,7 @@ class ExperimentConfiguration:
 
         self.func_NETWORKGENERATION = "nx.barabasi_albert_graph(n, m)"
 
+
         self.cnf = lconf
         # self.scenario = lconf.myConfiguration
 
@@ -128,6 +132,10 @@ class ExperimentConfiguration:
 
         self.nodeResources = {}
         self.nodeSpeed = {}
+
+        #TODO is this necessary?
+        # self.G.nodes = sorted(self.G.nodes)
+
         for i in self.G.nodes:
             self.nodeResources[i] = eval(self.func_NODERESOURECES)
             self.nodeSpeed[i] = eval(self.func_NODESPEED)
@@ -277,7 +285,69 @@ class ExperimentConfiguration:
 
         with open((path + file_name), 'w') as f:
             json.dump(self.apps, f)
+
+        #app popularity
+        for app_index in range(len(self.apps)):
+            self.apps[app_index]['popularity'] = eval(self.func_REQUESTPROB)
         return self.apps
+
+
+    def simpleAppsGeneration_2(self, path='', file_name='appDefinition.json', random_resources = True):  # resources available to each module (if False, each module's resources match each node"
+
+        self.apps = list()
+
+        # t = Topology()
+        # dataNetwork = json.load(open('netDefinition.json'))
+        # t.load(dataNetwork)
+
+        for n in range(len(self.netJson['entity'])-1): # number of nodes excluding cloud
+            # if 'type' not in t.nodeAttributes[n] or (t.nodeAttributes[n]['type'].upper() != 'CLOUD'):
+            app = dict()
+            app['id'] = n
+            app['name'] = n
+
+            app['transmission'] = list()
+
+            transmission = dict()
+            transmission['message_in'] = ('M.USER.APP.' + str(n))
+            transmission['module'] = (str(n) + '_01')
+
+            app['transmission'].append(transmission)
+
+            app['module'] = list()
+
+            module = dict()
+            module['id'] = 1
+            module['name'] = (str(n) + '_01')
+            module['type'] = 'MODULE'
+            if random_resources:
+                module['RAM'] = eval(self.func_SERVICERESOURCES)
+            else:
+                module['RAM'] = self.netJson['entity'][n]
+            app['module'].append(module)
+
+            app['message'] = list()
+
+            msg = dict()
+            msg['id'] = 0
+            msg['name'] = 'M.USER.APP.' + str(n)
+            msg['s'] = 'None'
+            msg['d'] = module['name']
+            msg['bytes'] = eval(self.func_SERVICEMESSAGESIZE)
+            msg['instructions'] = eval(self.func_SERVICEINSTR)
+
+            app['message'].append(msg)
+
+            self.apps.append(app)
+
+        with open((path + file_name), 'w') as f:
+            json.dump(self.apps, f)
+
+        #app popularity
+        for app_index in range(len(self.apps)):
+            self.apps[app_index]['popularity'] = eval(self.func_REQUESTPROB)
+        return self.apps
+
 
     def rec_placement(self, module_index, current_placement):
         if self.first_alloc and self.complete_first_allocation:
@@ -297,7 +367,7 @@ class ExperimentConfiguration:
             if self.freeNodeResources[node] >= current_module['RAM']:
                 current_placement[current_module['name']] = node
                 self.freeNodeResources[node] -= current_module['RAM']
-
+                print('node', node, ':' , self.freeNodeResources[node], '\tmodule', current_module['name'], ':' , current_module['RAM'])
                 self.rec_placement(module_index + 1, current_placement)
 
                 self.freeNodeResources[node] += current_module['RAM']
@@ -306,23 +376,14 @@ class ExperimentConfiguration:
     def backtrack_placement(self, path='', file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json',first_alloc=False, mode = 'FCFS'):
 
         self.first_alloc = first_alloc
-        self.complete_first_allocation = False
+        self.complete_first_allocation = False # indicates if the first solution has been found
 
         t = Topology()
         dataNetwork = json.load(open('netDefinition.json'))
         t.load(dataNetwork)
 
-        # n_modules = len([app['module'] for app in self.apps])
-        # self.n_modules = sum(len(app['module']) for app in self.apps)
 
-        self.all_modules = []
-        for app in self.apps:
-            for module in app['module']:
-                self.all_modules.append(module)
-
-        self.freeNodeResources = self.nodeResources
-
-
+        self.freeNodeResources = self.nodeResources.copy()
 
         # nodes -> self.devices     apps -> self.apps
         self.all_placements = []
@@ -331,25 +392,38 @@ class ExperimentConfiguration:
 
         if mode == 'FCFS':
             self.node_order = self.G.nodes
+            self.app_order = self.apps
         elif mode == 'Random':
             self.node_order = list(self.G.nodes.keys())
             random.shuffle(self.node_order)
+            self.app_order = self.apps
         elif mode == 'high_centrality':
             self.node_order = [node[0] for node in self.centralityValues]
+            self.app_order = self.apps
+        elif mode == 'high_centrality_and_app_popularity':
+            self.node_order = [node[0] for node in self.centralityValues]
+            self.app_order = sorted(self.apps, key=itemgetter('popularity'), reverse=True)
+
+
+        self.all_modules = []
+        for app in self.app_order:
+            for module in app['module']:
+                self.all_modules.append(module)
 
 
         self.rec_placement(0, current_placement)
         if debug_mode:
-            print(mode , self.node_order)
+            print(mode + "\nnode_oder ->", self.node_order, "\napp_order ->", list(app['id'] for app in self.app_order) , "\napp_popularity ->", list((app['id'] , app['popularity']) for app in self.apps) )
             print('\n--placements--')
             print(len(self.all_placements))
             print(self.all_placements)
 
-        # first solution
+        # first solution.apps
         solution = self.all_placements[0]
 
         for module, node in solution.items():
             self.netJson['entity'][node]['FRAM'] -= self.apps[int(module.split("_")[0])]['module'][int(module.split("_")[1])-1]['RAM']
+            print('node: ' , node , '\tapp / module : ' , int(module.split("_")[0]) ,'/' ,int(module.split("_")[1]),  '\tFRAM: ' , self.netJson['entity'][node]['FRAM'] , '\tRAM: ' , self.apps[int(module.split("_")[0])]['module'][int(module.split("_")[1])-1]['RAM'])
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
@@ -371,6 +445,8 @@ class ExperimentConfiguration:
         with open(os.path.dirname(__file__) + '/' + path + file_name_alloc, "w") as allocFile:
             allocFile.write(json.dumps(alloc))
 
+
+        # Update FRAM network Json
         # # Win
         # with open(os.path.dirname(__file__) + '\\' + path + file_name, "w") as netFile:
         #     netFile.write(json.dumps(self.netJson))
@@ -378,8 +454,21 @@ class ExperimentConfiguration:
         with open(os.path.dirname(__file__) + '/' + path + file_name_network, "w") as netFile:
             netFile.write(json.dumps(self.netJson))
 
+    def greedy_algorithm(self):
 
-        # TODO atualizar network definition FRAM
+        #  popular apps will be allocated, preferably, in lower tier nodes
+        self.app_order = sorted(self.apps, key=itemgetter('popularity'), reverse=True)
+        self.all_modules = []
+        for app in self.app_order:
+            for module in app['module']:
+                self.all_modules.append(module)
+
+
+        import heapq
+        heap = []
+        heapq.heapify(heap)
+        for node in self.netJson['entity']:
+            heapq.heappush(heap, (node['tier'], node['FRAM'], node['id'])) # add tier to json
 
     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
@@ -390,9 +479,9 @@ class ExperimentConfiguration:
     def config_generation_random_resources(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
                       file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
         self.networkGeneration(n, m, path_network, file_name_network)
-        self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=True)
-        self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True, mode='high_centrality') # FCFS - high_centrality - Random
-
+        self.simpleAppsGeneration_2(path_apps, file_name_apps, random_resources=True)
+        self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True, mode='high_centrality_and_app_popularity') # FCFS - high_centrality - Random - high_centrality_and_app_popularity
+        print()
 
 import myConfig
 
