@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -12,8 +14,16 @@ from collections import Counter
 # folder_results.mkdir(parents=True, exist_ok=True)
 # folder_results = str(folder_results)+"/"
 
+def save_plot(folder_results, plot_name):
+    try:
+        os.stat(folder_results + '..\\data_analysis\\')
+    except:
+        os.mkdir(folder_results + '..\\data_analysis\\')
 
-def plot_paths_taken(folder_results):
+    plt.savefig(folder_results + '..\\data_analysis\\' + plot_name)
+
+
+def plot_paths_taken(folder_results, plot_name=None):
     dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
 
     apps_deployed = np.unique(dfl.app)
@@ -31,10 +41,14 @@ def plot_paths_taken(folder_results):
     ax.set_ylabel('Destiny nodes')
     ax.set_title('Simulation hops')
     ax.legend()
+
+    if plot_name is not None:
+        save_plot(folder_results, plot_name)
+
     plt.show()
 
 
-def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_taken', placement=None):
+def plot_app_path(folder_results, application, t, pos=None, placement=None, plot_name=None):
     if pos is None:
         pos = nx.spring_layout(t.G)
 
@@ -90,11 +104,13 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     nx.draw_networkx_edges(t.G, pos, edgelist=highlighted_edges, edge_color='red', arrows=True, arrowstyle='->')
     nx.draw_networkx_edge_labels(t.G, pos, edge_labels=labels, label_pos=0.5, font_size=8, font_family='Arial')
 
-    plt.savefig(graph_file+'.png')
+    if plot_name is not None:
+        save_plot(folder_results, plot_name)
+
     plt.show()
 
 
-def plot_occurrences(folder_results, mode='module'):
+def plot_occurrences(folder_results, mode='module', plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace.csv")
 
     if mode == 'module':
@@ -115,10 +131,14 @@ def plot_occurrences(folder_results, mode='module'):
     ax.set_xlabel(mode.title())
     ax.set_ylabel('Occurrences')
     ax.set_title(f'Times a {mode.title()} is used')
+
+    if plot_name is not None:
+        save_plot(folder_results, plot_name)
+
     plt.show()
 
 
-def plot_latency(folder_results):
+def plot_latency(folder_results, plot_name=None):
     dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
 
     apps_deployed = np.unique(dfl.app)
@@ -135,10 +155,13 @@ def plot_latency(folder_results):
 
     ax.set_xlabel(f'Apps')
     ax.set_ylabel('Latency')
+
+    if plot_name is not None:
+        save_plot(folder_results, plot_name)
     plt.show()
 
 
-def plot_avg_latency(folder_results):
+def plot_avg_latency(folder_results, plot_name=None):
     dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
 
     apps_deployed = np.unique(dfl.app)
@@ -157,10 +180,13 @@ def plot_avg_latency(folder_results):
     ax.set_xlabel(f'Apps')
     ax.set_ylabel('Latency')
     ax.set_title('Average Latency')
+
+    if plot_name is not None:
+        save_plot(folder_results, plot_name)
     plt.show()
 
 
-def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False):
+def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False, plot_name=None):
 
     df = pd.read_csv(folder_results + "sim_trace.csv")
 
@@ -199,6 +225,9 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, sh
 
     ax.set_xlabel(f'Window')
     ax.set_ylabel('% Used Nodes')
+
+    if plot_name is not None:
+        save_plot(folder_results, plot_name)
     plt.show()
 
 
@@ -221,7 +250,7 @@ def modules_per_node(placement, topology):
     # print(nodes)
 
 
-def plot_messages_node(folder_results):
+def plot_messages_node(folder_results, plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace_link.csv")
     res_used = df['dst']
 
@@ -245,4 +274,7 @@ def plot_messages_node(folder_results):
     ax.set_xticks(x)
     ax.set_ylabel('Occurrences')
     ax.set_title('Number of Messages')
+
+    if plot_name is not None:
+        save_plot(folder_results, plot_name)
     plt.show()

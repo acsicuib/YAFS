@@ -249,7 +249,7 @@ class ExperimentConfiguration:
             self.appJson[app_index]['popularity'] = eval(self.func_REQUESTPROB)
         return self.appJson
 
-    def app_generation(self, file_name_apps='appDefinition.json'):
+    def app_generation(self, file_name_apps='appDefinition.json', app_struct='tree'):
         self.apps = list()
 
         # Apps generation
@@ -274,6 +274,8 @@ class ExperimentConfiguration:
             myApp = {}
             # myAppEB = {}
             # myAppDD = {}
+            if app_struct == 'linear':
+                self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"
             APP = eval(self.func_APPGENERATION)
 
             mylabels = {}

@@ -66,16 +66,21 @@ def append_results(it, path):
                 writer.writerow(converted_row)
 
 
-
-
 def main(stop_time, it, folder_results):
+
+    allocAlg = 'near_GW_placement'
+    allocAlg = 'bt_min_mods'
+
+
 
     conf = myConfig.myConfig()
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
-    exp_conf.networkGeneration(file_name_network='network.json')
+    exp_conf.networkGeneration(n=10, file_name_network='network.json')
     exp_conf.user_generation()
-    exp_conf.app_generation()
-    exp_conf.near_GW_placement()
+    # exp_conf.simpleAppsGeneration()
+    exp_conf.app_generation(app_struct='linear')
+    eval('exp_conf.' + allocAlg + '()')
+    # exp_conf.bt_min_mods()
 
 
     """
@@ -156,7 +161,8 @@ def main(stop_time, it, folder_results):
     #!!! data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
     # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10)
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
-    # data_analysis.plot_avg_latency(folder_results)
+
+    data_analysis.plot_latency(folder_results, allocAlg)
 
 
 if __name__ == '__main__':
@@ -165,9 +171,9 @@ if __name__ == '__main__':
 
     folder_results = Path("results/")
     folder_results.mkdir(parents=True, exist_ok=True)
-    folder_results = str(folder_results)+"/"
+    folder_results = str(folder_results)+"\\" #!123
 
-    nIterations = 3  # iteration for each experiment
+    nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
 
     # Iteration for each experiment changing the seed of randoms
@@ -183,7 +189,7 @@ if __name__ == '__main__':
 
     print("Simulation Done!")
 
-    # Analysing the results. 
+    # Analysing the results.
     dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
     print("Number of total messages between nodes: %i"%len(dfl))
 
