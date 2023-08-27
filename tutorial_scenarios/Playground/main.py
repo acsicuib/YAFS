@@ -71,14 +71,12 @@ def main(stop_time, it, folder_results):
     allocAlg = 'near_GW_placement'
     allocAlg = 'bt_min_mods'
 
-
-
     conf = myConfig.myConfig()
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
     exp_conf.networkGeneration(n=10, file_name_network='network.json')
     exp_conf.user_generation()
-    # exp_conf.simpleAppsGeneration()
-    exp_conf.app_generation(app_struct='linear')
+    exp_conf.simpleAppsGeneration()
+    exp_conf.app_generation(app_struct='simple')
     eval('exp_conf.' + allocAlg + '()')
     # exp_conf.bt_min_mods()
 

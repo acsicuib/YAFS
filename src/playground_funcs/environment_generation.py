@@ -22,7 +22,8 @@ debug_mode = True
 def linear_graph(size):
     g = nx.DiGraph()
     g.add_nodes_from(range(size))
-    g.add_edges_from(tuple(zip(range(1, size), range(size - 1))))
+    if size >= 1:
+        g.add_edges_from(tuple(zip(range(1, size), range(size - 1))))
 
     return g
 
@@ -276,6 +277,8 @@ class ExperimentConfiguration:
             # myAppDD = {}
             if app_struct == 'linear':
                 self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"
+            elif app_struct == 'simple':
+                self.func_APPGENERATION = "linear_graph(1)"
             APP = eval(self.func_APPGENERATION)
 
             mylabels = {}
@@ -367,6 +370,12 @@ class ExperimentConfiguration:
                             myTransmission['message_in'] = "M.USER.APP." + str(i)
                             myTransmission['message_out'] = str(i) + '_(' + str(o[0]) + "-" + str(o[1]) + ")"
                             myApp['transmission'].append(myTransmission)
+
+                    if app_struct == 'simple':
+                        myTransmission = {}
+                        myTransmission['module'] = str(i) + '_' + str(source)
+                        myTransmission['message_in'] = "M.USER.APP." + str(i)
+                        myApp['transmission'].append(myTransmission)
 
                 myApp['module'].append(myNode)
 
