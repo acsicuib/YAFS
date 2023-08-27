@@ -14,7 +14,7 @@ import operator
 import json
 import os
 from yafs import Topology
-import myConfig
+# import myConfig #! 27/08
 
 debug_mode = True
 
@@ -180,11 +180,11 @@ class ExperimentConfiguration:
             plt.show()
 
         # # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
-        # Unix
-        with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(self.netJson))
+        # Unix
+        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+        #     netFile.write(json.dumps(self.netJson))
 
     def simpleAppsGeneration(self, file_name_apps='appDefinition.json',
                              random_resources=True):  # resources available to each module (if False, each module's resources match each node")
@@ -238,11 +238,11 @@ class ExperimentConfiguration:
             self.appJson.append(app)
 
         #  Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
-        #    json.dump(self.appJson, f)
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+           json.dump(self.appJson, f)
         # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
-            json.dump(self.appJson, f)
+        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+        #     json.dump(self.appJson, f)
 
         # app popularity
         for app_index in range(len(self.appJson)):
@@ -433,8 +433,8 @@ class ExperimentConfiguration:
         self.appsRequests = list()
         for i in range(0, self.TOTALNUMBEROFAPPS):
             userRequestList = set()
-            probOfRequested = self.appJson[i]['popularity']
-            # probOfRequested = eval(self.func_REQUESTPROB)
+            # probOfRequested = self.appJson[i]['popularity']
+            probOfRequested = eval(self.func_REQUESTPROB)
             # probOfRequested = -1
             atLeastOneAllocated = False
             for j in self.gatewaysDevices:
@@ -563,8 +563,8 @@ class ExperimentConfiguration:
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
             allocFile.write(json.dumps(alloc))
         # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
-            allocFile.write(json.dumps(alloc))
+        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+        #     allocFile.write(json.dumps(alloc))
 
         # Update FRAM network Json
         # # Win
@@ -796,7 +796,8 @@ class ExperimentConfiguration:
                             alloc[app.nodes[app_node]['module']] = chosen_node
                             module2app_map[app.nodes[app_node]['module']] = app_i
 
-        allocDef = list()
+        allocDef = dict()
+        allocDef["initialAllocation"] = list()
         for mod, id_res in alloc.items():
             temp_dict = dict()
 
@@ -804,7 +805,7 @@ class ExperimentConfiguration:
             temp_dict['id_resource'] = id_res
             temp_dict['app'] = module2app_map[mod]
 
-            allocDef.append(temp_dict)
+            allocDef["initialAllocation"].append(temp_dict)
 
         # Win
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
@@ -830,13 +831,13 @@ class ExperimentConfiguration:
         print()
 
 
-conf = myConfig.myConfig()  # Setting up configuration preferences
-random.seed(15612357)
+# conf = myConfig.myConfig()  # Setting up configuration preferences                                                    #! 27/08
+# random.seed(15612357)                                                                                                 #! 27/08
 
 #
-exp_config = ExperimentConfiguration(conf)
+# exp_config = ExperimentConfiguration(conf)                                                                            #! 27/08
 # exp_config.config_generation(n=10)
-exp_config.config_generation_random_resources(n=10)
+# exp_config.config_generation_random_resources(n=10)                                                                   #! 27/08
 
 # exp_config.networkGeneration(10)
 # exp_config.simpleAppsGeneration()

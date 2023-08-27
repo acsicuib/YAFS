@@ -19,7 +19,7 @@ import numpy as np
 
 # Meus imports
 from playground_funcs import data_analysis
-from playground_funcs import environment_generation
+from playground_funcs import environment_generation as eg, myConfig
 from playground_funcs.routing_algorithms import MaxBW, MaxBW_Root
 
 from yafs.core import Sim
@@ -70,7 +70,12 @@ def append_results(it, path):
 
 def main(stop_time, it, folder_results):
 
-
+    conf = myConfig.myConfig()
+    exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
+    exp_conf.networkGeneration(file_name_network='network.json')
+    exp_conf.user_generation()
+    exp_conf.app_generation()
+    exp_conf.near_GW_placement()
 
 
     """
@@ -148,7 +153,7 @@ def main(stop_time, it, folder_results):
     # teste = nx.algorithms.community.asyn_fluidc(t.G, 4, max_iter=100, seed=None)
     # teste = nx.pagerank(t.G, alpha=0.85, personalization=None, max_iter=100, tol=1e-06, nstart=None, weight='weight', dangling=None)
 
-    data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
+    #!!! data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
     # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10)
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
     # data_analysis.plot_avg_latency(folder_results)
