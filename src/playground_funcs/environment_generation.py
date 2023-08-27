@@ -1,18 +1,22 @@
 import json
+from operator import itemgetter
+
 import networkx as nx
 
 import re
 import random
+import time
 from math import floor
 import matplotlib.pyplot as plt
+import copy
 
 import operator
+import json
 import os
 from yafs import Topology
+import myConfig
 
-from playground_funcs import myConfig
-
-debug_mode=True
+debug_mode = True
 
 
 def linear_graph(size):
@@ -48,7 +52,7 @@ class ExperimentConfiguration:
         self.func_USERREQRAT = "random.randint(200,1000)"
 
         # APP and SERVICES
-        self.TOTALNUMBEROFAPPS = 3 # 10 ! !!
+        self.TOTALNUMBEROFAPPS = 10
         # !!!
         self.func_APPGENERATION = "nx.gn_graph(random.randint(2,4))"  # algorithm for the generation of the random applications
         # self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"  # algorithm for the generation of the random applications (agora linear)
@@ -64,7 +68,10 @@ class ExperimentConfiguration:
         self.cnf = lconf
         # self.scenario = lconf.myConfiguration
 
-    def network_generation(self, n=20, m=2, file_name_network='netDefinition.json'):
+        current_time = int(time.time())
+        random.seed(current_time)
+
+    def networkGeneration(self, n=20, m=2, file_name_network='netDefinition.json'):
         # Generation of the network topology
 
         # Topology genneration
@@ -74,9 +81,11 @@ class ExperimentConfiguration:
         self.devices = list()
 
         self.nodeResources = {}
-        self.freeNodeResources = {}
-
         self.nodeSpeed = {}
+
+        # TODO is this necessary?
+        # self.G.nodes = sorted(self.G.nodes)
+
         for i in self.G.nodes:
             self.nodeResources[i] = eval(self.func_NODERESOURECES)
             self.nodeSpeed[i] = eval(self.func_NODESPEED)
@@ -109,14 +118,14 @@ class ExperimentConfiguration:
             myEdges.append(myLink)
 
         centralityValuesNoOrdered = nx.betweenness_centrality(self.G, weight="weight")
-        centralityValues = sorted(centralityValuesNoOrdered.items(), key=operator.itemgetter(1), reverse=True)
+        self.centralityValues = sorted(centralityValuesNoOrdered.items(), key=operator.itemgetter(1), reverse=True)
 
         self.gatewaysDevices = set()
         self.cloudgatewaysDevices = set()
 
-        highestCentrality = centralityValues[0][1]
+        highestCentrality = self.centralityValues[0][1]
 
-        for device in centralityValues:
+        for device in self.centralityValues:
             if device[1] == highestCentrality:
                 self.cloudgatewaysDevices.add(device[0])  # highest centrality
                 self.node_labels[device[0]] = "cloudgateway"
@@ -125,8 +134,8 @@ class ExperimentConfiguration:
             (1 - self.PERCENTATGEOFGATEWAYS) * len(self.G.nodes))  # Getting the indexes for the GWs nodes
 
         for idDev in range(initialIndx, len(self.G.nodes)):
-            self.gatewaysDevices.add(centralityValues[idDev][0])  # lowest centralities
-            self.node_labels[centralityValues[idDev][0]] = "gateway"
+            self.gatewaysDevices.add(self.centralityValues[idDev][0])  # lowest centralities
+            self.node_labels[self.centralityValues[idDev][0]] = "gateway"
 
         self.cloudId = len(self.G.nodes)
         myNode = {}
@@ -139,7 +148,7 @@ class ExperimentConfiguration:
         # Adding Cloud's resource to nodeResources
         self.nodeResources[self.cloudId] = self.CLOUDCAPACITY
         self.node_labels[self.cloudId] = "cloud"
-        self.freeNodeResources = self.nodeResources.copy()          #!!!!
+        self.freeNodeResources = self.nodeResources.copy()
 
         for cloudGtw in self.cloudgatewaysDevices:
             myLink = {}
@@ -166,68 +175,78 @@ class ExperimentConfiguration:
 
             nx.draw(tempGraph, pos)
             nx.draw_networkx_labels(tempGraph, pos, font_size=8)
-            nx.draw_networkx_labels(self.G, label_pos, labels=self.node_labels, font_size=8, horizontalalignment='center' )
+            nx.draw_networkx_labels(self.G, label_pos, labels=self.node_labels, font_size=8,
+                                    horizontalalignment='center')
             plt.show()
 
         # # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+        #     netFile.write(json.dumps(self.netJson))
+        # Unix
+        with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(self.netJson))
 
-        # self.t = Topology()
-        # self.dataNetwork = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
-        # self.t.load(self.dataNetwork)
+    def simpleAppsGeneration(self, file_name_apps='appDefinition.json',
+                             random_resources=True):  # resources available to each module (if False, each module's resources match each node")
 
-        # Unix
-        # with open(self.path + '' + path + file_name, "w") as netFile:
-        #     netFile.write(json.dumps(netJson))
-
-    def simple_apps_generation(self, file_name_apps='appDefinition.json', random_resources=True):
-
-        # apps = list()
         self.appJson = list()
 
-        for node in self.netJson['entity']:
-            if 'type' not in node or (node['type'].upper() != 'CLOUD'):
-                app = dict()
-                app['id'] = node['id']
-                app['name'] = node['id']
+        if random_resources:
+            number_of_apps = len(self.netJson['entity']) - 1
+        else:
+            number_of_apps = self.TOTALNUMBEROFAPPS
 
-                app['transmission'] = list()
+        # for n in range(len(self.netJson['entity'])-1): # number of nodes excluding cloud
+        for n in range(number_of_apps):
+            # if 'type' not in t.nodeAttributes[n] or (t.nodeAttributes[n]['type'].upper() != 'CLOUD'):
+            app = dict()
+            app['id'] = n
+            app['name'] = n
 
-                transmission = dict()
-                transmission['message_in'] = ('M.USER.APP.' + str(node['id']))
-                transmission['module'] = (str(node['id']) + '_0')
+            app['transmission'] = list()
 
-                app['transmission'].append(transmission)
+            transmission = dict()
+            transmission['message_in'] = ('M.USER.APP.' + str(n))
+            transmission['module'] = (str(n) + '_01')
 
-                app['module'] = list()
+            app['transmission'].append(transmission)
 
-                module = dict()
-                module['id'] = 1
-                module['name'] = (str(node['id']) + '_0')
-                module['type'] = 'MODULE'
-                if random_resources:
-                    module['RAM'] = eval(self.func_SERVICERESOURCES)
-                else:
-                    module['RAM'] = node['RAM']
-                app['module'].append(module)
+            app['module'] = list()
 
-                app['message'] = list()
+            module = dict()
+            module['id'] = 1
+            module['name'] = (str(n) + '_01')
+            module['type'] = 'MODULE'
+            if random_resources:
+                module['RAM'] = eval(self.func_SERVICERESOURCES)
+            else:
+                module['RAM'] = self.netJson['entity'][n]
+            app['module'].append(module)
 
-                msg = dict()
-                msg['id'] = 0
-                msg['name'] = 'M.USER.APP.' + str(node['id'])
-                msg['s'] = 'None'
-                msg['d'] = module['name']
-                msg['bytes'] = eval(self.func_SERVICEMESSAGESIZE)
-                msg['instructions'] = eval(self.func_SERVICEINSTR)
+            app['message'] = list()
 
-                app['message'].append(msg)
+            msg = dict()
+            msg['id'] = 0
+            msg['name'] = 'M.USER.APP.' + str(n)
+            msg['s'] = 'None'
+            msg['d'] = module['name']
+            msg['bytes'] = eval(self.func_SERVICEMESSAGESIZE)
+            msg['instructions'] = eval(self.func_SERVICEINSTR)
 
-                self.appJson.append(app)
+            app['message'].append(msg)
 
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+            self.appJson.append(app)
+
+        #  Win
+        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+        #    json.dump(self.appJson, f)
+        # Unix
+        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
             json.dump(self.appJson, f)
+
+        # app popularity
+        for app_index in range(len(self.appJson)):
+            self.appJson[app_index]['popularity'] = eval(self.func_REQUESTPROB)
         return self.appJson
 
     def app_generation(self, file_name_apps='appDefinition.json'):
@@ -304,7 +323,7 @@ class ExperimentConfiguration:
             # APP_DD = APP.copy()
 
             myApp['id'] = i
-            myApp['name'] = int(i)                              #! int() -> str()    (antes dava erro na sim)
+            myApp['name'] = int(i)  # ! int() -> str()    (antes dava erro na sim)
             # myApp['deadline'] = self.appsDeadlines[i]
 
             myApp['module'] = list()
@@ -350,8 +369,12 @@ class ExperimentConfiguration:
                 myApp['module'].append(myNode)
 
             # Acrescentei isto para utilizar nos algoritmos de placement
-            nx.set_node_attributes(APP, dict(zip(range(len(myApp['module'])), [node['name'] for node in myApp['module']])), "module")
-            nx.set_node_attributes(APP, dict(zip(range(len(myApp['module'])), [node['RAM'] for node in myApp['module']])), "cost")
+            nx.set_node_attributes(APP,
+                                   dict(zip(range(len(myApp['module'])), [node['name'] for node in myApp['module']])),
+                                   "module")
+            nx.set_node_attributes(APP,
+                                   dict(zip(range(len(myApp['module'])), [node['RAM'] for node in myApp['module']])),
+                                   "cost")
 
             for n in APP.edges:
                 myEdge = {}
@@ -400,6 +423,51 @@ class ExperimentConfiguration:
         appFile.write(json.dumps(self.appJson))
         appFile.close()
 
+    def user_generation(self, file_name_users='usersDefinition.json'):
+        # Generation of the IoT devices (users)
+
+        userJson = {}
+
+        self.myUsers = list()
+
+        self.appsRequests = list()
+        for i in range(0, self.TOTALNUMBEROFAPPS):
+            userRequestList = set()
+            probOfRequested = self.appJson[i]['popularity']
+            # probOfRequested = eval(self.func_REQUESTPROB)
+            # probOfRequested = -1
+            atLeastOneAllocated = False
+            for j in self.gatewaysDevices:
+                if random.random() < probOfRequested:
+                    myOneUser = {}
+                    myOneUser['app'] = int(i)  # !!!
+                    myOneUser['message'] = "M.USER.APP." + str(i)
+                    myOneUser['id_resource'] = j
+                    myOneUser['lambda'] = eval(self.func_USERREQRAT)
+                    userRequestList.add(j)
+                    self.myUsers.append(myOneUser)
+                    atLeastOneAllocated = True
+            if not atLeastOneAllocated:
+                j = random.randint(0, len(self.gatewaysDevices) - 1)
+                myOneUser = {}
+                myOneUser['app'] = int(i)  # !!!
+                myOneUser['message'] = "M.USER.APP." + str(i)
+                # myOneUser['id_resource'] = j
+                myOneUser['id_resource'] = list(self.gatewaysDevices)[j]  # Random GW to host the request
+                myOneUser['lambda'] = eval(self.func_USERREQRAT)
+                userRequestList.add(list(self.gatewaysDevices)[j])
+                self.myUsers.append(myOneUser)
+            self.appsRequests.append(userRequestList)
+
+        userJson['sources'] = self.myUsers
+
+        # Win
+        userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
+        # Unix
+        # userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
+        userFile.write(json.dumps(userJson))
+        userFile.close()
+
     def rec_placement(self, module_index, current_placement):
         if self.first_alloc and self.complete_first_allocation:
             return
@@ -418,49 +486,66 @@ class ExperimentConfiguration:
             if self.freeNodeResources[node] >= current_module['RAM']:
                 current_placement[current_module['name']] = node
                 self.freeNodeResources[node] -= current_module['RAM']
-
+                if debug_mode:
+                    print('node', node, ':', self.freeNodeResources[node], '\tmodule', current_module['name'], ':',
+                          current_module['RAM'])
                 self.rec_placement(module_index + 1, current_placement)
 
                 self.freeNodeResources[node] += current_module['RAM']
                 current_placement.pop(current_module['name'])
 
-    def backtrack_placement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json', first_alloc=False, mode='FCFS'):
+    def backtrack_placement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json',
+                            first_alloc=False, mode='FCFS'):
 
         self.first_alloc = first_alloc
-        self.complete_first_allocation = False
+        self.complete_first_allocation = False  # indicates if the first solution has been found
 
-        # n_modules = len([app['module'] for app in self.appJson])
-        # self.n_modules = sum(len(app['module']) for app in self.appJson)
-
-        self.all_modules = []
-        for app in self.appJson:
-            for module in app['module']:
-                self.all_modules.append(module)
+        # t = Topology()
+        # dataNetwork = json.load(open('netDefinition.json'))
+        # t.load(dataNetwork)
 
         # nodes -> self.devices     apps -> self.apps
-        self.all_placements = []
         current_placement = {}
+        self.all_placements = []
 
+        # TODO deep copy
         if mode == 'FCFS':
             self.node_order = self.G.nodes
+            self.app_order = self.appJson
         elif mode == 'Random':
             self.node_order = list(self.G.nodes.keys())
             random.shuffle(self.node_order)
+            self.app_order = self.appJson
         elif mode == 'high_centrality':
             self.node_order = [node[0] for node in self.centralityValues]
+            self.app_order = self.appJson
+        elif mode == 'high_centrality_and_app_popularity':
+            self.node_order = [node[0] for node in self.centralityValues]
+            self.app_order = sorted(self.appJson, key=itemgetter('popularity'), reverse=True)
+
+        self.all_modules = []
+        for app in self.app_order:
+            for module in app['module']:
+                self.all_modules.append(module)
 
         self.rec_placement(0, current_placement)
+
         if debug_mode:
-            print(mode , self.node_order)
+            print(mode + "\nnode_oder ->", self.node_order, "\napp_order ->", list(app['id'] for app in self.app_order),
+                  "\napp_popularity ->", list((app['id'], app['popularity']) for app in self.appJson))
             print('\n--placements--')
             print(len(self.all_placements))
             print(self.all_placements)
 
-        # first solution
+        # first solution.apps
         solution = self.all_placements[0]
 
         for module, node in solution.items():
-            self.netJson['entity'][node]['FRAM'] -= self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1])]['RAM']
+            self.netJson['entity'][node]['FRAM'] -= \
+            self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM']
+            print('node: ', node, '\tapp / module : ', int(module.split("_")[0]), '/', int(module.split("_")[1]),
+                  '\tFRAM: ', self.netJson['entity'][node]['FRAM'], '\tRAM: ',
+                  self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM'])
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
@@ -477,110 +562,36 @@ class ExperimentConfiguration:
         # Win
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
             allocFile.write(json.dumps(alloc))
+        # Unix
+        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+            allocFile.write(json.dumps(alloc))
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+        # Update FRAM network Json
+        # # Win
+        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+        #     netFile.write(json.dumps(self.netJson))
+        # Unix
+        with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(self.netJson))
 
-    def random_placement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
-        # nodes -> self.devices     apps -> self.apps
-        rnd_placement = {}
+    def greedy_algorithm(self):
 
-        for app in self.appJson:
+        #  popular apps will be allocated, preferably, in lower tier nodes
+        self.app_order = sorted(self.appJson, key=itemgetter('popularity'), reverse=True)
+        self.all_modules = []
+        for app in self.app_order:
             for module in app['module']:
-                for i in range(50):
-                    index = random.randint(0, (len(self.netJson['entity']) - 1))
-                    # Se o node 'index' tiver recursos suficientes para alocar o modulo:
-                    if self.freeNodeResources[index] >= module['RAM']:
-                        self.freeNodeResources[index] -= module['RAM']
-                        if app['id'] not in rnd_placement:
-                            rnd_placement[app['id']] = dict()
-                        rnd_placement[app['id']][module['name']] = index
-                        break
+                self.all_modules.append(module)
 
-                    if i == 49:
-                        print(f"Nao foi possivel alocar o modulo {module} após 50 iterações.")
-
-        alloc = dict()
-        alloc['initialAllocation'] = list()
-
-        for app in rnd_placement:
-            for mod, res in rnd_placement[app].items():
-                temp_dict = dict()
-                temp_dict["module_name"] = mod
-                temp_dict["app"] = app
-                temp_dict["id_resource"] = res
-
-                alloc['initialAllocation'].append(temp_dict)
-
-        # atualiza valores de FRAM
-        self.update_json_resources(file_name_network)
-
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
-            netFile.write(json.dumps(alloc))
-
-    def update_json_resources(self, file_name_network):
-        net_json = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
-
-        for node in net_json['entity']:
-            node['FRAM'] = self.freeNodeResources[node['id']]
-
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(net_json))
-
-    def user_generation(self, file_name_users='usersDefinition.json'):
-        # Generation of the IoT devices (users)
-
-        userJson = {}
-
-        self.myUsers = list()
-
-        self.appsRequests = list()
-        for i in range(0, self.TOTALNUMBEROFAPPS):
-            userRequestList = set()
-            probOfRequested = eval(self.func_REQUESTPROB)
-            # probOfRequested = -1
-            atLeastOneAllocated = False
-            for j in self.gatewaysDevices:
-                if random.random() < probOfRequested:
-                    myOneUser = {}
-                    myOneUser['app'] = int(i)    #!!!
-                    myOneUser['message'] = "M.USER.APP." + str(i)
-                    myOneUser['id_resource'] = j
-                    myOneUser['lambda'] = eval(self.func_USERREQRAT)
-                    userRequestList.add(j)
-                    self.myUsers.append(myOneUser)
-                    atLeastOneAllocated = True
-            if not atLeastOneAllocated:
-                j = random.randint(0, len(self.gatewaysDevices) - 1)
-                myOneUser = {}
-                myOneUser['app'] = int(i)       # !!!
-                myOneUser['message'] = "M.USER.APP." + str(i)
-                # myOneUser['id_resource'] = j
-                myOneUser['id_resource'] = list(self.gatewaysDevices)[j]  # Random GW to host the request
-                myOneUser['lambda'] = eval(self.func_USERREQRAT)
-                userRequestList.add(list(self.gatewaysDevices)[j])
-                self.myUsers.append(myOneUser)
-            self.appsRequests.append(userRequestList)
-
-        userJson['sources'] = self.myUsers
-
-        # Win
-        userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
-        # Unix
-        # userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
-        userFile.write(json.dumps(userJson))
-        userFile.close()
-
-    def config_generation(self, n=20, m=2, file_name_network='netDefinition.json',
-                          file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
-        self.network_generation(n, m, file_name_network)
-        self.simple_apps_generation(file_name_apps)
-        self.backtrack_placement(file_name_alloc=file_name_alloc)
+        import heapq
+        heap = []
+        heapq.heapify(heap)
+        for node in self.netJson['entity']:
+            heapq.heappush(heap, (node['tier'], node['FRAM'], node['id']))  # add tier to json
 
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
-        available_res.pop(max(available_res))       # Remove-se o node da Cloud
+        available_res.pop(max(available_res))  # Remove-se o node da Cloud
 
         used_res = list()
         services = list()
@@ -598,7 +609,7 @@ class ExperimentConfiguration:
 
         for index, service in enumerate(services):
             service['id_resource'] = best_solution[index]
-            self.freeNodeResources[service['id_resource']] -= service['RAM']        # Subtrai o recurso usado
+            self.freeNodeResources[service['id_resource']] -= service['RAM']  # Subtrai o recurso usado
             service.pop('RAM')
 
         alloc['initialAllocation'] = services
@@ -621,7 +632,7 @@ class ExperimentConfiguration:
 
             # Caso as 2 soluções empatem, é considerada a opção que utilizar os nodes com - recursos
             elif len(set(cur_solution)) == len(set(best_solution)) \
-                and sum([self.nodeResources[node_index] for node_index in set(cur_solution)]) < \
+                    and sum([self.nodeResources[node_index] for node_index in set(cur_solution)]) < \
                     sum([self.nodeResources[node_index] for node_index in set(best_solution)]):
 
                 return cur_solution.copy()
@@ -649,8 +660,8 @@ class ExperimentConfiguration:
         alloc = dict()
         alloc['initialAllocation'] = list()
 
-        max_res = max([len(app['module']) for app in self.appJson])         # Obtem-se o # max e min de modulos de uma app
-        min_res = min([len(app['module']) for app in self.appJson])         #
+        max_res = max([len(app['module']) for app in self.appJson])  # Obtem-se o # max e min de modulos de uma app
+        min_res = min([len(app['module']) for app in self.appJson])  #
         n_comms = 0
 
         # Decide-se o nr de communities max de forma a conseguir suportar a maior app (caso seja possivel)
@@ -725,6 +736,7 @@ class ExperimentConfiguration:
                                        if nd['FRAM'] >= cost and ('type' not in nd or nd['type'].upper() != 'CLOUD')]
 
                     # Calcula-se o sumatorio das distancias aos GW's
+
                     GW_dists = [sum(len(nx.shortest_path(self.G, n, nd)) for n in self.gatewaysDevices) for nd in
                                 candidate_nodes]
 
@@ -799,22 +811,34 @@ class ExperimentConfiguration:
             json.dump(allocDef, f)
 
         # # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
-        #     json.dump(alloc, f)
+        # with open(self.path + '/' + s
+
+    def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
+                          file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
+        self.networkGeneration(n, m, path_network, file_name_network)
+        self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=False)
+        self.backtrack_placement(path_alloc, file_name_alloc)
+
+    def config_generation_random_resources(self, n=20, m=2, path_network='', file_name_network='netDefinition.json',
+                                           path_apps='',
+                                           file_name_apps='appDefinition.json', path_alloc='',
+                                           file_name_alloc='allocDefinition.json'):
+        self.networkGeneration(n, m, path_network, file_name_network)
+        self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=True)
+        self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True,
+                                 mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
+        print()
 
 
 conf = myConfig.myConfig()  # Setting up configuration preferences
 random.seed(15612357)
 
+#
 exp_config = ExperimentConfiguration(conf)
 # exp_config.config_generation(n=10)
+exp_config.config_generation_random_resources(n=10)
 
-exp_config.network_generation(10)
-# exp_config.simple_apps_generation()
-exp_config.app_generation()
-exp_config.user_generation()
-
-# exp_config.closer_placement()
-exp_config.near_GW_placement()
-# exp_config.resilient_placement()
-
+# exp_config.networkGeneration(10)
+# exp_config.simpleAppsGeneration()
+# exp_config.backtrack_placement()
+# print()
