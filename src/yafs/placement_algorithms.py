@@ -88,8 +88,6 @@ class ExperimentConfiguration:
         self.nodeResources = {}
         self.nodeSpeed = {}
 
-        # TODO is this necessary?
-        # self.G.nodes = sorted(self.G.nodes)
 
         for i in self.G.nodes:
             self.nodeResources[i] = eval(self.func_NODERESOURECES)
@@ -135,7 +133,7 @@ class ExperimentConfiguration:
                 self.cloudgatewaysDevices.add(device[0])  # highest centrality
 
                 self.node_labels[device[0]] = "cloudgateway"
-                self.devices[device[0]]['tier'] = 1
+                self.devices[device[0]]['tier'] = 0
 
         initialIndx = int(
             (1 - self.PERCENTATGEOFGATEWAYS) * len(self.G.nodes))  # Getting the indexes for the GWs nodes
@@ -143,7 +141,7 @@ class ExperimentConfiguration:
         for idDev in range(initialIndx, len(self.G.nodes)):
             self.gatewaysDevices.add(self.centralityValues[idDev][0])  # lowest centralities
             self.node_labels[self.centralityValues[idDev][0]] = "gateway"
-            self.devices[self.centralityValues[idDev][0]]['tier'] = 1
+            self.devices[self.centralityValues[idDev][0]]['tier'] = 2
 
         self.cloudId = len(self.G.nodes)
         myNode = {}
@@ -171,7 +169,7 @@ class ExperimentConfiguration:
 
         for node in self.devices:
             if 'tier' not in node:
-                node['tier'] = 2
+                node['tier'] = 1
 
         self.netJson['entity'] = self.devices
         self.netJson['link'] = myEdges
@@ -636,7 +634,7 @@ class ExperimentConfiguration:
         nodes_heap = []
         heapq.heapify(nodes_heap)
         for node in self.netJson['entity']:
-            heapq.heappush(nodes_heap, (-node['tier'], -node['FRAM'], node['id']))  # add tier to json
+            heapq.heappush(nodes_heap, (-node['tier'], -node['FRAM'], node['id']))
 
         # # retrieve one node and update FRAM on dict
         # _, _, node_id = heapq.heappop(nodes_heap)
