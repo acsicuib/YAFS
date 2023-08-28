@@ -72,7 +72,7 @@ def main(stop_time, it, folder_results):
     conf = myConfig.myConfig()
 
     random.seed(15612357)
-    exp_conf = ec.ExperimentConfiguration(conf)
+    exp_conf = ec.ExperimentConfiguration(conf, os.path.dirname(__file__))
 
     random.seed(15612357)
     exp_conf.app_generation(app_struct='simple')
@@ -89,8 +89,11 @@ def main(stop_time, it, folder_results):
     # exp_conf.bt_min_mods()
     # plot_name = 'bt_min_mods'
 
-    exp_conf.near_GW_placement()
-    plot_name = 'near_GW_placement'
+    # exp_conf.near_GW_placement()
+    # plot_name = 'near_GW_placement'
+
+    exp_conf.greedy_algorithm()
+    plot_name = 'greedy_placement'
 
 
     """
@@ -182,9 +185,9 @@ if __name__ == '__main__':
     LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
     logging.config.fileConfig(LOGGING_CONFIG)
 
-    folder_results = Path("results/")
+    folder_results = Path("results")
     folder_results.mkdir(parents=True, exist_ok=True)
-    folder_results = str(folder_results)+"\\" #!
+    folder_results = str(folder_results)+"\\"
 
     nIterations = 1  # iteration for each experiment
     simulationDuration = 20000

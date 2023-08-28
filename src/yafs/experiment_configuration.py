@@ -448,6 +448,9 @@ class ExperimentConfiguration:
         appFile.write(json.dumps(self.appJson))
         appFile.close()
 
+        for app_index in range(len(self.appJson)):
+            self.appJson[app_index]['popularity'] = eval(self.func_REQUESTPROB)
+
     def user_generation(self, file_name_users='usersDefinition.json'):
         # Generation of the IoT devices (users)
 
@@ -697,17 +700,17 @@ class ExperimentConfiguration:
         # Win
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
             allocFile.write(json.dumps(alloc))
-        # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
-            allocFile.write(json.dumps(alloc))
+        # # Unix
+        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+        #     allocFile.write(json.dumps(alloc))
 
         # Update FRAM network Json
-        # # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
-        # Unix
-        with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+        # Win
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(self.netJson))
+        # # Unix
+        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+        #     netFile.write(json.dumps(self.netJson))
 
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
