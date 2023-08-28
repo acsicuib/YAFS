@@ -27,7 +27,7 @@ from yafs.distribution import deterministic_distribution
 
 #from playground_funcs import data_analysis
 
-from yafs.sandbox_placement import stable_placement
+from yafs.experiment_configuration import stable_placement
 from yafs.plot import module_placement
 
 def main(stop_time, it,folder_results):

@@ -1,11 +1,10 @@
-from math import ceil
-
+import os
 import matplotlib.pyplot as plt
-from collections import Counter
 import numpy as np
 import pandas as pd
 import networkx as nx
-import json
+from math import ceil, floor
+from collections import Counter
 
 # from pathlib import Path
 
@@ -14,8 +13,16 @@ import json
 # folder_results.mkdir(parents=True, exist_ok=True)
 # folder_results = str(folder_results)+"/"
 
+def save_plot(plot_name):
+    try:
+        os.stat('data_analysis\\')
+    except:
+        os.mkdir('data_analysis\\')
 
-def plot_paths_taken(folder_results):
+    plt.savefig('data_analysis\\' + plot_name)
+
+
+def plot_paths_taken(folder_results, plot_name=None):
     dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
 
     apps_deployed = np.unique(dfl.app)
@@ -31,22 +38,33 @@ def plot_paths_taken(folder_results):
 
     ax.set_xlabel('Source nodes')
     ax.set_ylabel('Destiny nodes')
-    ax.set_title('Simulation hops')
     ax.legend()
+
+    if plot_name is None:
+        ax.set_title(f'Simulation hops')
+
+    else:
+        plot_name += '_sim_hops'
+        ax.set_title(plot_name)
+        save_plot(plot_name)
+
     plt.show()
 
 
-def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_taken', placement=None):
+def plot_app_path(folder_results, application, t, pos=None, placement=None, plot_name=None):
     if pos is None:
         pos = nx.spring_layout(t.G)
 
     plt.figure(figsize=(10, 5))
-    sml = pd.read_csv(folder_results + "sim_trace_link.csv")
-    sm = pd.read_csv(folder_results + "sim_trace.csv")
+    sml = pd.read_csv(folder_results + "sim_trace_temp_link.csv")
+    sm = pd.read_csv(folder_results + "sim_trace_temp.csv")
 
     path = sml[sml.app == application]
-    path = path[sml.at[0, 'id'] == sml.id]
-    # path = sml[(sml.id == 1) & (sml.app == application)]
+
+    path = path[path.id == min(path.id)]
+
+    # path = path[sml.at[0, 'id'] == sml.id]            # << antigo
+    # Na versao anterior só funcionava se o link com id 1 fosse o da aplicação que se quer ver
 
     path2 = sm[sm.app == application]
     path2 = sm[sm.at[0, 'id'] == sm.id]
@@ -57,7 +75,7 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     labels = {}
     for index, hops in path.iterrows():
         highlighted_edges.append([hops.src, hops.dst])
-        labels[(hops.src, hops.dst)] = "{}\nBW={}\tPR={}".format( hops.message , t.get_edge((hops.src, hops.dst))['BW'], t.get_edge((hops.src, hops.dst))['PR'])
+        labels[(hops.src, hops.dst)] = "{}\nBW={}\tPR={}".format(hops.message, t.get_edge((hops.src, hops.dst))['BW'], t.get_edge((hops.src, hops.dst))['PR'])
     print(highlighted_edges)
 
     print('tempo total')
@@ -89,40 +107,19 @@ def plot_app_path(folder_results, application, t, pos=None, graph_file='Routes_t
     nx.draw_networkx_edges(t.G, pos, edgelist=highlighted_edges, edge_color='red', arrows=True, arrowstyle='->')
     nx.draw_networkx_edge_labels(t.G, pos, edge_labels=labels, label_pos=0.5, font_size=8, font_family='Arial')
 
-    plt.savefig(graph_file+'.png')
+    if plot_name is not None:
+        save_plot(plot_name+f'_{application}_path')
+
     plt.show()
 
 
-def plot_messages_node(folder_results):
-    df = pd.read_csv(folder_results + "sim_trace_link.csv")
-    res_used = df['dst']
-
-
-    values = Counter(res_used)
-    x = [i for i in range(max(values.keys()) + 1)]
-    y = [values[i] if i in values.keys() else 0 for i in x]
-
-    ax = plt.subplot()
-
-    plt.bar(x, y)
-
-    for i in range(len(x)):
-        plt.text(i, y[i] + 0.005 * max(y), y[i], ha='center')
-
-    ax.set_xlabel('Node')
-    ax.set_xticks(x)
-    ax.set_ylabel('Occurrences')
-    ax.set_title('Number of Messages')
-    plt.show()
-
-
-def plot_occurrences(folder_results, mode='module'):
+def plot_occurrences(folder_results, mode='module', plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace.csv")
 
     if mode == 'module':
         res_used = df.module
     elif mode == 'node':
-        res_used = list(df['TOPO.dst'])
+        res_used = df['TOPO.src'] + df['TOPO.dst']
     elif mode == 'node_src':
         res_used = df['TOPO.src']
     else:                               # elif mode == 'node_dst':
@@ -133,16 +130,22 @@ def plot_occurrences(folder_results, mode='module'):
     ax = plt.subplot()
 
     plt.bar(unique_values, occurrence_count)
-    for i in range(len(unique_values)):
-        plt.text(i, occurrence_count[i] + 0.005 * max(occurrence_count), occurrence_count[i], ha='center')
 
     ax.set_xlabel(mode.title())
     ax.set_ylabel('Occurrences')
-    ax.set_title(f'Times a {mode.title()} is used')
+
+    if plot_name is None:
+        ax.set_title(f'Times a {mode.title()} is used')
+
+    else:
+        plot_name += '_occur'
+        ax.set_title(plot_name)
+        save_plot(plot_name)
+
     plt.show()
 
 
-def plot_latency(folder_results):
+def plot_latency(folder_results, plot_name=None):
     dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
 
     apps_deployed = np.unique(dfl.app)
@@ -159,10 +162,48 @@ def plot_latency(folder_results):
 
     ax.set_xlabel(f'Apps')
     ax.set_ylabel('Latency')
+
+    if plot_name is None:
+        ax.set_title('Latency')
+
+    else:
+        plot_name += '_latency'
+        ax.set_title(plot_name)
+        save_plot(plot_name)
+
     plt.show()
 
 
-def plot_nodes_per_time_window(folder_results, t, n_wind=30, graph_type=None):
+def plot_avg_latency(folder_results, plot_name=None):
+    dfl = pd.read_csv(folder_results + "sim_trace_link.csv")
+
+    apps_deployed = np.unique(dfl.app)
+
+    app_lat = []
+
+    for app_ in apps_deployed:
+        app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
+
+    ax = plt.subplot()
+
+    # plt.boxplot(app_lat)
+    plt.bar(range(0, len(apps_deployed)), app_lat)
+    plt.xticks(range(0, len(apps_deployed)), apps_deployed)
+
+    ax.set_xlabel(f'Apps')
+    ax.set_ylabel('Latency')
+
+    if plot_name is None:
+        ax.set_title('Average Latency')
+
+    else:
+        plot_name += '_avg_latency'
+        ax.set_title(plot_name)
+        save_plot(plot_name)
+    plt.show()
+
+
+def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False, plot_name=None):
 
     df = pd.read_csv(folder_results + "sim_trace.csv")
 
@@ -174,7 +215,6 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=30, graph_type=None):
     n_nodes = len(t.G.nodes)
 
     for i in range(n_wind):
-        # add = df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)][]
         add = np.unique(np.concatenate((df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)]['TOPO.src'],
                                         df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)]['TOPO.dst'])))
         nodes_per_window.append(add)
@@ -183,35 +223,89 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=30, graph_type=None):
 
     ax = plt.subplot()
 
+    plt.ylim(0, 100)
+
+    x_min, x_max = plt.xlim()
+    y_min, y_max = plt.ylim()
+    plt.text(x_max - 0.02, y_min + 0.02, f'# Topology Nodes: {n_nodes}', fontsize=10, ha='right', va='bottom',
+             transform=plt.gca().transAxes)
+
     if graph_type is None:
         plt.plot(range(len(window_rate)), window_rate)
+        plt.scatter(range(len(window_rate)), window_rate, marker='x')
     elif graph_type == 'bar':
         plt.bar(range(len(window_rate)), window_rate)
 
+    if show_values:
+        for enum, rate in enumerate(window_rate):
+            plt.text(enum, rate, f'{int(floor((rate*n_nodes)/100))}')
+
     ax.set_xlabel(f'Window')
     ax.set_ylabel('% Used Nodes')
+
+    if plot_name is not None:
+        save_plot(plot_name)
     plt.show()
 
 
-def module_placement(alloc_def='data/allocDefinition.json'): #incluir ou não nós sem modulos?
-
-    modules = json.load(open(alloc_def))['initialAllocation']
-
+def modules_per_node(placement, topology, path, plot_name=None):
     nodes = dict()
-    for module in modules:
-        if module['id_resource'] not in nodes.keys():
-            nodes[module['id_resource']] = 0
+    for n in topology.get_nodes():
+        nodes[int(n)] = 0
 
-        nodes[module['id_resource']] += 1
+    for dt in placement.data['initialAllocation']:
+        # if int(dt['id_resource']) not in nodes:
+        #     nodes[int(dt['id_resource'])] = 1
+        # else:
+        nodes[int(dt['id_resource'])] += 1
 
-    sorted_nodes = {k: v for k, v in sorted(nodes.items())}
+    plt.bar(nodes.keys(), nodes.values())
+    plt.yticks(range(0, int(max(nodes.values())) + 1))
+    plt.xlabel('nodes')
+    plt.ylabel('number of modules allocated')
 
-    plt.bar(sorted_nodes.keys(), sorted_nodes.values())
-    print(sorted_nodes.keys())
-    plt.xlabel('Nodes')
-    plt.ylabel('Number of Modules')
-    plt.title('Initial Module Allocation')
+    ax = plt.subplot()
+
+    if plot_name is None:
+        ax.set_title('Modules per node')
+    else:
+        plot_name += '_mods_per_nds'
+        ax.set_title(plot_name)
+        save_plot(plot_name)
+
     plt.show()
 
+    # print(nodes)
 
 
+def plot_messages_node(folder_results, plot_name=None):
+    df = pd.read_csv(folder_results + "sim_trace_link.csv")
+    res_used = df['dst']
+
+    src_nodes = df.drop_duplicates(subset='id')
+    src_nodes = src_nodes['src']
+
+    nodes_used = pd.concat([src_nodes, res_used], axis=0)
+
+    values = Counter(nodes_used)
+    x = [i for i in range(max(values.keys()) + 1)]
+    y = [values[i] if i in values.keys() else 0 for i in x]
+
+    ax = plt.subplot()
+
+    plt.bar(x, y)
+
+    for i in range(len(x)):
+        plt.text(i, y[i] + 0.005 * max(y), y[i], ha='center')
+
+    ax.set_xlabel('Node')
+    ax.set_xticks(x)
+    ax.set_ylabel('Occurrences')
+
+    if plot_name is None:
+        ax.set_title('Number of Messages')
+    else:
+        plot_name += '_nr_msgs'
+        ax.set_title(plot_name)
+        save_plot(plot_name)
+    plt.show()
