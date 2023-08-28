@@ -9,6 +9,7 @@ import time
 from math import floor
 import matplotlib.pyplot as plt
 import copy
+import heapq
 
 import operator
 import json
@@ -25,6 +26,10 @@ def linear_graph(size):
     g.add_edges_from(tuple(zip(range(1, size), range(size - 1))))
 
     return g
+
+
+def deviation_from_mean(element, mean):
+    return abs(element - mean)
 
 
 class ExperimentConfiguration:
@@ -128,7 +133,9 @@ class ExperimentConfiguration:
         for device in self.centralityValues:
             if device[1] == highestCentrality:
                 self.cloudgatewaysDevices.add(device[0])  # highest centrality
+
                 self.node_labels[device[0]] = "cloudgateway"
+                self.devices[device[0]]['tier'] = 1
 
         initialIndx = int(
             (1 - self.PERCENTATGEOFGATEWAYS) * len(self.G.nodes))  # Getting the indexes for the GWs nodes
@@ -136,6 +143,7 @@ class ExperimentConfiguration:
         for idDev in range(initialIndx, len(self.G.nodes)):
             self.gatewaysDevices.add(self.centralityValues[idDev][0])  # lowest centralities
             self.node_labels[self.centralityValues[idDev][0]] = "gateway"
+            self.devices[self.centralityValues[idDev][0]]['tier'] = 1
 
         self.cloudId = len(self.G.nodes)
         myNode = {}
@@ -144,11 +152,13 @@ class ExperimentConfiguration:
         myNode['FRAM'] = self.CLOUDCAPACITY
         myNode['IPT'] = self.CLOUDSPEED
         myNode['type'] = 'CLOUD'
+        myNode['tier'] = 0
         self.devices.append(myNode)
         # Adding Cloud's resource to nodeResources
         self.nodeResources[self.cloudId] = self.CLOUDCAPACITY
         self.node_labels[self.cloudId] = "cloud"
         self.freeNodeResources = self.nodeResources.copy()
+
 
         for cloudGtw in self.cloudgatewaysDevices:
             myLink = {}
@@ -159,11 +169,15 @@ class ExperimentConfiguration:
 
             myEdges.append(myLink)
 
+        for node in self.devices:
+            if 'tier' not in node:
+                node['tier'] = 2
+
         self.netJson['entity'] = self.devices
         self.netJson['link'] = myEdges
 
         # Plotting the graph with all the element
-        if False:
+        if debug_mode:
             tempGraph = self.G
             tempGraph.add_node(self.cloudId)
             for gw_node in list(self.cloudgatewaysDevices):
@@ -247,6 +261,7 @@ class ExperimentConfiguration:
         # app popularity
         for app_index in range(len(self.appJson)):
             self.appJson[app_index]['popularity'] = eval(self.func_REQUESTPROB)
+
         return self.appJson
 
     def app_generation(self, file_name_apps='appDefinition.json'):
@@ -426,6 +441,7 @@ class ExperimentConfiguration:
     def user_generation(self, file_name_users='usersDefinition.json'):
         # Generation of the IoT devices (users)
 
+
         userJson = {}
 
         self.myUsers = list()
@@ -435,6 +451,7 @@ class ExperimentConfiguration:
             userRequestList = set()
             probOfRequested = self.appJson[i]['popularity']
             # probOfRequested = eval(self.func_REQUESTPROB)
+
             # probOfRequested = -1
             atLeastOneAllocated = False
             for j in self.gatewaysDevices:
@@ -462,9 +479,9 @@ class ExperimentConfiguration:
         userJson['sources'] = self.myUsers
 
         # Win
-        userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
+        #userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
         # Unix
-        # userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
+        userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
         userFile.write(json.dumps(userJson))
         userFile.close()
 
@@ -542,7 +559,7 @@ class ExperimentConfiguration:
 
         for module, node in solution.items():
             self.netJson['entity'][node]['FRAM'] -= \
-            self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM']
+                self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM']
             print('node: ', node, '\tapp / module : ', int(module.split("_")[0]), '/', int(module.split("_")[1]),
                   '\tFRAM: ', self.netJson['entity'][node]['FRAM'], '\tRAM: ',
                   self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM'])
@@ -574,7 +591,12 @@ class ExperimentConfiguration:
         with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(self.netJson))
 
-    def greedy_algorithm(self):
+    def greedy_algorithm(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
+        # best choice for each iteration - node with more FRAM
+        # objective ->  maximize the use of resources while avoiding overloading nodes
+        # optimal score to achieve = 0
+        # score is the "Maximum deviation" (largest difference between the FRAM of a given set of nodes and its mean)
+        # firstly, the set of nodes considered are only the gateways, only after the remaining nodes have to be used those nodes are taken into account for the score
 
         #  popular apps will be allocated, preferably, in lower tier nodes
         self.app_order = sorted(self.appJson, key=itemgetter('popularity'), reverse=True)
@@ -583,11 +605,103 @@ class ExperimentConfiguration:
             for module in app['module']:
                 self.all_modules.append(module)
 
-        import heapq
-        heap = []
-        heapq.heapify(heap)
+
+        # tier2_list = [element for element in self.netJson['entity'] if element['tier'] == 2]  # Filtering gateway nodes
+        # tier1_list = [element for element in self.netJson['entity'] if element['tier'] == 1]  # Filtering fog nodes
+        # tier0_list = self.netJson['entity'][len(self.netJson['entity']) - 1] # Cloud node
+        # tier1_used = False
+        # tier0_used = False
+        # total_nodes_used = len(tier2_list) - 1
+
+        #initial score
+        # total_FRAM = sum(i['FRAM'] for i in tier2_list)
+        # mean_score = total_FRAM / total_nodes_used
+        # score = max_deviation = max(tier2_list, key=lambda node_: deviation_from_mean(node['FRAM'], mean_score))
+
+
+        # score in each iteration
+        # total_FRAM -= self.netJson['entity'][node_id]['FRAM']
+        # mean_score = total_FRAM / total_nodes_used
+        # max_deviation = max(tier2_list, key=lambda node_: deviation_from_mean(node['FRAM'], mean_score))
+        # if tier1_used:
+        #     max_deviation = max(max_deviation, max(tier1_list, key=lambda node_: deviation_from_mean(node['FRAM'], mean_score)))
+        #     if tier0_used:
+        #         max_deviation = max(max_deviation, deviation_from_mean(tier0_list['FRAM'], mean_score))
+        # score = max_deviation
+
+
+        placement = {}
+
+        # creating original heap
+        nodes_heap = []
+        heapq.heapify(nodes_heap)
         for node in self.netJson['entity']:
-            heapq.heappush(heap, (node['tier'], node['FRAM'], node['id']))  # add tier to json
+            heapq.heappush(nodes_heap, (-node['tier'], -node['FRAM'], node['id']))  # add tier to json
+
+        # # retrieve one node and update FRAM on dict
+        # _, _, node_id = heapq.heappop(nodes_heap)
+        # self.netJson['entity'][node_id]['FRAM'] -= 0  # module['RAM']
+        # # add the node back to the heap
+        # heapq.heappush(nodes_heap,
+        #                (-self.netJson['entity'][node_id]['tier'], -self.netJson['entity'][node_id]['FRAM'], node_id))
+
+        for current_module in self.all_modules:
+            if debug_mode:
+                sorted_nodes = sorted(self.netJson['entity'], key=lambda node: (-node['tier'], -node['FRAM']))
+                for node in sorted_nodes:
+                    print("ID:", node['id'], "FRAM:", node['FRAM'], "Tier:", node['tier'])
+                print()
+            nodes_retrieved = []
+            module_placed = False
+            while (not module_placed) and len(nodes_heap):
+                node_tier, node_FRAM, node_id = heapq.heappop(nodes_heap)
+                if self.netJson['entity'][node_id]['FRAM'] >= current_module['RAM']:
+                    if debug_mode:
+                        print(current_module['name'], 'module RAM: ', current_module['RAM'], '-->> node' , node_id ,'\n')
+                    self.netJson['entity'][node_id]['FRAM'] -= current_module['RAM']
+                    placement[current_module['name']] = node_id
+                    module_placed = True
+                    heapq.heappush(nodes_heap,(-self.netJson['entity'][node_id]['tier'], -self.netJson['entity'][node_id]['FRAM'],node_id))
+                    # print(sorted((node['id'],node['FRAM']) for node in self.netJson) )
+
+                else:
+                    nodes_retrieved.append((node_tier, node_FRAM, node_id))
+            if len(nodes_heap)==0:
+                print('NO FRAM LEFT FOR MODULE ', current_module['name'])
+            if nodes_retrieved:
+                for node_retrieved in nodes_retrieved:
+                    heapq.heappush(nodes_heap, (node_retrieved[0], node_retrieved[1], node_retrieved[2]))
+
+        print(placement)
+
+        # Alloc será o dicionario convertido para json
+        alloc = dict()
+        alloc['initialAllocation'] = list()
+
+        for module in placement:
+            temp_dict = dict()
+            temp_dict['module_name'] = module
+            temp_dict['app'] = module.split("_")[0]
+            temp_dict['id_resource'] = placement[module]  # node
+
+            alloc['initialAllocation'].append(temp_dict)
+
+        # Win
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+            allocFile.write(json.dumps(alloc))
+        # Unix
+        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+            allocFile.write(json.dumps(alloc))
+
+        # Update FRAM network Json
+        # # Win
+        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+        #     netFile.write(json.dumps(self.netJson))
+        # Unix
+        with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+            netFile.write(json.dumps(self.netJson))
+
+
 
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
@@ -813,21 +927,20 @@ class ExperimentConfiguration:
         # with open(self.path + '/' + s
 
     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
-                          file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
+                          file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json', file_name_users='usersDefinition.json'):
         self.networkGeneration(n, m, path_network, file_name_network)
         self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=False)
         self.backtrack_placement(path_alloc, file_name_alloc)
 
-    def config_generation_random_resources(self, n=20, m=2, path_network='', file_name_network='netDefinition.json',
-                                           path_apps='',
-                                           file_name_apps='appDefinition.json', path_alloc='',
-                                           file_name_alloc='allocDefinition.json'):
-        self.networkGeneration(n, m, path_network, file_name_network)
-        self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=True)
-        self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True,
-                                 mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
-        print()
-
+    def config_generation_random_resources(self, n=20, m=2, file_name_network='netDefinition.json',
+                                           file_name_apps='appDefinition.json',
+                                           file_name_alloc='allocDefinition.json',
+                                           file_name_users='usersDefinition.json'):
+        self.networkGeneration(n, m, file_name_network)
+        self.simpleAppsGeneration(file_name_apps, random_resources=True)
+        self.user_generation(file_name_users)
+        # self.backtrack_placement(file_name_alloc, first_alloc=True, mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
+        self.greedy_algorithm(file_name_alloc, file_name_network)
 
 conf = myConfig.myConfig()  # Setting up configuration preferences
 random.seed(15612357)

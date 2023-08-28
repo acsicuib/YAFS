@@ -8,7 +8,7 @@ class myConfig:
         self.graphicTerminal = True
         self.verbose_log = False
         # self.myConfiguration = 'plarge'
-        self.resultFolder = 'conf'
+        self.resultFolder = 'data'
 
         try:
             os.stat(self.resultFolder)
