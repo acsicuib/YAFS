@@ -270,7 +270,7 @@ def modules_per_node(placement, topology, path, plot_name=None):
     if plot_name is None:
         ax.set_title('Modules per node')
     else:
-        plot_name += 'mods_per_nds'
+        plot_name += '_mods_per_nds'
         ax.set_title(plot_name)
         save_plot(path+'\\', plot_name)
 
