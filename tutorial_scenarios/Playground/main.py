@@ -69,10 +69,15 @@ def append_results(it, path):
 def main(stop_time, it, folder_results):
 
     conf = myConfig.myConfig()
+
+    random.seed(15612357)
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
 
+    random.seed(15612357)
     exp_conf.app_generation(app_struct='simple')
+    random.seed(15612357)
     exp_conf.networkGeneration(n=10, file_name_network='network.json')
+    random.seed(15612357)
     exp_conf.user_generation()
 
     # Algoritmo de alloc

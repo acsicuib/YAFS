@@ -743,21 +743,22 @@ class ExperimentConfiguration:
                     cost = app.nodes[0]['cost']
 
                     # Array com os nodes que conseguem abarcar o 1o modulo da app
-                    candidate_nodes = [nd['id'] for nd in self.netJson['entity']
-                                       if nd['FRAM'] >= cost and ('type' not in nd or nd['type'].upper() != 'CLOUD')]
+                    candidate_nodes = [nd for nd, res in self.freeNodeResources.items() if res >= cost and nd != self.cloudId]
 
-                    # Calcula-se o sumatorio das distancias aos GW's
+                    if len(candidate_nodes) == 0:
+                        chosen_node = self.cloudId
+                    else:
+                        # Calcula-se o sumatorio das distancias aos GW's
+                        GW_dists = [sum(len(nx.shortest_path(self.G, n, nd)) for n in self.gatewaysDevices) for nd in
+                                    candidate_nodes]
 
-                    GW_dists = [sum(len(nx.shortest_path(self.G, n, nd)) for n in self.gatewaysDevices) for nd in
-                                candidate_nodes]
+                        # Dentro destes, escolhe-se os com distancia <
+                        candidate_nodes = [node for i, node in enumerate(candidate_nodes) if GW_dists[i] == min(GW_dists)]
 
-                    # Dentro destes, escolhe-se os com distancia <
-                    candidate_nodes = [node for i, node in enumerate(candidate_nodes) if GW_dists[i] == min(GW_dists)]
+                        chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
 
-                    chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
-
-                    # Dentro destes, escolhe-se o com FRAM >
-                    chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                        # Dentro destes, escolhe-se o com FRAM >
+                        chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
 
                     self.freeNodeResources[chosen_node] -= cost
                     app.nodes[0]['id_resource'] = chosen_node
@@ -779,7 +780,6 @@ class ExperimentConfiguration:
                             while True:
                                 if len(candidate_nodes) == 0:
                                     chosen_node = self.cloudId
-                                    chosen_node_FRAM = self.freeNodeResources[chosen_node]
                                     break
 
                                 chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
