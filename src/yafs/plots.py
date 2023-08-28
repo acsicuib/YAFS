@@ -89,8 +89,7 @@ def plot_app_path(folder_results, application, t, pos=None, placement=None):
                 node_labels[int(dt['id_resource'])][1].append(str(dt['app']))
 
         for lbl in node_labels:
-            node_labels[
-                lbl] = f"\n\n\n\nModule: {', '.join(node_labels[lbl][0])}\nApp: {', '.join(node_labels[lbl][1])}"
+            node_labels[ lbl] = f"\n\n\n\nModule: {', '.join(node_labels[lbl][0])}\nApp: {', '.join(node_labels[lbl][1])}"
 
         nx.draw_networkx_labels(t.G, pos, labels=node_labels, font_size=8)
         nx.draw_networkx(t.G, pos, arrows=True)
