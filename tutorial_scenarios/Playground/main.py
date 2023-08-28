@@ -70,16 +70,17 @@ def main(stop_time, it, folder_results):
 
     allocAlg = 'near_GW_placement'
     allocAlg = 'bt_min_mods'
+    allocAlg = 'bt_min_mods'
 
     conf = myConfig.myConfig()
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
     exp_conf.networkGeneration(n=10, file_name_network='network.json')
     exp_conf.user_generation()
-    exp_conf.simpleAppsGeneration()
-    exp_conf.app_generation(app_struct='simple')
-    eval('exp_conf.' + allocAlg + '()')
-    # exp_conf.bt_min_mods()
 
+    exp_conf.app_generation(app_struct='simple')
+    # eval('exp_conf.' + allocAlg + '()')
+    exp_conf.backtrack_placement(first_alloc=True, mode='Random', file_name_network='network.json')
+    allocAlg = 'Random'
 
     """
     TOPOLOGY
@@ -157,10 +158,10 @@ def main(stop_time, it, folder_results):
     # teste = nx.pagerank(t.G, alpha=0.85, personalization=None, max_iter=100, tol=1e-06, nstart=None, weight='weight', dangling=None)
 
     #!!! data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
-    # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10)
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
 
-    data_analysis.plot_latency(folder_results, allocAlg)
+    data_analysis.plot_latency(folder_results, plot_name=allocAlg+'_latency')
+    # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
 
 
 if __name__ == '__main__':

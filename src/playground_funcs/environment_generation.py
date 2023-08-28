@@ -16,7 +16,7 @@ import os
 from yafs import Topology
 # import myConfig #! 27/08
 
-debug_mode = True
+debug_mode = False
 
 
 def linear_graph(size):
@@ -578,12 +578,12 @@ class ExperimentConfiguration:
         #     allocFile.write(json.dumps(alloc))
 
         # Update FRAM network Json
-        # # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
-        # Unix
-        with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+        # Win
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(self.netJson))
+        # Unix
+        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+        #     netFile.write(json.dumps(self.netJson))
 
     def greedy_algorithm(self):
 
@@ -824,6 +824,43 @@ class ExperimentConfiguration:
 
         # # Unix
         # with open(self.path + '/' + s
+
+    def randomPlacement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
+        # nodes -> self.devices     apps -> self.apps
+        rnd_placement = {}
+
+        for app in self.appJson:
+            for module in app['module']:
+                for i in range(50):
+                    index = random.randint(0, (len(self.netJson['entity']) - 1))
+                    # Se o node 'index' tiver recursos suficientes para alocar o modulo:
+                    if self.freeNodeResources[index] >= module['RAM']:
+                        self.freeNodeResources[index] -= module['RAM']
+                        if app['id'] not in rnd_placement:
+                            rnd_placement[app['id']] = dict()
+                        rnd_placement[app['id']][module['name']] = index
+                        break
+
+                    if i == 49:
+                        print(f"Nao foi possivel alocar o modulo {module} após 50 iterações.")
+
+        alloc = dict()
+        alloc['initialAllocation'] = list()
+
+        for app in rnd_placement:
+            for mod, res in rnd_placement[app].items():
+                temp_dict = dict()
+                temp_dict["module_name"] = mod
+                temp_dict["app"] = app
+                temp_dict["id_resource"] = res
+
+                alloc['initialAllocation'].append(temp_dict)
+
+        # atualiza valores de FRAM
+        self.update_json_resources(file_name_network)
+
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
+            netFile.write(json.dumps(alloc))
 
     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
