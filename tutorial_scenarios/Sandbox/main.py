@@ -97,7 +97,7 @@ def main(stop_time, it, folder_results):
     TOPOLOGY
     """
     t = Topology()
-    dataNetwork = json.load(open('data/network.json'))
+    dataNetwork = json.load(open('data/netDefinition.json'))
 
     t.load(dataNetwork)
 
