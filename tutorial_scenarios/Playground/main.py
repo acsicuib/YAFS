@@ -68,19 +68,23 @@ def append_results(it, path):
 
 def main(stop_time, it, folder_results):
 
-    allocAlg = 'near_GW_placement'
-    allocAlg = 'bt_min_mods'
-    allocAlg = 'bt_min_mods'
-
     conf = myConfig.myConfig()
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
+
+    exp_conf.app_generation(app_struct='simple')
     exp_conf.networkGeneration(n=10, file_name_network='network.json')
     exp_conf.user_generation()
 
-    exp_conf.app_generation(app_struct='simple')
-    # eval('exp_conf.' + allocAlg + '()')
-    exp_conf.backtrack_placement(first_alloc=True, mode='Random', file_name_network='network.json')
-    allocAlg = 'Random'
+    # Algoritmo de alloc
+    # exp_conf.randomPlacement(file_name_network='network.json')
+    # plot_name = 'randomPlacement'
+
+    # exp_conf.bt_min_mods()
+    # plot_name = 'bt_min_mods'
+
+    exp_conf.near_GW_placement()
+    plot_name = 'near_GW_placement'
+
 
     """
     TOPOLOGY
@@ -160,7 +164,9 @@ def main(stop_time, it, folder_results):
     #!!! data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
 
-    data_analysis.plot_latency(folder_results, plot_name=allocAlg+'_latency')
+    # data_analysis.plot_latency(folder_results, plot_name=plot_name)
+    data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
+    data_analysis.modules_per_node(placement, t, os.path.dirname(__file__), plot_name=plot_name)
     # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
 
 
@@ -170,7 +176,7 @@ if __name__ == '__main__':
 
     folder_results = Path("results/")
     folder_results.mkdir(parents=True, exist_ok=True)
-    folder_results = str(folder_results)+"\\" #!123
+    folder_results = str(folder_results)+"\\" #!
 
     nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
@@ -206,6 +212,4 @@ if __name__ == '__main__':
     print("The app0 is deployed in the folling nodes: %s"%np.unique(dfapp["TOPO.dst"]))
     print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
 
-    # data_analysis.plot_latency(folder_results)
-    # data_analysis.plot_node_services(folder_results)
 

@@ -14,13 +14,13 @@ from collections import Counter
 # folder_results.mkdir(parents=True, exist_ok=True)
 # folder_results = str(folder_results)+"/"
 
-def save_plot(folder_results, plot_name):
+def save_plot(path, plot_name):
     try:
-        os.stat(folder_results + '..\\data_analysis\\')
+        os.stat(path + 'data_analysis\\')
     except:
-        os.mkdir(folder_results + '..\\data_analysis\\')
+        os.mkdir(path + 'data_analysis\\')
 
-    plt.savefig(folder_results + '..\\data_analysis\\' + plot_name)
+    plt.savefig(path + 'data_analysis\\' + plot_name)
 
 
 def plot_paths_taken(folder_results, plot_name=None):
@@ -39,11 +39,15 @@ def plot_paths_taken(folder_results, plot_name=None):
 
     ax.set_xlabel('Source nodes')
     ax.set_ylabel('Destiny nodes')
-    ax.set_title('Simulation hops')
     ax.legend()
 
-    if plot_name is not None:
-        save_plot(folder_results, plot_name)
+    if plot_name is None:
+        ax.set_title(f'Simulation hops')
+
+    else:
+        plot_name += '_sim_hops'
+        ax.set_title(plot_name)
+        save_plot(folder_results + '\\..\\', plot_name)
 
     plt.show()
 
@@ -105,7 +109,7 @@ def plot_app_path(folder_results, application, t, pos=None, placement=None, plot
     nx.draw_networkx_edge_labels(t.G, pos, edge_labels=labels, label_pos=0.5, font_size=8, font_family='Arial')
 
     if plot_name is not None:
-        save_plot(folder_results, plot_name)
+        save_plot(folder_results+'\\..\\', plot_name+f'_{application}_path')
 
     plt.show()
 
@@ -130,10 +134,14 @@ def plot_occurrences(folder_results, mode='module', plot_name=None):
 
     ax.set_xlabel(mode.title())
     ax.set_ylabel('Occurrences')
-    ax.set_title(f'Times a {mode.title()} is used')
 
-    if plot_name is not None:
-        save_plot(folder_results, plot_name)
+    if plot_name is None:
+        ax.set_title(f'Times a {mode.title()} is used')
+
+    else:
+        plot_name += '_occur'
+        ax.set_title(plot_name)
+        save_plot(folder_results+'\\..\\', plot_name)
 
     plt.show()
 
@@ -156,8 +164,14 @@ def plot_latency(folder_results, plot_name=None):
     ax.set_xlabel(f'Apps')
     ax.set_ylabel('Latency')
 
-    if plot_name is not None:
-        save_plot(folder_results, plot_name)
+    if plot_name is None:
+        ax.set_title('Latency')
+
+    else:
+        plot_name += '_latency'
+        ax.set_title(plot_name)
+        save_plot(folder_results + '\\..\\', plot_name)
+
     plt.show()
 
 
@@ -179,10 +193,14 @@ def plot_avg_latency(folder_results, plot_name=None):
 
     ax.set_xlabel(f'Apps')
     ax.set_ylabel('Latency')
-    ax.set_title('Average Latency')
 
-    if plot_name is not None:
-        save_plot(folder_results, plot_name)
+    if plot_name is None:
+        ax.set_title('Average Latency')
+
+    else:
+        plot_name += '_avg_latency'
+        ax.set_title(plot_name)
+        save_plot(folder_results+'\\..\\', plot_name)
     plt.show()
 
 
@@ -227,11 +245,11 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, sh
     ax.set_ylabel('% Used Nodes')
 
     if plot_name is not None:
-        save_plot(folder_results, plot_name)
+        save_plot(folder_results+'\\..\\', plot_name)
     plt.show()
 
 
-def modules_per_node(placement, topology):
+def modules_per_node(placement, topology, path, plot_name=None):
     nodes = dict()
     for n in topology.get_nodes():
         nodes[int(n)] = 0
@@ -246,7 +264,18 @@ def modules_per_node(placement, topology):
     plt.yticks(range(0, int(max(nodes.values())) + 1))
     plt.xlabel('nodes')
     plt.ylabel('number of modules allocated')
+
+    ax = plt.subplot()
+
+    if plot_name is None:
+        ax.set_title('Modules per node')
+    else:
+        plot_name += 'mods_per_nds'
+        ax.set_title(plot_name)
+        save_plot(path+'\\', plot_name)
+
     plt.show()
+
     # print(nodes)
 
 
@@ -273,8 +302,11 @@ def plot_messages_node(folder_results, plot_name=None):
     ax.set_xlabel('Node')
     ax.set_xticks(x)
     ax.set_ylabel('Occurrences')
-    ax.set_title('Number of Messages')
 
-    if plot_name is not None:
-        save_plot(folder_results, plot_name)
+    if plot_name is None:
+        ax.set_title('Number of Messages')
+    else:
+        plot_name += '_nr_msgs'
+        ax.set_title(plot_name)
+        save_plot(folder_results+'\\..\\', plot_name)
     plt.show()

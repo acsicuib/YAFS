@@ -857,8 +857,15 @@ class ExperimentConfiguration:
                 alloc['initialAllocation'].append(temp_dict)
 
         # atualiza valores de FRAM
-        self.update_json_resources(file_name_network)
+        net_json = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
 
+        for node in net_json['entity']:
+            node['FRAM'] = self.freeNodeResources[node['id']]
+
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+            netFile.write(json.dumps(net_json))
+
+        # Guarda a alocação no .json
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
             netFile.write(json.dumps(alloc))
 
