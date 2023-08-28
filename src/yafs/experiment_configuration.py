@@ -6,6 +6,7 @@ import networkx as nx
 import re
 import random
 import time
+import heapq
 from math import floor
 import matplotlib.pyplot as plt
 import copy
@@ -16,7 +17,7 @@ import os
 from yafs import Topology
 # import myConfig #! 27/08
 
-debug_mode = False
+debug_mode = True
 
 
 def linear_graph(size):
@@ -180,10 +181,16 @@ class ExperimentConfiguration:
 
             displacement = -0.09
             label_pos = {node: (x, y + displacement) for node, (x, y) in pos.items()}
+            tier_color_map = {0: 'red', 1: 'yellow', 2: 'green'}
 
-            nx.draw(tempGraph, pos)
+            # draw the graph
+            for tier, color in tier_color_map.items():
+                nx.draw_networkx_nodes(tempGraph, pos,
+                                       nodelist=[node['id'] for node in self.devices if node['tier'] == tier],
+                                       node_color=color)
+            nx.draw_networkx_edges(tempGraph, pos)
             nx.draw_networkx_labels(tempGraph, pos, font_size=8)
-            nx.draw_networkx_labels(self.G, label_pos, labels=self.node_labels, font_size=8,
+            nx.draw_networkx_labels(tempGraph, label_pos, labels=self.node_labels, font_size=8,
                                     horizontalalignment='center')
             plt.show()
 

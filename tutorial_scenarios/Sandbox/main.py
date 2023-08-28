@@ -174,6 +174,7 @@ def main(stop_time, it, folder_results):
     # data_analysis.plot_latency(folder_results, plot_name=plot_name)
     plot.plot_avg_latency(folder_results, plot_name=plot_name)
     plot.modules_per_node(placement, t, os.path.dirname(__file__), plot_name=plot_name)
+
     # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
 
 
