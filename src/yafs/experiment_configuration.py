@@ -18,7 +18,7 @@ from yafs import Topology
 # import myConfig #! 27/08
 
 debug_mode = True
-mental_stability = True
+windows_mode = True # for Unix set to False
 
 
 def linear_graph(size):
@@ -195,7 +195,7 @@ class ExperimentConfiguration:
                                     horizontalalignment='center')
             plt.show()
 
-        if mental_stability:
+        if windows_mode:
             # Win
             with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
                 netFile.write(json.dumps(self.netJson))
@@ -254,7 +254,7 @@ class ExperimentConfiguration:
 
             self.appJson.append(app)
 
-        if mental_stability:
+        if windows_mode:
             #  Win
             with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
                json.dump(self.appJson, f)
@@ -444,7 +444,7 @@ class ExperimentConfiguration:
 
             self.appJson.append(myApp)
 
-        if mental_stability:
+        if windows_mode:
             # Win
             appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
         else:
@@ -496,7 +496,7 @@ class ExperimentConfiguration:
 
         userJson['sources'] = self.myUsers
 
-        if mental_stability:
+        if windows_mode:
             # Win
             userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
         else:
@@ -596,7 +596,7 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        if mental_stability:
+        if windows_mode:
             # Win
             with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
                 allocFile.write(json.dumps(alloc))
@@ -707,7 +707,7 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        if mental_stability:
+        if windows_mode:
             # Win
             with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
                 allocFile.write(json.dumps(alloc))
@@ -748,7 +748,7 @@ class ExperimentConfiguration:
 
         alloc['initialAllocation'] = services
 
-        if mental_stability:
+        if windows_mode:
             # # Win
             with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
                 netFile.write(json.dumps(alloc))
@@ -832,7 +832,7 @@ class ExperimentConfiguration:
             if n_comms != 1:
                 comms.append(comms.pop(0))
 
-        if mental_stability:
+        if windows_mode:
             # Win
             with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
                 json.dump(alloc, f)
@@ -945,7 +945,7 @@ class ExperimentConfiguration:
 
             allocDef["initialAllocation"].append(temp_dict)
 
-        if mental_stability:
+        if windows_mode:
             # Win
             with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
                 json.dump(allocDef, f)
