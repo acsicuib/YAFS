@@ -4,27 +4,27 @@ import os
 from playground_funcs import myConfig, environment_generation as eg
 
 
-conf = myConfig.myConfig()
+def placement_timer(iter=50, placement_alg='backtrack_placement'):
+    exec_times = list()
 
-random.seed(15612357)
-exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
+    conf = myConfig.myConfig()
+    exp = eg.ExperimentConfiguration(conf)
 
-random.seed(15612357)
-exp_conf.app_generation(app_struct='simple')
-random.seed(15612357)
-exp_conf.networkGeneration(n=10, file_name_network='network.json')
-random.seed(15612357)
-exp_conf.user_generation()
+    while len(exec_times) != iter:
+        exec_t = exp.config_generation_timer(placement_alg=placement_alg, seed=iter*100000)
 
-# Algoritmo de alloc
-# exp_conf.randomPlacement(file_name_network='network.json')
-# plot_name = 'randomPlacement'
+        if exec_t != 0:
+            exec_times.append(exec_t)
 
-exp_conf.bt_min_mods()
-plot_name = 'bt_min_mods'
+    print(f'Algoritmo: {placement_alg}')
+    print(f'Tempo total: {sum(exec_times) * 1000 : .6f} ms')
+    print(f'Tempo médio: {(sum(exec_times)/iter) * 1000 : .6f} ms')
+    print(f'Tempo minimo: {min(exec_times) * 1000 : .6f} ms')
+    print(f'Tempo máximo: {max(exec_times) * 1000 : .6f} ms')
 
-# exp_conf.near_GW_placement()
-# plot_name = 'near_GW_placement'
 
-exp_conf.greedy_algorithm()
-plot_name = 'greedy_algorithm'
+algorithms = ['greedy_algorithm', 'near_GW_placement', 'randomPlacement', 'backtrack_placement', 'bt_min_mods']
+
+for alg in algorithms:
+    placement_timer(placement_alg=alg)
+    print('\n')

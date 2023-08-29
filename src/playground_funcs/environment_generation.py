@@ -498,7 +498,9 @@ class ExperimentConfiguration:
             self.all_placements.append(current_placement.copy())
             if self.first_alloc:
                 self.complete_first_allocation = True
-                print("first alloc")
+
+                if debug_mode:
+                    print("first alloc")
             return
 
         current_module = self.all_modules[module_index]
@@ -565,9 +567,11 @@ class ExperimentConfiguration:
         for module, node in solution.items():
             self.netJson['entity'][node]['FRAM'] -= \
             self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM']
-            print('node: ', node, '\tapp / module : ', int(module.split("_")[0]), '/', int(module.split("_")[1]),
-                  '\tFRAM: ', self.netJson['entity'][node]['FRAM'], '\tRAM: ',
-                  self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM'])
+
+            if debug_mode:
+                print('node: ', node, '\tapp / module : ', int(module.split("_")[0]), '/', int(module.split("_")[1]),
+                      '\tFRAM: ', self.netJson['entity'][node]['FRAM'], '\tRAM: ',
+                      self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM'])
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
@@ -653,9 +657,12 @@ class ExperimentConfiguration:
         for current_module in self.all_modules:
             if debug_mode:
                 sorted_nodes = sorted(self.netJson['entity'], key=lambda node: (-node['tier'], -node['FRAM']))
-                for node in sorted_nodes:
-                    print("ID:", node['id'], "FRAM:", node['FRAM'], "Tier:", node['tier'])
-                print()
+
+                if debug_mode:
+                    for node in sorted_nodes:
+                        print("ID:", node['id'], "FRAM:", node['FRAM'], "Tier:", node['tier'])
+                    print()
+
             nodes_retrieved = []
             module_placed = False
             while (not module_placed) and len(nodes_heap):
@@ -676,8 +683,8 @@ class ExperimentConfiguration:
             if nodes_retrieved:
                 for node_retrieved in nodes_retrieved:
                     heapq.heappush(nodes_heap, (node_retrieved[0], node_retrieved[1], node_retrieved[2]))
-
-        print(placement)
+        if debug_mode:
+            print(placement)
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
@@ -989,7 +996,41 @@ class ExperimentConfiguration:
         self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=True)
         self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True,
                                  mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
-        print()
+
+    def config_generation_timer(self, n=20, m=2, file_name_network='netDefinition.json',
+                                              file_name_apps='appDefinition.json',
+                                              file_name_users='usersDefinition.json',
+                                              file_name_alloc='allocDefinition.json',
+                                              placement_alg='backtrack_placement',
+                                              seed=100000):
+        random.seed(seed)
+        self.networkGeneration(n, m, file_name_network)
+        random.seed(seed)
+        self.app_generation(file_name_apps, 'simple')
+        random.seed(seed)
+        self.user_generation(file_name_users)
+
+        random.seed(seed)
+        ti = time.time()
+
+        if placement_alg == 'backtrack_placement':
+            self.backtrack_placement(file_name_alloc=file_name_alloc, file_name_network=file_name_network, first_alloc=True,
+                                     mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
+
+        elif placement_alg == 'randomPlacement':
+            self.randomPlacement(file_name_network=file_name_network)
+        elif placement_alg == 'bt_min_mods':
+            self.bt_min_mods()
+        elif placement_alg == 'near_GW_placement':
+            self.near_GW_placement()
+        elif placement_alg == 'greedy_algorithm':
+            self.greedy_algorithm()
+
+        tf = time.time()
+
+        return tf-ti
+
+
 
 
 # conf = myConfig.myConfig()  # Setting up configuration preferences                                                    #! 27/08
