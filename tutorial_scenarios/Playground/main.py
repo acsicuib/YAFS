@@ -84,11 +84,14 @@ def main(stop_time, it, folder_results):
     # exp_conf.randomPlacement(file_name_network='network.json')
     # plot_name = 'randomPlacement'
 
-    # exp_conf.bt_min_mods()
-    # plot_name = 'bt_min_mods'
+    exp_conf.bt_min_mods()
+    plot_name = 'bt_min_mods'
 
-    exp_conf.near_GW_placement()
-    plot_name = 'near_GW_placement'
+    # exp_conf.near_GW_placement()
+    # plot_name = 'near_GW_placement'
+
+    exp_conf.greedy_algorithm()
+    plot_name = 'greedy_algorithm'
 
 
     """
@@ -169,10 +172,12 @@ def main(stop_time, it, folder_results):
     #!!! data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
 
-    # data_analysis.plot_latency(folder_results, plot_name=plot_name)
-    data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
-    data_analysis.modules_per_node(placement, t, os.path.dirname(__file__), plot_name=plot_name)
-    # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
+
+    if it == nIterations-1:
+        # data_analysis.plot_latency(folder_results, plot_name=plot_name)
+        data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
+        data_analysis.modules_per_node(placement, t, plot_name=plot_name)
+        # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
 
 
 if __name__ == '__main__':
@@ -181,9 +186,9 @@ if __name__ == '__main__':
 
     folder_results = Path("results/")
     folder_results.mkdir(parents=True, exist_ok=True)
-    folder_results = str(folder_results)+"\\" #!
+    folder_results = str(folder_results)+'/'
 
-    nIterations = 1  # iteration for each experiment
+    nIterations = 10  # iteration for each experiment
     simulationDuration = 20000
 
     # Iteration for each experiment changing the seed of randoms

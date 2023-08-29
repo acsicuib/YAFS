@@ -249,7 +249,7 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, sh
     plt.show()
 
 
-def modules_per_node(placement, topology, path, plot_name=None):
+def modules_per_node(placement, topology,plot_name=None):
     nodes = dict()
     for n in topology.get_nodes():
         nodes[int(n)] = 0
@@ -275,8 +275,6 @@ def modules_per_node(placement, topology, path, plot_name=None):
         save_plot(plot_name)
 
     plt.show()
-
-    # print(nodes)
 
 
 def plot_messages_node(folder_results, plot_name=None):
