@@ -18,6 +18,7 @@ from yafs import Topology
 # import myConfig #! 27/08
 
 debug_mode = True
+mental_stability = True
 
 
 def linear_graph(size):
@@ -194,16 +195,17 @@ class ExperimentConfiguration:
                                     horizontalalignment='center')
             plt.show()
 
-        # # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
-        # Unix
-        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
+        if mental_stability:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def simpleAppsGeneration(self, file_name_apps='appDefinition.json',
                              random_resources=True):  # resources available to each module (if False, each module's resources match each node")
-
         self.appJson = list()
 
         if random_resources:
@@ -252,12 +254,14 @@ class ExperimentConfiguration:
 
             self.appJson.append(app)
 
-        #  Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
-           json.dump(self.appJson, f)
-        # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
-        #     json.dump(self.appJson, f)
+        if mental_stability:
+            #  Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+               json.dump(self.appJson, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+                json.dump(self.appJson, f)
 
         # app popularity
         for app_index in range(len(self.appJson)):
@@ -440,11 +444,14 @@ class ExperimentConfiguration:
 
             self.appJson.append(myApp)
 
-        # Win
-        appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
-        # Unix
-        # appFile = open(self.cnf.resultFolder + "/appDefinition.json", "w")
-        # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
+        if mental_stability:
+            # Win
+            appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
+        else:
+            # Unix
+            appFile = open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, "w")
+            # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
+
         appFile.write(json.dumps(self.appJson))
         appFile.close()
 
@@ -489,10 +496,12 @@ class ExperimentConfiguration:
 
         userJson['sources'] = self.myUsers
 
-        # Win
-        userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
-        # Unix
-        # userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
+        if mental_stability:
+            # Win
+            userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
+        else:
+            # Unix
+            userFile = open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_users, "w")
         userFile.write(json.dumps(userJson))
         userFile.close()
 
@@ -587,20 +596,21 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
-            allocFile.write(json.dumps(alloc))
-        # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
-        #     allocFile.write(json.dumps(alloc))
-
-        # Update FRAM network Json
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
-        # Unix
-        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
+        if mental_stability:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def greedy_algorithm(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # best choice for each iteration - node with more FRAM
@@ -697,20 +707,21 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
-            allocFile.write(json.dumps(alloc))
-        # # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
-        #     allocFile.write(json.dumps(alloc))
-
-        # Update FRAM network Json
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
-        # # Unix
-        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
+        if mental_stability:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
@@ -737,13 +748,15 @@ class ExperimentConfiguration:
 
         alloc['initialAllocation'] = services
 
-        # # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
-            netFile.write(json.dumps(alloc))
+        if mental_stability:
+            # # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
+        else:
+            with open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
         # Unix
         # with open(self.path + '/' + path + "/allocDefinition.json", "w") as netFile:
-        # with open(self.path + '/' + path + file_name, "w") as netFile:
-        #     netFile.write(json.dumps(alloc))
 
     def bt_min_mods_(self, available_res, cur_solution, services, best_solution, index=0):
 
@@ -819,13 +832,15 @@ class ExperimentConfiguration:
             if n_comms != 1:
                 comms.append(comms.pop(0))
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
-            json.dump(alloc, f)
+        if mental_stability:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+                json.dump(alloc, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+                json.dump(alloc, f)
 
-        # # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
-        #     json.dump(alloc, f)
 
     def near_GW_placement(self, file_name_alloc='allocDefinition.json'):
 
@@ -930,12 +945,15 @@ class ExperimentConfiguration:
 
             allocDef["initialAllocation"].append(temp_dict)
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
-            json.dump(allocDef, f)
+        if mental_stability:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
+                json.dump(allocDef, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, 'w') as f:
+                json.dump(allocDef, f)
 
-        # # Unix
-        # with open(self.path + '/' + s
 
     def randomPlacement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # nodes -> self.devices     apps -> self.apps
