@@ -583,7 +583,7 @@ class ExperimentConfiguration:
         for mod in solution:
             temp_dict = dict()
             temp_dict['module_name'] = mod
-            temp_dict['app'] = mod.split("_")[0]
+            temp_dict['app'] = int(mod.split("_")[0])
             temp_dict['id_resource'] = solution[mod]  # node
 
             alloc['initialAllocation'].append(temp_dict)
@@ -693,7 +693,7 @@ class ExperimentConfiguration:
         for module in placement:
             temp_dict = dict()
             temp_dict['module_name'] = module
-            temp_dict['app'] = module.split("_")[0]
+            temp_dict['app'] = int(module.split("_")[0])
             temp_dict['id_resource'] = placement[module]  # node
 
             alloc['initialAllocation'].append(temp_dict)
@@ -704,6 +704,7 @@ class ExperimentConfiguration:
         # Unix
         with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
             allocFile.write(json.dumps(alloc))
+
 
         # Update FRAM network Json
         # # Win
@@ -974,18 +975,18 @@ class ExperimentConfiguration:
                 alloc['initialAllocation'].append(temp_dict)
 
         # atualiza valores de FRAM
-        net_json = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
+        net_json = json.load(open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_network))
 
         for node in net_json['entity']:
             node['FRAM'] = self.freeNodeResources[node['id']]
 
 
         #TODO change this to UNIX
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
             netFile.write(json.dumps(net_json))
 
         # Guarda a alocação no .json
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
+        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as netFile:
             netFile.write(json.dumps(alloc))
 
 #     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',

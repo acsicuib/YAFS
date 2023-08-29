@@ -16,11 +16,11 @@ from collections import Counter
 
 def save_plot(plot_name):
     try:
-        os.stat('data_analysis\\')
+        os.stat('data_analysis/')
     except:
-        os.mkdir('data_analysis\\')
+        os.mkdir('data_analysis/')
 
-    plt.savefig('data_analysis\\' + plot_name)
+    plt.savefig('data_analysis/' + plot_name)
 
 
 def plot_paths_taken(folder_results, plot_name=None):

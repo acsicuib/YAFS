@@ -97,14 +97,14 @@ def main(stop_time, it, folder_results, seed):
     # exp_conf.bt_min_mods()
     # plot_name = 'bt_min_mods'
 
-    exp_conf.near_GW_placement()
-    plot_name = 'near_GW_placement'
+    # exp_conf.near_GW_placement()
+    # plot_name = 'near_GW_placement'
 
     # exp_conf.greedy_algorithm('allocDefinition.json', file_name_network='network.json')
     # plot_name = 'greedy_algorithm'
     #
-    # exp_conf.backtrack_placement( first_alloc=True, mode='high_centrality_and_app_popularity', file_name_network='network.json')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
-    # plot_name = 'backtrack_placement'
+    exp_conf.backtrack_placement( first_alloc=True, mode='high_centrality_and_app_popularity', file_name_network='network.json')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
+    plot_name = 'backtrack_placement'
     """
     TOPOLOGY
     """
@@ -197,7 +197,7 @@ if __name__ == '__main__':
     folder_results.mkdir(parents=True, exist_ok=True)
     folder_results = str(folder_results)+'/' #TODO bool
 
-    nIterations = 100  # iteration for each experiment
+    nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
     seed = time.time()
     # Iteration for each experiment changing the seed of randoms
