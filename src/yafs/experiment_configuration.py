@@ -591,7 +591,7 @@ class ExperimentConfiguration:
         for mod in solution:
             temp_dict = dict()
             temp_dict['module_name'] = mod
-            temp_dict['app'] = mod.split("_")[0]
+            temp_dict['app'] = int(mod.split("_")[0])
             temp_dict['id_resource'] = solution[mod]  # node
 
             alloc['initialAllocation'].append(temp_dict)
@@ -702,7 +702,7 @@ class ExperimentConfiguration:
         for module in placement:
             temp_dict = dict()
             temp_dict['module_name'] = module
-            temp_dict['app'] = module.split("_")[0]
+            temp_dict['app'] = int(module.split("_")[0])
             temp_dict['id_resource'] = placement[module]  # node
 
             alloc['initialAllocation'].append(temp_dict)
