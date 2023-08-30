@@ -75,25 +75,25 @@ def main(stop_time, it, folder_results):
     exp_conf = ec.ExperimentConfiguration(conf, os.path.dirname(__file__))
 
     random.seed(15612357)
-    exp_conf.app_generation(app_struct='simple')
+    exp_conf.app_generation(app_struct='linear')
     random.seed(15612357)
-    exp_conf.networkGeneration(n=11)
+    exp_conf.networkGeneration(n=10)
 
     random.seed(15612357)
     exp_conf.user_generation()
 
     # Algoritmo de alloc
-    # exp_conf.randomPlacement(file_name_network='network.json')
-    # plot_name = 'randomPlacement'
+    exp_conf.randomPlacement()
+    plot_name = 'randomPlacement'
 
     # exp_conf.bt_min_mods()
     # plot_name = 'bt_min_mods'
-
+    #
     # exp_conf.near_GW_placement()
     # plot_name = 'near_GW_placement'
 
-    exp_conf.greedy_algorithm()
-    plot_name = 'greedy_placement'
+    # exp_conf.greedy_algorithm()
+    # plot_name = 'greedy_placement'
 
 
     """
@@ -177,6 +177,7 @@ def main(stop_time, it, folder_results):
     # data_analysis.plot_latency(folder_results, plot_name=plot_name)
     plot.plot_avg_latency(folder_results, plot_name=plot_name)
     plot.modules_per_node(placement, t, os.path.dirname(__file__), plot_name=plot_name)
+    plot.plot_app_path('results/', 0, t=t)
 
     # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
 

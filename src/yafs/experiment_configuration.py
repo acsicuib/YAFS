@@ -55,7 +55,7 @@ class ExperimentConfiguration:
         self.func_USERREQRAT = "random.randint(200,1000)"
 
         # APP and SERVICES
-        self.TOTALNUMBEROFAPPS = 10
+        self.TOTALNUMBEROFAPPS = 1
         # !!!
         self.func_APPGENERATION = "nx.gn_graph(random.randint(2,4))"  # algorithm for the generation of the random applications
         # self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"  # algorithm for the generation of the random applications (agora linear)
@@ -297,7 +297,12 @@ class ExperimentConfiguration:
                 self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"
             elif app_struct == 'simple':
                 self.func_APPGENERATION = "linear_graph(1)"
+            elif app_struct == 'tree':
+                self.func_APPGENERATION = "nx.random_tree(n=random.randint(2, 6), create_using=nx.DiGraph)"
             APP = eval(self.func_APPGENERATION)
+
+            if debug_mode:
+                nx.write_network_text(APP) #TODO : é preciso a versão 3.1 do nx
 
             mylabels = {}
 
@@ -307,12 +312,12 @@ class ExperimentConfiguration:
             edgeList_ = list()
 
             # Reverting the direction of the edges from Source to Modules
-
             for m in APP.edges:
                 edgeList_.append(m)
-            for m in edgeList_:
-                APP.remove_edge(m[0], m[1])
-                APP.add_edge(m[1], m[0])
+            if app_struct != 'tree':
+                for m in edgeList_:
+                    APP.remove_edge(m[0], m[1])
+                    APP.add_edge(m[1], m[0])
 
             # if self.cnf.graphicTerminal:
             #     fig, ax = plt.subplots()
