@@ -17,7 +17,7 @@ import os
 from yafs import Topology
 # import myConfig #! 27/08
 
-debug_mode = False
+debug_mode = True
 
 
 def linear_graph(size):
@@ -833,22 +833,23 @@ class ExperimentConfiguration:
         alloc = dict()
         module2app_map = dict()
 
-        shortest_paths = dict()
+        origin_lens = dict()
 
+        # Separam-se os nodes por comprimentos até à origem
         for app_i, app in enumerate(self.apps):
-            for nd in app:
+            for cand_nd in app:
 
-                length = len(nx.shortest_path(app, 0, nd)) - 1
+                length = len(nx.shortest_path(app, 0, cand_nd)) - 1
 
-                if length not in shortest_paths:
-                    shortest_paths[length] = dict()
+                if length not in origin_lens:
+                    origin_lens[length] = dict()
 
-                if app_i not in shortest_paths[length]:
-                    shortest_paths[length][app_i] = list()
+                if app_i not in origin_lens[length]:
+                    origin_lens[length][app_i] = list()
 
-                shortest_paths[length][app_i].append(nd)
+                origin_lens[length][app_i].append(cand_nd)
 
-        max_branch_len = max(shortest_paths.keys())
+        max_branch_len = max(origin_lens.keys())
 
         for length in range(max_branch_len + 1):
             for app_i, app in enumerate(self.apps):
@@ -862,8 +863,8 @@ class ExperimentConfiguration:
                         chosen_node = self.cloudId
                     else:
                         # Calcula-se o sumatorio das distancias aos GW's
-                        GW_dists = [sum(len(nx.shortest_path(self.G, n, nd)) for n in self.gatewaysDevices) for nd in
-                                    candidate_nodes]
+                        GW_dists = [sum(nx.shortest_path_length(self.G, source=GW, target=cnd_nd, weight='PR')
+                                        for GW in self.gatewaysDevices) for cnd_nd in candidate_nodes]
 
                         # Dentro destes, escolhe-se os com distancia <
                         candidate_nodes = [node for i, node in enumerate(candidate_nodes) if GW_dists[i] == min(GW_dists)]
@@ -881,44 +882,63 @@ class ExperimentConfiguration:
 
                 else:
                     # Verifica se existe algum elemento desse comprimento na app
-                    if app_i in shortest_paths[length]:
+                    if app_i not in origin_lens[length]:
+                        continue
 
-                        for app_node in shortest_paths[length][app_i]:
-                            parent_app_nd = [edge[0] for edge in app.edges()][0]
-                            parent_id_res = alloc[app.nodes[parent_app_nd]['module']]
+                    for app_node in origin_lens[length][app_i]:
+                        cost = app.nodes[app_node]['cost']
 
-                            candidate_nodes = [parent_id_res]
-                            visited_nodes = list()
+                        parent_app_nd = [edge[0] for edge in app.edges()][0]
+                        parent_id_res = alloc[app.nodes[parent_app_nd]['module']]
 
-                            while True:
-                                if len(candidate_nodes) == 0:
-                                    chosen_node = self.cloudId
-                                    break
+                        candidate_nodes = [parent_id_res]
+                        visited_nodes = list()
 
+                        while True:
+                            # Se, apos todos os nodes serem vistos, nao foi possivel alocar o modulo, aloca-se na cloud
+                            if len(candidate_nodes) == 0:
+                                chosen_node = self.cloudId
+                                break
+
+                            # lista que guarda temporariamente os nodes que nao conseguem abarcar o modulo
+                            insuf_res = list()
+
+                            # guardam-se os nodes que nao conseguem abarcar o modulo
+                            for i, nd in enumerate(candidate_nodes):
+                                if self.freeNodeResources[nd] < cost:
+                                    insuf_res.append(candidate_nodes.pop(i))
+
+                            # Calcula-se o sumatorio de PR usado para chegar aos GW's
+                            GW_dists = [nx.shortest_path_length(self.G, source=parent_id_res, target=cnd_nd, weight='PR') for cnd_nd in candidate_nodes]
+
+                            # Dentro destes, escolhe-se os com peso <
+                            candidate_nodes = [node for i, node in enumerate(candidate_nodes) if GW_dists[i] == min(GW_dists)]
+
+                            if len(candidate_nodes) != 0:
                                 chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
+                                chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                                break
 
-                                if chosen_node_FRAM >= app.nodes[app_node]['cost']:
-                                    chosen_node = [nd for nd in candidate_nodes
-                                                   if self.freeNodeResources[nd] == chosen_node_FRAM][0]
-                                    break
+                            else:
+                                # Voltam-se a adicionar os insuf_res para considerarmos os seus vizinhos
+                                candidate_nodes += insuf_res
 
-                                else:
-                                    # Atualiza a lista de nodes já visitados
-                                    visited_nodes += candidate_nodes
+                                # Atualiza a lista de nodes já visitados
+                                visited_nodes += candidate_nodes
 
-                                    # Vao se buscar os nodes vizinhos dos candidate anteriores
-                                    candidate_nodes = [e[1] for e in self.G.edges if e[0] in candidate_nodes] + \
-                                                      [e[0] for e in self.G.edges if e[1] in candidate_nodes]
+                                # Vao se buscar os nodes vizinhos dos candidate anteriores
+                                candidate_nodes = [e[1] for e in self.G.edges if e[0] in candidate_nodes] + \
+                                                  [e[0] for e in self.G.edges if e[1] in candidate_nodes]
 
-                                    # Removem-se elementos repetidos (vizinhos em comum) e os já vistos
-                                    candidate_nodes = list(set(candidate_nodes))
-                                    candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes]
+                                # Removem-se elementos repetidos (vizinhos em comum) e os já vistos
+                                candidate_nodes = list(set(candidate_nodes))
+                                candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes]
 
-                            self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
+                        self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
 
-                            app.nodes[app_node]['id_resource'] = chosen_node
-                            alloc[app.nodes[app_node]['module']] = chosen_node
-                            module2app_map[app.nodes[app_node]['module']] = app_i
+                        app.nodes[app_node]['id_resource'] = chosen_node
+                        alloc[app.nodes[app_node]['module']] = chosen_node
+                        module2app_map[app.nodes[app_node]['module']] = app_i
 
         allocDef = dict()
         allocDef["initialAllocation"] = list()

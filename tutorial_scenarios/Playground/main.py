@@ -74,7 +74,7 @@ def main(stop_time, it, folder_results):
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
 
     random.seed(15612357)
-    exp_conf.app_generation(app_struct='simple')
+    exp_conf.app_generation(app_struct='linear')
     random.seed(15612357)
     exp_conf.networkGeneration(n=10, file_name_network='network.json')
     random.seed(15612357)
@@ -84,14 +84,14 @@ def main(stop_time, it, folder_results):
     # exp_conf.randomPlacement(file_name_network='network.json')
     # plot_name = 'randomPlacement'
 
-    exp_conf.bt_min_mods()
-    plot_name = 'bt_min_mods'
+    # exp_conf.bt_min_mods()
+    # plot_name = 'bt_min_mods'
 
-    # exp_conf.near_GW_placement()
-    # plot_name = 'near_GW_placement'
+    exp_conf.near_GW_placement()
+    plot_name = 'near_GW_placement'
 
-    exp_conf.greedy_algorithm()
-    plot_name = 'greedy_algorithm'
+    # exp_conf.greedy_algorithm()
+    # plot_name = 'greedy_algorithm'
 
 
     """
@@ -188,7 +188,7 @@ if __name__ == '__main__':
     folder_results.mkdir(parents=True, exist_ok=True)
     folder_results = str(folder_results)+'/'
 
-    nIterations = 10  # iteration for each experiment
+    nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
 
     # Iteration for each experiment changing the seed of randoms
