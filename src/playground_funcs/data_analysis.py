@@ -10,7 +10,7 @@ from collections import Counter
 # from pathlib import Path
 
 
-# folder_results = Path("../../tutorial_scenarios/Playground/results/")
+# folder_results = Path("../../tutorial_scenarios/simulation_tests/results/")
 # folder_results.mkdir(parents=True, exist_ok=True)
 # folder_results = str(folder_results)+"/"
 

@@ -34,7 +34,7 @@ def main(stop_time, it,folder_results):
 
     conf = myConfig()
     random.seed(15612357)
-    exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\Playground')
+    exp_config = ExperimentConfiguration(conf, lpath='C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\simulation_tests')
 
     exp_config.network_generation(10, file_name_network='network.json')         # Def da network
     exp_config.app_generation()                                                 # Def das apps
