@@ -3,8 +3,9 @@ import networkx as nx
 import heapq
 
 
-def inverse_BW(_, _2, data):
+def inverse_BW(src, dst, data):
     return 1 / data.get('BW') + data.get('PR')
+    # return 1 / data.get('BW')
 
 class MaxBW(Selection):
 

@@ -832,10 +832,15 @@ class ExperimentConfiguration:
 
         # Funcao de peso utilizada no algoritmo de routing de min_path (o meu)
         if weight == 'BW_PR':
-            weight = lambda _, _2, data: 1 / data.get('BW') + data.get('PR')
+            weight = lambda src, dst, data: 1 / data.get('BW') + data.get('PR')
 
         elif weight == 'BW':
-            weight = lambda _, _2, data: 1 / data.get('BW')
+            weight = lambda src, dst, data: 1 / data.get('BW')
+
+        elif weight == 'IPT':
+            weight = lambda src, dst, data: 1 / self.netJson['entity'][dst]['IPT']
+
+
 
         alloc = dict()
         module2app_map = dict()

@@ -88,11 +88,12 @@ def main(stop_time, it, folder_results):
     # plot_name = 'bt_min_mods'
 
     # BW_PR <=> weight=lambda _, _2, data: 1 / data.get('BW') + data.get('PR')
-    exp_conf.near_GW_placement(weight='BW_PR')
+    # BW <=> weight=lambda _, _2, data: 1 / data.get('BW')
 
+    # exp_conf.near_GW_placement(weight='BW_PR')
     # exp_conf.near_GW_placement(weight='PR')
     # exp_conf.near_GW_placement(weight='BW')
-
+    exp_conf.near_GW_placement(weight='IPT')
 
     plot_name = 'near_GW_placement'
 
@@ -129,11 +130,11 @@ def main(stop_time, it, folder_results):
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
     # selectorPath = MaxBW_Root()       # <<< Selector path do ze
-    selectorPath = DeviceSpeedAwareRouting()
-    graph_file_ = 'root_alg'
+    # selectorPath = DeviceSpeedAwareRouting()
+    # graph_file_ = 'root_alg'
 
-    # selectorPath = MaxBW()
-    # graph_file_ = 'networkx_alg'
+    selectorPath = MaxBW()
+    graph_file_ = 'networkx_alg'
 
 
     """
