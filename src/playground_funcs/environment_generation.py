@@ -830,12 +830,12 @@ class ExperimentConfiguration:
 
     def near_GW_placement(self, file_name_alloc='allocDefinition.json', weight='PR'):
 
-        # Funcao de peso utilizada no algoritmo de routing de min_path
+        # Funcao de peso utilizada no algoritmo de routing de min_path (o meu)
         if weight == 'BW_PR':
-            weight = lambda _, _2, data : 1 / data.get('BW') + data.get('PR')
+            weight = lambda _, _2, data: 1 / data.get('BW') + data.get('PR')
 
         elif weight == 'BW':
-                    weight = lambda _, _2, data : 1 / data.get('BW')
+            weight = lambda _, _2, data: 1 / data.get('BW')
 
         alloc = dict()
         module2app_map = dict()
