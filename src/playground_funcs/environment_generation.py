@@ -828,7 +828,14 @@ class ExperimentConfiguration:
         # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
         #     json.dump(alloc, f)
 
-    def near_GW_placement(self, file_name_alloc='allocDefinition.json'):
+    def near_GW_placement(self, file_name_alloc='allocDefinition.json', weight='PR'):
+
+        # Funcao de peso utilizada no algoritmo de routing de min_path
+        if weight == 'BW_PR':
+            weight = lambda _, _2, data : 1 / data.get('BW') + data.get('PR')
+
+        elif weight == 'BW':
+                    weight = lambda _, _2, data : 1 / data.get('BW')
 
         alloc = dict()
         module2app_map = dict()
@@ -863,7 +870,7 @@ class ExperimentConfiguration:
                         chosen_node = self.cloudId
                     else:
                         # Calcula-se o sumatorio das distancias aos GW's
-                        GW_dists = [sum(nx.shortest_path_length(self.G, source=GW, target=cnd_nd, weight='PR')
+                        GW_dists = [sum(nx.shortest_path_length(self.G, source=GW, target=cnd_nd, weight=weight)
                                         for GW in self.gatewaysDevices) for cnd_nd in candidate_nodes]
 
                         # Dentro destes, escolhe-se os com distancia <
@@ -909,7 +916,7 @@ class ExperimentConfiguration:
                                     insuf_res.append(candidate_nodes.pop(i))
 
                             # Calcula-se o sumatorio de PR usado para chegar aos GW's
-                            GW_dists = [nx.shortest_path_length(self.G, source=parent_id_res, target=cnd_nd, weight='PR') for cnd_nd in candidate_nodes]
+                            GW_dists = [nx.shortest_path_length(self.G, source=parent_id_res, target=cnd_nd, weight=weight) for cnd_nd in candidate_nodes]
 
                             # Dentro destes, escolhe-se os com peso <
                             candidate_nodes = [node for i, node in enumerate(candidate_nodes) if GW_dists[i] == min(GW_dists)]

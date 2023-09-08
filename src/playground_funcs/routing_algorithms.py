@@ -6,7 +6,6 @@ import heapq
 def inverse_BW(_, _2, data):
     return 1 / data.get('BW') + data.get('PR')
 
-
 class MaxBW(Selection):
 
     def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):

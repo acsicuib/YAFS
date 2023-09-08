@@ -87,7 +87,13 @@ def main(stop_time, it, folder_results):
     # exp_conf.bt_min_mods()
     # plot_name = 'bt_min_mods'
 
-    exp_conf.near_GW_placement()
+    # BW_PR <=> weight=lambda _, _2, data: 1 / data.get('BW') + data.get('PR')
+    # exp_conf.near_GW_placement('BW_PR')
+
+    # exp_conf.near_GW_placement('PR')
+    exp_conf.near_GW_placement('BW')
+
+
     plot_name = 'near_GW_placement'
 
     # exp_conf.greedy_algorithm()
