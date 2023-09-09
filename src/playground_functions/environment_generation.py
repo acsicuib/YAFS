@@ -18,7 +18,7 @@ from yafs import Topology
 from playground_functions import myConfig
 
 debug_mode = False
-
+windows_mode = False # for Unix set to False
 
 def linear_graph(size):
     g = nx.DiGraph()
@@ -175,7 +175,7 @@ class ExperimentConfiguration:
         self.netJson['link'] = myEdges
 
         # Plotting the graph with all the element
-        if True:
+        if debug_mode:
             tempGraph = self.G
             tempGraph.add_node(self.cloudId)
             for gw_node in list(self.cloudgatewaysDevices):
@@ -191,12 +191,14 @@ class ExperimentConfiguration:
                                     horizontalalignment='center')
             plt.show()
 
-        # # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
-        # Unix
-        with open( self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def simpleAppsGeneration(self, file_name_apps='appDefinition.json',
                              random_resources=True):  # resources available to each module (if False, each module's resources match each node")
@@ -249,12 +251,14 @@ class ExperimentConfiguration:
 
             self.appJson.append(app)
 
-        #  Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
-        #    json.dump(self.appJson, f)
-        # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
-            json.dump(self.appJson, f)
+        if windows_mode:
+            #  Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+                json.dump(self.appJson, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+                json.dump(self.appJson, f)
 
         # app popularity
         for app_index in range(len(self.appJson)):
@@ -438,11 +442,13 @@ class ExperimentConfiguration:
 
             self.appJson.append(myApp)
 
-        # Win
-        #appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
-        # Unix
-        appFile = open(self.cnf.resultFolder + "/appDefinition.json", "w")
-        # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
+        if windows_mode:
+            # Win
+            appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
+        else:
+            # Unix
+            appFile = open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, "w")
+            # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
         appFile.write(json.dumps(self.appJson))
         appFile.close()
 
@@ -490,10 +496,12 @@ class ExperimentConfiguration:
 
         userJson['sources'] = self.myUsers
 
-        # Win
-        #userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
-        # Unix
-        userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
+        if windows_mode:
+            # Win
+            userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
+        else:
+            # Unix
+            userFile = open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_users, "w")
         userFile.write(json.dumps(userJson))
         userFile.close()
 
@@ -588,20 +596,21 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
-        #     allocFile.write(json.dumps(alloc))
-        # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
-            allocFile.write(json.dumps(alloc))
-
-        # Update FRAM network Json
-        # # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
-        # Unix
-        with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def greedy_algorithm(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # best choice for each iteration - node with more FRAM
@@ -698,21 +707,21 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
-        #     allocFile.write(json.dumps(alloc))
-        # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
-            allocFile.write(json.dumps(alloc))
-
-
-        # Update FRAM network Json
-        # # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
-        # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
@@ -739,13 +748,13 @@ class ExperimentConfiguration:
 
         alloc['initialAllocation'] = services
 
-        # # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
-        #     netFile.write(json.dumps(alloc))
-        # Unix
-        # with open(self.path + '/' + path + "/allocDefinition.json", "w") as netFile:
-        with open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_alloc, "w") as netFile:
-            netFile.write(json.dumps(alloc))
+        if windows_mode:
+            # # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
+        else:
+            with open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
 
     def bt_min_mods_(self, available_res, cur_solution, services, best_solution, index=0):
 
@@ -821,35 +830,47 @@ class ExperimentConfiguration:
             if n_comms != 1:
                 comms.append(comms.pop(0))
 
-        # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
-        #     json.dump(alloc, f)
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+                json.dump(alloc, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+                json.dump(alloc, f)
 
-        # # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
-            json.dump(alloc, f)
+    def near_GW_placement(self, file_name_alloc='allocDefinition.json', weight='PR'):
 
-    def near_GW_placement(self, file_name_alloc='allocDefinition.json'):
+        # Funcao de peso utilizada no algoritmo de routing de min_path (o meu)
+        if weight == 'BW_PR':
+            weight = lambda src, dst, data: 1 / data.get('BW') + data.get('PR')
+
+        elif weight == 'BW':
+            weight = lambda src, dst, data: 1 / data.get('BW')
+
+        elif weight == 'IPT':
+            weight = lambda src, dst, data: 1 / self.netJson['entity'][dst]['IPT']
 
         alloc = dict()
         module2app_map = dict()
 
-        shortest_paths = dict()
+        origin_lens = dict()
 
+        # Separam-se os nodes por comprimentos até à origem
         for app_i, app in enumerate(self.apps):
-            for nd in app:
+            for cand_nd in app:
 
-                length = len(nx.shortest_path(app, 0, nd)) - 1
+                length = len(nx.shortest_path(app, 0, cand_nd)) - 1
 
-                if length not in shortest_paths:
-                    shortest_paths[length] = dict()
+                if length not in origin_lens:
+                    origin_lens[length] = dict()
 
-                if app_i not in shortest_paths[length]:
-                    shortest_paths[length][app_i] = list()
+                if app_i not in origin_lens[length]:
+                    origin_lens[length][app_i] = list()
 
-                shortest_paths[length][app_i].append(nd)
+                origin_lens[length][app_i].append(cand_nd)
 
-        max_branch_len = max(shortest_paths.keys())
+        max_branch_len = max(origin_lens.keys())
 
         for length in range(max_branch_len + 1):
             for app_i, app in enumerate(self.apps):
@@ -864,8 +885,8 @@ class ExperimentConfiguration:
                         chosen_node = self.cloudId
                     else:
                         # Calcula-se o sumatorio das distancias aos GW's
-                        GW_dists = [sum(len(nx.shortest_path(self.G, n, nd)) for n in self.gatewaysDevices) for nd in
-                                    candidate_nodes]
+                        GW_dists = [sum(nx.shortest_path_length(self.G, source=GW, target=cnd_nd, weight=weight)
+                                        for GW in self.gatewaysDevices) for cnd_nd in candidate_nodes]
 
                         # Dentro destes, escolhe-se os com distancia <
                         candidate_nodes = [node for i, node in enumerate(candidate_nodes) if
@@ -885,44 +906,67 @@ class ExperimentConfiguration:
 
                 else:
                     # Verifica se existe algum elemento desse comprimento na app
-                    if app_i in shortest_paths[length]:
+                    if app_i not in origin_lens[length]:
+                        continue
 
-                        for app_node in shortest_paths[length][app_i]:
-                            parent_app_nd = [edge[0] for edge in app.edges()][0]
-                            parent_id_res = alloc[app.nodes[parent_app_nd]['module']]
+                    for app_node in origin_lens[length][app_i]:
+                        cost = app.nodes[app_node]['cost']
 
-                            candidate_nodes = [parent_id_res]
-                            visited_nodes = list()
+                        parent_app_nd = [edge[0] for edge in app.edges()][0]
+                        parent_id_res = alloc[app.nodes[parent_app_nd]['module']]
 
-                            while True:
-                                if len(candidate_nodes) == 0:
-                                    chosen_node = self.cloudId
-                                    break
+                        candidate_nodes = [parent_id_res]
+                        visited_nodes = list()
 
+                        while True:
+                            # Se, apos todos os nodes serem vistos, nao foi possivel alocar o modulo, aloca-se na cloud
+                            if len(candidate_nodes) == 0:
+                                chosen_node = self.cloudId
+                                break
+
+                            # lista que guarda temporariamente os nodes que nao conseguem abarcar o modulo
+                            insuf_res = list()
+
+                            # guardam-se os nodes que nao conseguem abarcar o modulo
+                            for i, nd in enumerate(candidate_nodes):
+                                if self.freeNodeResources[nd] < cost:
+                                    insuf_res.append(candidate_nodes.pop(i))
+
+                            # Calcula-se o sumatorio de PR usado para chegar aos GW's
+                            GW_dists = [
+                                nx.shortest_path_length(self.G, source=parent_id_res, target=cnd_nd, weight=weight) for
+                                cnd_nd in candidate_nodes]
+
+                            # Dentro destes, escolhe-se os com peso <
+                            candidate_nodes = [node for i, node in enumerate(candidate_nodes) if
+                                               GW_dists[i] == min(GW_dists)]
+
+                            if len(candidate_nodes) != 0:
                                 chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
+                                chosen_node = \
+                                [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                                break
 
-                                if chosen_node_FRAM >= app.nodes[app_node]['cost']:
-                                    chosen_node = [nd for nd in candidate_nodes
-                                                   if self.freeNodeResources[nd] == chosen_node_FRAM][0]
-                                    break
+                            else:
+                                # Voltam-se a adicionar os insuf_res para considerarmos os seus vizinhos
+                                candidate_nodes += insuf_res
 
-                                else:
-                                    # Atualiza a lista de nodes já visitados
-                                    visited_nodes += candidate_nodes
+                                # Atualiza a lista de nodes já visitados
+                                visited_nodes += candidate_nodes
 
-                                    # Vao se buscar os nodes vizinhos dos candidate anteriores
-                                    candidate_nodes = [e[1] for e in self.G.edges if e[0] in candidate_nodes] + \
-                                                      [e[0] for e in self.G.edges if e[1] in candidate_nodes]
+                                # Vao se buscar os nodes vizinhos dos candidate anteriores
+                                candidate_nodes = [e[1] for e in self.G.edges if e[0] in candidate_nodes] + \
+                                                  [e[0] for e in self.G.edges if e[1] in candidate_nodes]
 
-                                    # Removem-se elementos repetidos (vizinhos em comum) e os já vistos
-                                    candidate_nodes = list(set(candidate_nodes))
-                                    candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes]
+                                # Removem-se elementos repetidos (vizinhos em comum) e os já vistos
+                                candidate_nodes = list(set(candidate_nodes))
+                                candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes]
 
-                            self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
+                        self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
 
-                            app.nodes[app_node]['id_resource'] = chosen_node
-                            alloc[app.nodes[app_node]['module']] = chosen_node
-                            module2app_map[app.nodes[app_node]['module']] = app_i
+                        app.nodes[app_node]['id_resource'] = chosen_node
+                        alloc[app.nodes[app_node]['module']] = chosen_node
+                        module2app_map[app.nodes[app_node]['module']] = app_i
 
         allocDef = dict()
         allocDef["initialAllocation"] = list()
@@ -935,13 +979,14 @@ class ExperimentConfiguration:
 
             allocDef["initialAllocation"].append(temp_dict)
 
-        # Win
-        # with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
-        #     json.dump(allocDef, f)
-
-        # # Unix
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, 'w') as f:
-            json.dump(allocDef, f)
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
+                json.dump(allocDef, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, 'w') as f:
+                json.dump(allocDef, f)
 
     def randomPlacement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # nodes -> self.devices     apps -> self.apps
@@ -981,13 +1026,23 @@ class ExperimentConfiguration:
             node['FRAM'] = self.freeNodeResources[node['id']]
 
 
-        #TODO change this to UNIX
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(net_json))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(net_json))
 
-        # Guarda a alocação no .json
-        with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as netFile:
-            netFile.write(json.dumps(alloc))
+            # Guarda a alocação no .json
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(net_json))
+
+            # Guarda a alocação no .json
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
+
 
 #     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
 #                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json', file_name_users='usersDefinition.json'):

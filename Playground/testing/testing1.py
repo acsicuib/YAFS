@@ -9,7 +9,7 @@ import time
 import json
 import random
 import logging.config
-
+import shutil
 import networkx as nx
 
 from pathlib import Path
@@ -30,6 +30,8 @@ from yafs.placement import JSONPlacement
 from yafs.distribution import deterministic_distribution
 from yafs.path_routing import DeviceSpeedAwareRouting
 
+
+NUMBER_OF_APPS = 10
 
 def append_results(it, path):
     if it == 0:
@@ -66,167 +68,40 @@ def append_results(it, path):
                 writer.writerow(converted_row)
 
 
-def placement_and_run(it, stop_time, plot_name, folder_results):
+def main(stop_time, it, folder_results, algorithm, seed):
 
-
-    """
-    TOPOLOGY
-    """
-    t = Topology()
-    dataNetwork = json.load(open('data/network.json'))
-
-    t.load(dataNetwork)
-
-    # if it >= 1:
-    #     t.remove_node(1)
-    #
-    # stable_placement(t.G)
-
-    """
-    APPLICATION or SERVICES
-    """
-    dataApp = json.load(open('data/appDefinition.json'))
-    apps = create_applications_from_json(dataApp)
-
-    """
-    SERVICE PLACEMENT
-    """
-    placementJson = json.load(open('data/allocDefinition.json'))
-    placement = JSONPlacement(name="Placement", json=placementJson)
-
-    """
-    Defining ROUTING algorithm to define how path messages in the topology among modules
-    """
-    # selectorPath = MaxBW_Root()       # <<< Selector path do ze
-    selectorPath = DeviceSpeedAwareRouting()
-    graph_file_ = 'root_alg'
-
-    # selectorPath = MaxBW()
-    # graph_file_ = 'networkx_alg'
-
-    """
-    SIMULATION ENGINE
-    """
-    s = Sim(t, default_results_path=folder_results + "sim_trace_temp")
-
-    """
-    Deploy services == APP's modules
-    """
-    for aName in apps.keys():
-        s.deploy_app(apps[aName], placement, selectorPath)  # Note: each app can have a different routing algorithm
-
-    """
-    Deploy users
-    """
-
-    userJSON = json.load(open('data/usersDefinition.json'))
-    for user in userJSON["sources"]:
-        app_name = user["app"]
-        app = s.apps[app_name]
-        msg = app.get_message(user["message"])
-        node = user["id_resource"]
-        dist = deterministic_distribution(100, name="Deterministic")
-        idDES = s.deploy_source(app_name, id_node=node, msg=msg, distribution=dist)
-
-    """
-    RUNNING - last step
-    """
-    logging.info(" Performing simulation: %i " % it)
-    s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
-    s.print_debug_assignaments()
-
-    append_results(it, folder_results)
-
-    return placement, t
-
-algorithm_list = ['exp_conf.greedy_algorithm()', 'exp_conf.backtrack_placement()']
-def main2(stop_time, iterations, algorithms_list):
+    random.seed(seed)
     conf = myConfig.myConfig()
-
-    random.seed(15612357)
-    exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
-    folder_results = lpath=os.path.dirname(__file__)
-    print(folder_results)
-
-
-    random.seed(15612357)
-    exp_conf.networkGeneration(n=10, file_name_network='network.json')
-    random.seed(15612357)
-    exp_conf.simpleAppsGeneration(file_name_apps='appDefinition.json', random_resources=True)
-    random.seed(15612357)
-    exp_conf.user_generation()
-
-    for algo in algorithms_list:
-        for it in range(iterations):
-            file_name_network = 'network.json'
-            placement_algorithm = 'exp_conf.greedy_algorithm()'
-            it = 0 #  variavel
-            if placement_algorithm == 'exp_conf.near_GW_placement()':
-                exp_conf.near_GW_placement()
-                plot_name = 'near_GW_placement'
-            elif placement_algorithm == 'exp_conf.greedy_algorithm()':
-                exp_conf.greedy_algorithm('allocDefinition.json', file_name_network='network.json')
-                plot_name = 'greedy_algorithm'
-            elif placement_algorithm == 'exp_conf.bt_min_mods()':
-                exp_conf.bt_min_mods()
-                plot_name = 'bt_min_mods'
-            elif placement_algorithm == 'exp_conf.bt_min_mods_()':
-                exp_conf.bt_min_mods_()
-                plot_name = 'bt_min_mods_'
-            elif placement_algorithm == 'exp_conf.resilient_placement()':
-                exp_conf.resilient_placement()
-                plot_name = 'resilient_placement'
-            elif placement_algorithm == 'exp_conf.randomPlacement()':
-                exp_conf.randomPlacement()
-                plot_name = 'randomPlacement'
-            elif placement_algorithm == 'exp_conf.backtrack_placement()':
-                exp_conf.backtrack_placement(file_name_alloc='allocDefinition.json', first_alloc=True, mode='high_centrality_and_app_popularity')
-                plot_name = 'backtrack_placement'
-            else:  #more algo
-                pass
-
-            placement, t = placement_and_run(it, stop_time, plot_name, folder_results=folder_results)
-
-        # pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
-        pos = {0: (0, 1), 1: (1, 2), 2: (2, 1), 3: (1, 0), 4: (3, 1), 5: (4, 2), 6: (5, 1), 7: (4, 0)}
-
-        # teste = nx.algorithms.community.asyn_fluidc(t.G, 4, max_iter=100, seed=None)
-        # teste = nx.pagerank(t.G, alpha=0.85, personalization=None, max_iter=100, tol=1e-06, nstart=None, weight='weight', dangling=None)
-
-        # !!! data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
-        # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
-
-        # data_analysis.plot_latency(folder_results, plot_name=plot_name)
-        data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
-        data_analysis.modules_per_node(placement, t, os.path.dirname(__file__), plot_name=plot_name)
-        # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
-
-
-
-
-def main(stop_time, it, folder_results):
-
-    conf = myConfig.myConfig()
-
-    random.seed(15612357)
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
 
-    random.seed(15612357)
-    exp_conf.app_generation(app_struct='simple')
-    random.seed(15612357)
-    exp_conf.networkGeneration(n=10, file_name_network='network.json')
-    random.seed(15612357)
+    random.seed(seed)
+    exp_conf.app_generation(app_struct='linear')
+    random.seed(seed)
+    exp_conf.networkGeneration(n=NUMBER_OF_APPS, file_name_network='network.json')
+    random.seed(seed)
     exp_conf.user_generation()
 
     # Algoritmo de alloc
-    # exp_conf.randomPlacement(file_name_network='network.json')
-    # plot_name = 'randomPlacement'
 
-    # exp_conf.bt_min_mods()
-    # plot_name = 'bt_min_mods'
 
-    exp_conf.near_GW_placement()
-    plot_name = 'near_GW_placement'
+    if algorithm == 'randomPlacement':
+        exp_conf.randomPlacement(file_name_network='network.json')
+        plot_name = 'randomPlacement'
+    elif algorithm == 'bt_min_mods_':
+        exp_conf.bt_min_mods_()
+        plot_name = 'bt_min_mods_'
+    elif algorithm == 'near_GW_placement':
+        # BW_PR <=> weight=lambda _, _2, data: 1 / data.get('BW') + data.get('PR')
+        # BW <=> weight=lambda _, _2, data: 1 / data.get('BW')
+
+        # exp_conf.near_GW_placement(weight='BW_PR')
+        # exp_conf.near_GW_placement(weight='PR')
+        exp_conf.near_GW_placement(weight='BW')
+        # exp_conf.near_GW_placement(weight='IPT')
+        plot_name = 'near_GW_placement'
+    elif algorithm == 'greedy_algorithm':
+        exp_conf.greedy_algorithm()
+        plot_name = 'greedy_algorithm'
 
 
     """
@@ -258,11 +133,11 @@ def main(stop_time, it, folder_results):
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
     # selectorPath = MaxBW_Root()       # <<< Selector path do ze
-    selectorPath = DeviceSpeedAwareRouting()
-    graph_file_ = 'root_alg'
+    # selectorPath = DeviceSpeedAwareRouting()
+    # graph_file_ = 'root_alg'
 
-    # selectorPath = MaxBW()
-    # graph_file_ = 'networkx_alg'
+    selectorPath = MaxBW()
+    graph_file_ = 'networkx_alg'
 
 
     """
@@ -307,49 +182,53 @@ def main(stop_time, it, folder_results):
     #!!! data_analysis.plot_app_path(folder_results, 0, t, graph_file=graph_file_, pos=pos, placement=placement)
     # data_analysis.plot_occurrencies(folder_results, mode='node_dst')
 
-    # data_analysis.plot_latency(folder_results, plot_name=plot_name)
-    data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
-    data_analysis.modules_per_node(placement, t, os.path.dirname(__file__), plot_name=plot_name)
-    # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
+
+    if it == nIterations-1:
+        # data_analysis.plot_latency(folder_results, plot_name=plot_name)
+        data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
+
+        src_csv = folder_results + "sim_trace_link.csv"
+        dst_csv = folder_results + algorithm + "_sim_trace_link.csv"
+        shutil.copyfile(src_csv, dst_csv)
+
+        # data_analysis.modules_per_node(placement, t, plot_name=plot_name)
+        # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
 
 
 if __name__ == '__main__':
-    LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
+    # LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
     # logging.config.fileConfig(LOGGING_CONFIG)
 
+    folder_results = Path("results")
+    folder_results.mkdir(parents=True, exist_ok=True)
+    folder_results = str(folder_results) + '/'  # TODO bool
 
     nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
 
-    # Iteration for each experiment changing the seed of randoms
-    for iteration in range(nIterations):
-        random.seed(iteration)
-        logging.info("Running experiment it: - %i" % iteration)
+    god_tier_seed = 15612357
+    random_seed = True
+    if random_seed:
+        seed = time.time()
+    else:
+        seed = god_tier_seed
 
-        start_time = time.time()
-        # main(stop_time=simulationDuration,
-        #      it=iteration, folder_results=folder_results)
-        algorithms_list = ['exp_conf.greedy_algorithm()', 'exp_conf.backtrack_placement()']
-        main2(stop_time=simulationDuration,iterations=10,algorithms_list = algorithms_list)
 
-        print("\n--- %s seconds ---" % (time.time() - start_time))
+    # algorithm_list = ['randomPlacement', 'bt_min_mods_','near_GW_placement', 'greedy_algorithm']
+    algorithm_list = ['randomPlacement',  'near_GW_placement', 'greedy_algorithm']
+    for algorithm in algorithm_list:
+        print('\n\n', algorithm,'\n')
+        # Iteration for each experiment changing the seed of randoms
+        for iteration in range(nIterations):
+            random.seed(iteration)
+            logging.info("Running experiment it: - %i" % iteration)
 
-    print("Simulation Done!")
+            start_time = time.time()
+            main(stop_time=simulationDuration,
+                 it=iteration, folder_results=folder_results, algorithm=algorithm, seed=seed)
 
-    # Analysing the results.
-    dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
-    print("Number of total messages between nodes: %i"%len(dfl))
+            print("\n--- %s seconds ---" % (time.time() - start_time))
 
-    df = pd.read_csv(folder_results+"sim_trace.csv")
-    print("Number of requests handled by deployed services: %i"%len(df))
+        print("Simulation Done!")
 
-    dfapp = df[df.app == 0].copy() # a new df with the requests handled by app 0
-    print(dfapp.head())
-
-    dfapp.loc[:,"transmission_time"] = dfapp.time_emit - dfapp.time_reception # Transmission time
-    dfapp.loc[:,"service_time"] = dfapp.time_out - dfapp.time_in
-
-    print("The average service time of app0 is: %0.3f "%dfapp["service_time"].mean())
-
-    print("The app0 is deployed in the folling nodes: %s"%np.unique(dfapp["TOPO.dst"]))
-    print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
+    data_analysis.scatter_plot_app_latency_per_algorithm(folder_results,algorithm_list )
