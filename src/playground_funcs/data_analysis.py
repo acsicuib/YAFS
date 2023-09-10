@@ -308,3 +308,30 @@ def plot_messages_node(folder_results, plot_name=None):
         ax.set_title(plot_name)
         save_plot(plot_name)
     plt.show()
+
+def scatter_plot_app_latency_per_algorithm(folder_results, algorithm_list):
+    colors = ['red', 'green', 'blue', 'purple', 'orange']
+    # dfl = pd.read_csv(folder_results + "algorithm1")
+    i = 0
+    mean = []
+    labels = []
+    for algorithm in algorithm_list:
+        dfl = pd.read_csv(folder_results + algorithm + "_sim_trace_link.csv")
+        apps_deployed = np.unique(dfl.app)
+
+        app_lat = []
+        for app_ in apps_deployed:
+            app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
+        mean+=app_lat
+        plt.scatter(range(len(app_lat)), app_lat, label=algorithm, c=colors[i], marker='o')
+        labels.append(algorithm)
+        i = (i + 1) % len(colors)
+        ticks = range(len(app_lat))
+
+    # media = sum(mean)/len(mean)
+    plt.ylim(0, ((sum(mean)/len(mean))*1.5))
+    plt.xticks(ticks)
+    plt.xlabel(f'Apps')
+    plt.ylabel('Latency')
+    plt.legend(labels, loc='upper right')
+    plt.show()

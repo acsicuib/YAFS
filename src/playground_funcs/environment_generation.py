@@ -840,8 +840,6 @@ class ExperimentConfiguration:
         elif weight == 'IPT':
             weight = lambda src, dst, data: 1 / self.netJson['entity'][dst]['IPT']
 
-
-
         alloc = dict()
         module2app_map = dict()
 

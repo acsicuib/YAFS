@@ -9,7 +9,7 @@ import time
 import json
 import random
 import logging.config
-
+import shutil
 import networkx as nx
 
 from pathlib import Path
@@ -30,6 +30,8 @@ from yafs.placement import JSONPlacement
 from yafs.distribution import deterministic_distribution
 from yafs.path_routing import DeviceSpeedAwareRouting
 
+
+NUMBER_OF_APPS = 10
 
 def append_results(it, path):
     if it == 0:
@@ -66,39 +68,41 @@ def append_results(it, path):
                 writer.writerow(converted_row)
 
 
-def main(stop_time, it, folder_results):
+def main(stop_time, it, folder_results, algorithm, seed):
 
+    random.seed(seed)
     conf = myConfig.myConfig()
-
-    random.seed(15612357)
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
 
-    random.seed(15612357)
+    random.seed(seed)
     exp_conf.app_generation(app_struct='linear')
-    random.seed(15612357)
-    exp_conf.networkGeneration(n=10, file_name_network='network.json')
-    random.seed(15612357)
+    random.seed(seed)
+    exp_conf.networkGeneration(n=NUMBER_OF_APPS, file_name_network='network.json')
+    random.seed(seed)
     exp_conf.user_generation()
 
     # Algoritmo de alloc
-    # exp_conf.randomPlacement(file_name_network='network.json')
-    # plot_name = 'randomPlacement'
 
-    # exp_conf.bt_min_mods()
-    # plot_name = 'bt_min_mods'
 
-    # BW_PR <=> weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR')
-    # BW <=> weight=lambda src, dst, data: 1 / data.get('BW')
+    if algorithm == 'randomPlacement':
+        exp_conf.randomPlacement(file_name_network='network.json')
 
-    exp_conf.near_GW_placement(weight='BW')
-    # exp_conf.near_GW_placement(weight='PR')
-    # exp_conf.near_GW_placement(weight='BW')
-    # exp_conf.near_GW_placement(weight='IPT')
+    elif algorithm == 'bt_min_mods_':
+        exp_conf.bt_min_mods_()
 
-    plot_name = 'near_GW_placement'
+    elif algorithm == 'near_GW_placement_BW_PR':
+        exp_conf.near_GW_placement(weight='_BWPR')
 
-    # exp_conf.greedy_algorithm()
-    # plot_name = 'greedy_algorithm'
+    elif algorithm == 'near_GW_placement_PR':
+        exp_conf.near_GW_placement(weight='PR')
+
+    elif algorithm == 'near_GW_placement_BW':
+        exp_conf.near_GW_placement(weight='BW')
+
+    elif algorithm == 'greedy_algorithm':
+        exp_conf.greedy_algorithm()
+
+    plot_name = algorithm
 
 
     """
@@ -183,50 +187,60 @@ def main(stop_time, it, folder_results):
     if it == nIterations-1:
         # data_analysis.plot_latency(folder_results, plot_name=plot_name)
         data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
-        data_analysis.modules_per_node(placement, t, plot_name=plot_name)
+
+        src_csv = folder_results + "sim_trace_link.csv"
+        dst_csv = folder_results + algorithm + "_sim_trace_link.csv"
+        shutil.copyfile(src_csv, dst_csv)
+
+        # data_analysis.modules_per_node(placement, t, plot_name=plot_name)
         # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
 
 
 if __name__ == '__main__':
-    LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
-    logging.config.fileConfig(LOGGING_CONFIG)
+    # LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
+    # logging.config.fileConfig(LOGGING_CONFIG)
 
-    folder_results = Path("results/")
+    folder_results = Path("results")
     folder_results.mkdir(parents=True, exist_ok=True)
-    folder_results = str(folder_results)+'/'
+    folder_results = str(folder_results) + '/'  # TODO bool
 
     nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
 
-    # Iteration for each experiment changing the seed of randoms
-    for iteration in range(nIterations):
-        random.seed(iteration)
-        logging.info("Running experiment it: - %i" % iteration)
-
-        start_time = time.time()
-        main(stop_time=simulationDuration,
-             it=iteration, folder_results=folder_results)
-
-        print("\n--- %s seconds ---" % (time.time() - start_time))
-
-    print("Simulation Done!")
-
-    # Analysing the results.
-    dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
-    print("Number of total messages between nodes: %i"%len(dfl))
-
-    df = pd.read_csv(folder_results+"sim_trace.csv")
-    print("Number of requests handled by deployed services: %i"%len(df))
-
-    dfapp = df[df.app == 0].copy() # a new df with the requests handled by app 0
-    print(dfapp.head())
-
-    dfapp.loc[:,"transmission_time"] = dfapp.time_emit - dfapp.time_reception # Transmission time
-    dfapp.loc[:,"service_time"] = dfapp.time_out - dfapp.time_in
-
-    print("The average service time of app0 is: %0.3f "%dfapp["service_time"].mean())
-
-    print("The app0 is deployed in the folling nodes: %s"%np.unique(dfapp["TOPO.dst"]))
-    print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
+    god_tier_seed = 15612357
+    random_seed = True
+    if random_seed:
+        seed = time.time()
+    else:
+        seed = god_tier_seed
 
 
+    # algorithm_list = ['randomPlacement', 'bt_min_mods_','near_GW_placement', 'greedy_algorithm']
+    algorithm_list = ['randomPlacement',  'near_GW_placement_PR', 'greedy_algorithm']
+    for algorithm in algorithm_list:
+        print('\n\n', algorithm,'\n')
+        # Iteration for each experiment changing the seed of randoms
+        for iteration in range(nIterations):
+            random.seed(iteration)
+            logging.info("Running experiment it: - %i" % iteration)
+
+            start_time = time.time()
+            main(stop_time=simulationDuration,
+                 it=iteration, folder_results=folder_results, algorithm=algorithm, seed=seed)
+
+            print("\n--- %s seconds ---" % (time.time() - start_time))
+
+        print("Simulation Done!")
+
+    data_analysis.scatter_plot_app_latency_per_algorithm(folder_results,algorithm_list )
+
+
+
+#        # BW_PR <=> weight=lambda _, _2, data: 1 / data.get('BW') + data.get('PR')
+#        # BW <=> weight=lambda _, _2, data: 1 / data.get('BW')
+#
+#        # exp_conf.near_GW_placement(weight='BW_PR')
+#        # exp_conf.near_GW_placement(weight='PR')
+#        exp_conf.near_GW_placement(weight='BW')
+#        # exp_conf.near_GW_placement(weight='IPT')
+#        plot_name = 'near_GW_placement'
