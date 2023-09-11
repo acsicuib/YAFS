@@ -5,10 +5,17 @@ import pandas as pd
 import networkx as nx
 from math import ceil, floor
 from collections import Counter
+# from pathlib import Path
+
+
+# folder_results = Path("../../tutorial_scenarios/Playground/results/")
+# folder_results.mkdir(parents=True, exist_ok=True)
+# folder_results = str(folder_results)+"/"
 
 # colors
 import matplotlib.colors as mcolors
 import random
+
 
 # generate list of n different colors
 def generate_colors(n):
@@ -18,12 +25,6 @@ def generate_colors(n):
     selected_colors = random.sample(colors, n)
     return selected_colors
 
-# from pathlib import Path
-
-
-# folder_results = Path("../../tutorial_scenarios/Playground/results/")
-# folder_results.mkdir(parents=True, exist_ok=True)
-# folder_results = str(folder_results)+"/"
 
 def save_plot(plot_name):
     try:
