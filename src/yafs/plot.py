@@ -6,6 +6,18 @@ import networkx as nx
 from math import ceil, floor
 from collections import Counter
 
+# colors
+import matplotlib.colors as mcolors
+import random
+
+# generate list of n different colors
+def generate_colors(n):
+    colors = list(mcolors.CSS4_COLORS.keys())
+
+    # Randomly select n colors
+    selected_colors = random.sample(colors, n)
+    return selected_colors
+
 # from pathlib import Path
 
 
@@ -23,7 +35,7 @@ def save_plot(plot_name):
 
 
 def plot_paths_taken(folder_results, plot_name=None):
-    dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
+    dfl = pd.read_csv(folder_results + "sim_trace" + "_link.csv")
 
     apps_deployed = np.unique(dfl.app)
 
@@ -33,7 +45,7 @@ def plot_paths_taken(folder_results, plot_name=None):
 
     for en, a in enumerate(apps_deployed):
         ax.scatter(np.array(dfl[dfl.app == a].src), np.array(dfl[dfl.app == a].dst),
-                   c=(pallet[en]*np.ones(len(dfl[dfl.app == a].src))), cmap='plasma', vmin=0, vmax=100, marker='x',
+                   c=(pallet[en] * np.ones(len(dfl[dfl.app == a].src))), cmap='plasma', vmin=0, vmax=100, marker='x',
                    label=f'App: {a}')
 
     ax.set_xlabel('Source nodes')
@@ -75,7 +87,8 @@ def plot_app_path(folder_results, application, t, pos=None, placement=None, plot
     labels = {}
     for index, hops in path.iterrows():
         highlighted_edges.append([hops.src, hops.dst])
-        labels[(hops.src, hops.dst)] = "{}\nBW={}\tPR={}".format(hops.message, t.get_edge((hops.src, hops.dst))['BW'], t.get_edge((hops.src, hops.dst))['PR'])
+        labels[(hops.src, hops.dst)] = "{}\nBW={}\tPR={}".format(hops.message, t.get_edge((hops.src, hops.dst))['BW'],
+                                                                 t.get_edge((hops.src, hops.dst))['PR'])
     print(highlighted_edges)
 
     print('tempo total')
@@ -96,7 +109,8 @@ def plot_app_path(folder_results, application, t, pos=None, placement=None, plot
                 node_labels[int(dt['id_resource'])][1].append(str(dt['app']))
 
         for lbl in node_labels:
-            node_labels[lbl] = f"\n\n\n\nModule: {', '.join(node_labels[lbl][0])}\nApp: {', '.join(node_labels[lbl][1])}"
+            node_labels[
+                lbl] = f"\n\n\n\nModule: {', '.join(node_labels[lbl][0])}\nApp: {', '.join(node_labels[lbl][1])}"
 
         nx.draw_networkx_labels(t.G, pos, labels=node_labels, font_size=8)
         nx.draw_networkx(t.G, pos, arrows=True)
@@ -108,7 +122,7 @@ def plot_app_path(folder_results, application, t, pos=None, placement=None, plot
     nx.draw_networkx_edge_labels(t.G, pos, edge_labels=labels, label_pos=0.5, font_size=8, font_family='Arial')
 
     if plot_name is not None:
-        save_plot(plot_name+f'_{application}_path')
+        save_plot(plot_name + f'_{application}_path')
 
     plt.show()
 
@@ -122,7 +136,7 @@ def plot_occurrences(folder_results, mode='module', plot_name=None):
         res_used = df['TOPO.src'] + df['TOPO.dst']
     elif mode == 'node_src':
         res_used = df['TOPO.src']
-    else:                               # elif mode == 'node_dst':
+    else:  # elif mode == 'node_dst':
         res_used = df['TOPO.dst']
 
     unique_values, occurrence_count = np.unique(res_used, return_counts=True)
@@ -158,7 +172,7 @@ def plot_latency(folder_results, plot_name=None):
     ax = plt.subplot()
 
     plt.boxplot(app_lat)
-    plt.xticks(range(1, len(apps_deployed)+1), apps_deployed)
+    plt.xticks(range(1, len(apps_deployed) + 1), apps_deployed)
 
     ax.set_xlabel(f'Apps')
     ax.set_ylabel('Latency')
@@ -203,8 +217,68 @@ def plot_avg_latency(folder_results, plot_name=None):
     plt.show()
 
 
-def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False, plot_name=None):
+def scatter_plot_app_latency_per_algorithm(folder_results, algorithm_list):
+    colors = ['red', 'green', 'blue', 'purple', 'orange']
+    # dfl = pd.read_csv(folder_results + "algorithm1")
+    i = 0
+    mean = []
+    labels = []
+    for algorithm in algorithm_list:
+        dfl = pd.read_csv(folder_results + algorithm + "_sim_trace_link.csv")
+        apps_deployed = np.unique(dfl.app)
 
+        app_lat = []
+        for app_ in apps_deployed:
+            app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
+        mean += app_lat
+        plt.scatter(range(len(app_lat)), app_lat, label=algorithm, c=colors[i], marker='o')
+        labels.append(algorithm)
+        i = (i + 1) % len(colors)
+        ticks = range(len(app_lat))
+
+    # media = sum(mean)/len(mean)
+    plt.ylim(0, ((sum(mean) / len(mean)) * 1.5))
+    plt.xticks(ticks)
+    plt.xlabel(f'Apps')
+    plt.ylabel('Latency')
+    plt.legend(labels, loc='upper right')
+    plt.show()
+
+def plot_latency_per_placement_algorithm(folder_results, algorithm_list):
+    colors = generate_colors(len(algorithm_list))
+    # dfl = pd.read_csv(folder_results + "algorithm1")
+    i = 0
+    mean = []
+    for algorithm in algorithm_list:
+        dfl = pd.read_csv(folder_results + algorithm + "_sim_trace_link.csv")
+        apps_deployed = np.unique(dfl.app)
+
+        app_lat = []
+        for app_ in apps_deployed:
+            app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
+        mean.append(sum(app_lat) / len(app_lat))
+
+
+        i = + 1
+
+    bars = plt.bar(algorithm_list, mean, color=colors)
+
+    # media = sum(mean)/len(mean)
+    plt.ylim(0, max(mean) * 1.1)
+    # plt.xticks(ticks)
+    plt.xlabel(f'Placement Algorithms')
+    plt.ylabel('Latency')
+    plt.title('latency_per_placement_algorithm')
+    # plt.legend(algorithm_list, loc='upper right')
+
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
+
+    plt.show()
+
+
+def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False, plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace.csv")
 
     max_time = max(df['time_out'])
@@ -215,8 +289,10 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, sh
     n_nodes = len(t.G.nodes)
 
     for i in range(n_wind):
-        add = np.unique(np.concatenate((df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)]['TOPO.src'],
-                                        df[(df['time_out'] < ((i+1)*window_sz)) & (df['time_out'] > i*window_sz)]['TOPO.dst'])))
+        add = np.unique(
+            np.concatenate((df[(df['time_out'] < ((i + 1) * window_sz)) & (df['time_out'] > i * window_sz)]['TOPO.src'],
+                            df[(df['time_out'] < ((i + 1) * window_sz)) & (df['time_out'] > i * window_sz)][
+                                'TOPO.dst'])))
         nodes_per_window.append(add)
 
         window_rate.append(len(nodes_per_window[i]) * 100 / n_nodes)
@@ -238,7 +314,7 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, sh
 
     if show_values:
         for enum, rate in enumerate(window_rate):
-            plt.text(enum, rate, f'{int(floor((rate*n_nodes)/100))}')
+            plt.text(enum, rate, f'{int(floor((rate * n_nodes) / 100))}')
 
     ax.set_xlabel(f'Window')
     ax.set_ylabel('% Used Nodes')
@@ -248,7 +324,7 @@ def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, sh
     plt.show()
 
 
-def modules_per_node(placement, topology, path, plot_name=None):
+def modules_per_node(placement, topology, plot_name=None):
     nodes = dict()
     for n in topology.get_nodes():
         nodes[int(n)] = 0
@@ -274,8 +350,6 @@ def modules_per_node(placement, topology, path, plot_name=None):
         save_plot(plot_name)
 
     plt.show()
-
-    # print(nodes)
 
 
 def plot_messages_node(folder_results, plot_name=None):
