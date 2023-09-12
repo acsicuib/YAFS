@@ -295,8 +295,12 @@ class ExperimentConfiguration:
                 self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"
             elif app_struct == 'simple':
                 self.func_APPGENERATION = "linear_graph(1)"
+            elif app_struct == 'tree':
+                self.func_APPGENERATION = "nx.random_tree(n=random.randint(2, 6), create_using=nx.DiGraph)"
             APP = eval(self.func_APPGENERATION)
 
+            if debug_mode:
+                nx.write_network_text(APP)  # TODO : é preciso a versão 3.1 do nx
             mylabels = {}
 
             for n in range(0, len(APP.nodes)):

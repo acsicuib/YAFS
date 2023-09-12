@@ -245,10 +245,9 @@ def scatter_plot_app_latency_per_algorithm(folder_results, algorithm_list):
     plt.legend(labels, loc='upper right')
     plt.show()
 
+
 def plot_latency_per_placement_algorithm(folder_results, algorithm_list):
     colors = generate_colors(len(algorithm_list))
-    # dfl = pd.read_csv(folder_results + "algorithm1")
-    i = 0
     mean = []
     for algorithm in algorithm_list:
         dfl = pd.read_csv(folder_results + algorithm + "_sim_trace_link.csv")
@@ -258,9 +257,6 @@ def plot_latency_per_placement_algorithm(folder_results, algorithm_list):
         for app_ in apps_deployed:
             app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
         mean.append(sum(app_lat) / len(app_lat))
-
-
-        i = + 1
 
     bars = plt.bar(algorithm_list, mean, color=colors)
 

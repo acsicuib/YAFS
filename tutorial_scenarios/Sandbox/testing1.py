@@ -231,5 +231,5 @@ if __name__ == '__main__':
 
         print("Simulation Done!")
 
-    # plot.scatter_plot_app_latency_per_algorithm(folder_results, algorithm_list)
+    plot.scatter_plot_app_latency_per_algorithm(folder_results, algorithm_list)
     plot.plot_latency_per_placement_algorithm(folder_results, algorithm_list)
