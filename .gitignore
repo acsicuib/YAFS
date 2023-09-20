@@ -8,3 +8,4 @@
 build/
 src/yafs.egg-info/
 
+Playground/**/*.csv
