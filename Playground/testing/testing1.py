@@ -32,6 +32,7 @@ from yafs.path_routing import DeviceSpeedAwareRouting
 
 
 NUMBER_OF_APPS = 10
+NUMBER_OF_NODES = 10
 
 def append_results(it, path):
     if it == 0:
@@ -68,8 +69,25 @@ def append_results(it, path):
                 writer.writerow(converted_row)
 
 
-def main(stop_time, it, folder_results, algorithm, seed):
+def sum_mods_per_node(placement, nodes):
+    for dt in placement.data['initialAllocation']:
+        nodes[int(dt['id_resource'])] += 1
 
+def append_mods_per_node(placement, total_mods_per_node):
+    mods_per_node = dict()
+    for i in range(NUMBER_OF_NODES+1):
+        mods_per_node[i] = 0
+
+    for dt in placement.data['initialAllocation']:
+        mods_per_node[int(dt['id_resource'])] += 1
+
+    total_mods_per_node[algorithm] += list(mods_per_node.values())
+
+
+def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, total_mods_per_node):
+
+
+    global nodes
     random.seed(seed)
     conf = myConfig.myConfig()
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
@@ -77,7 +95,7 @@ def main(stop_time, it, folder_results, algorithm, seed):
     random.seed(seed)
     exp_conf.app_generation(app_struct='linear')
     random.seed(seed)
-    exp_conf.networkGeneration(n=NUMBER_OF_APPS, file_name_network='network.json')
+    exp_conf.networkGeneration(n=NUMBER_OF_NODES, file_name_network='network.json')
     random.seed(seed)
     exp_conf.user_generation()
 
@@ -87,9 +105,9 @@ def main(stop_time, it, folder_results, algorithm, seed):
     if algorithm == 'randomPlacement':
         exp_conf.randomPlacement(file_name_network='network.json')
         plot_name = 'randomPlacement'
-    elif algorithm == 'bt_min_mods_':
-        exp_conf.bt_min_mods_()
-        plot_name = 'bt_min_mods_'
+    elif algorithm == 'bt_min_mods':
+        exp_conf.bt_min_mods()
+        plot_name = 'bt_min_mods'
     elif algorithm == 'near_GW_placement':
         # BW_PR <=> weight=lambda _, _2, data: 1 / data.get('BW') + data.get('PR')
         # BW <=> weight=lambda _, _2, data: 1 / data.get('BW')
@@ -128,6 +146,18 @@ def main(stop_time, it, folder_results, algorithm, seed):
     """
     placementJson = json.load(open('data/allocDefinition.json'))
     placement = JSONPlacement(name="Placement", json=placementJson)
+
+    if it == 0:
+        nodes = dict()
+        for n in t.get_nodes():
+            nodes[int(n)] = 0
+
+        total_mods_per_node[algorithm] = []
+        for n in t.get_nodes():
+            nodes[int(n)] = 0
+
+    append_mods_per_node(placement, total_mods_per_node)
+    sum_mods_per_node(placement, nodes)
 
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
@@ -171,6 +201,8 @@ def main(stop_time, it, folder_results, algorithm, seed):
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
 
+
+
     append_results(it, folder_results)
 
     # pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
@@ -188,8 +220,18 @@ def main(stop_time, it, folder_results, algorithm, seed):
         data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
 
         src_csv = folder_results + "sim_trace_link.csv"
-        dst_csv = folder_results + algorithm + "_sim_trace_link.csv"
+        dst_csv = folder_data_processing + algorithm + "_sim_trace_link.csv"
         shutil.copyfile(src_csv, dst_csv)
+
+        # src_alloc = 'data/allocDefinition.json'
+        # dst_alloc = folder_data_processing + algorithm + '_allocDefinition.json'
+        # shutil.copyfile(src_alloc, dst_alloc)
+        if nIterations > 1:
+            for node in nodes.keys():
+                nodes[node] /= it
+        modules_per_node[algorithm] = nodes
+
+        print(algorithm, 'len\n',len(total_mods_per_node[algorithm]), '\n\n')
 
         # data_analysis.modules_per_node(placement, t, plot_name=plot_name)
         # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, plot_name=allocAlg+'_nds_per_tw')
@@ -203,7 +245,11 @@ if __name__ == '__main__':
     folder_results.mkdir(parents=True, exist_ok=True)
     folder_results = str(folder_results) + '/'  # TODO bool
 
-    nIterations = 1  # iteration for each experiment
+    folder_data_processing = Path('data_processing')
+    folder_data_processing.mkdir(parents=True, exist_ok=True)
+    folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
+
+    nIterations = 3  # iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
@@ -213,8 +259,11 @@ if __name__ == '__main__':
     else:
         seed = god_tier_seed
 
+    modules_per_node = dict()
+    total_mods_per_node = dict()
 
-    # algorithm_list = ['randomPlacement', 'bt_min_mods_','near_GW_placement', 'greedy_algorithm']
+    # algorithm_list = ['randomPlacement', 'bt_min_mods','near_GW_placement', 'greedy_algorithm']
+    # algorithm_list = ['bt_min_mods']
     algorithm_list = ['randomPlacement',  'near_GW_placement', 'greedy_algorithm']
     for algorithm in algorithm_list:
         print('\n\n', algorithm,'\n')
@@ -225,10 +274,14 @@ if __name__ == '__main__':
 
             start_time = time.time()
             main(stop_time=simulationDuration,
-                 it=iteration, folder_results=folder_results, algorithm=algorithm, seed=seed)
+                 it=iteration, folder_results=folder_results, folder_data_processing=folder_data_processing,algorithm=algorithm, seed=seed, total_mods_per_node=total_mods_per_node)
 
             print("\n--- %s seconds ---" % (time.time() - start_time))
 
         print("Simulation Done!")
 
-    data_analysis.scatter_plot_app_latency_per_algorithm(folder_results,algorithm_list )
+    print(modules_per_node)
+
+    data_analysis.scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_list)
+    data_analysis.plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
+    data_analysis.plot_modules_per_node_per_algorithm(algorithm_list, total_mods_per_node)

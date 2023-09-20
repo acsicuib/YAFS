@@ -731,7 +731,12 @@ class ExperimentConfiguration:
         services = list()
         best_solution = list()
 
-        apps = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps))
+        if windows_mode:
+            # Win
+            apps = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps))
+        else:
+            # UNIX
+            apps = json.load(open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps))
 
         for app in apps:
             for mod in app['module']:
@@ -749,10 +754,11 @@ class ExperimentConfiguration:
         alloc['initialAllocation'] = services
 
         if windows_mode:
-            # # Win
+            # Win
             with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
                 netFile.write(json.dumps(alloc))
         else:
+            # UNIX
             with open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_alloc, "w") as netFile:
                 netFile.write(json.dumps(alloc))
 
@@ -786,6 +792,8 @@ class ExperimentConfiguration:
                 cur_solution.pop(index)
 
         return best_solution
+
+
 
     def resilient_placement(self, file_name_apps='appDefinition.json'):
         # Nota: Este algoritmo de placement tinha em conta que um node só poderia ter um module
