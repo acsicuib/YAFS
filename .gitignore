@@ -10,3 +10,4 @@ src/yafs.egg-info/
 
 Playground/**/*.csv
 Playground/testing/**/*.png
+Playground/testing/**/*.json
