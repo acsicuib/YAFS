@@ -250,7 +250,7 @@ if __name__ == '__main__':
     folder_data_processing.mkdir(parents=True, exist_ok=True)
     folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
 
-    nIterations = 3  # iteration for each experiment
+    nIterations = 50  # iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
@@ -285,4 +285,5 @@ if __name__ == '__main__':
 
     data_analysis.scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_list)
     data_analysis.plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
-    data_analysis.plot_modules_per_node_per_algorithm(algorithm_list, total_mods_per_node)
+    data_analysis.boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
+    data_analysis.plot_modules_per_node_per_algorithm(total_mods_per_node)
