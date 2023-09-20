@@ -149,15 +149,16 @@ def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, 
 
     if it == 0:
         nodes = dict()
-        for n in t.get_nodes():
-            nodes[int(n)] = 0
+        # for n in t.get_nodes():
+        #     nodes[int(n)] = 0
 
         total_mods_per_node[algorithm] = []
         for n in t.get_nodes():
             nodes[int(n)] = 0
 
+    # sum_mods_per_node(placement, nodes)
     append_mods_per_node(placement, total_mods_per_node)
-    sum_mods_per_node(placement, nodes)
+
 
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
