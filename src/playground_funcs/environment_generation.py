@@ -1,4 +1,3 @@
-import heapq
 import json
 from operator import itemgetter
 
@@ -10,23 +9,27 @@ import time
 from math import floor
 import matplotlib.pyplot as plt
 import copy
+import heapq
 
 import operator
 import json
 import os
 from yafs import Topology
-# import myConfig #! 27/08
+from playground_funcs import myConfig
 
-debug_mode = True
-
+debug_mode = False
+windows_mode = True # for Unix set to False
 
 def linear_graph(size):
     g = nx.DiGraph()
     g.add_nodes_from(range(size))
-    if size >= 1:
-        g.add_edges_from(tuple(zip(range(1, size), range(size - 1))))
+    g.add_edges_from(tuple(zip(range(1, size), range(size - 1))))
 
     return g
+
+
+def deviation_from_mean(element, mean):
+    return abs(element - mean)
 
 
 class ExperimentConfiguration:
@@ -188,19 +191,21 @@ class ExperimentConfiguration:
                                     horizontalalignment='center')
             plt.show()
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
-        # Unix
-        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def simpleAppsGeneration(self, file_name_apps='appDefinition.json',
                              random_resources=True):  # resources available to each module (if False, each module's resources match each node")
 
         self.appJson = list()
 
-        if random_resources:
+        if not random_resources:
             number_of_apps = len(self.netJson['entity']) - 1
         else:
             number_of_apps = self.TOTALNUMBEROFAPPS
@@ -246,16 +251,19 @@ class ExperimentConfiguration:
 
             self.appJson.append(app)
 
-        #  Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
-           json.dump(self.appJson, f)
-        # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
-        #     json.dump(self.appJson, f)
+        if windows_mode:
+            #  Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+                json.dump(self.appJson, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+                json.dump(self.appJson, f)
 
         # app popularity
         for app_index in range(len(self.appJson)):
             self.appJson[app_index]['popularity'] = eval(self.func_REQUESTPROB)
+
         return self.appJson
 
     def app_generation(self, file_name_apps='appDefinition.json', app_struct='tree'):
@@ -434,19 +442,23 @@ class ExperimentConfiguration:
 
             self.appJson.append(myApp)
 
-        # Win
-        appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
-        # Unix
-        # appFile = open(self.cnf.resultFolder + "/appDefinition.json", "w")
-        # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
+        if windows_mode:
+            # Win
+            appFile = open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, "w")
+        else:
+            # Unix
+            appFile = open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, "w")
+            # appFileBE = open(self.cnf.resultFolder + "/appDefinitionBE.json", "w")
         appFile.write(json.dumps(self.appJson))
         appFile.close()
 
         for app_index in range(len(self.appJson)):
             self.appJson[app_index]['popularity'] = eval(self.func_REQUESTPROB)
 
+
     def user_generation(self, file_name_users='usersDefinition.json'):
         # Generation of the IoT devices (users)
+
 
         userJson = {}
 
@@ -455,8 +467,9 @@ class ExperimentConfiguration:
         self.appsRequests = list()
         for i in range(0, self.TOTALNUMBEROFAPPS):
             userRequestList = set()
-            # probOfRequested = self.appJson[i]['popularity']
-            probOfRequested = eval(self.func_REQUESTPROB)
+            probOfRequested = self.appJson[i]['popularity']
+            # probOfRequested = eval(self.func_REQUESTPROB)
+
             # probOfRequested = -1
             atLeastOneAllocated = False
             for j in self.gatewaysDevices:
@@ -483,10 +496,12 @@ class ExperimentConfiguration:
 
         userJson['sources'] = self.myUsers
 
-        # Win
-        userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
-        # Unix
-        # userFile = open(self.cnf.resultFolder + "/usersDefinition.json", "w")
+        if windows_mode:
+            # Win
+            userFile = open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_users, "w")
+        else:
+            # Unix
+            userFile = open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_users, "w")
         userFile.write(json.dumps(userJson))
         userFile.close()
 
@@ -498,9 +513,7 @@ class ExperimentConfiguration:
             self.all_placements.append(current_placement.copy())
             if self.first_alloc:
                 self.complete_first_allocation = True
-
-                if debug_mode:
-                    print("first alloc")
+                print("first alloc")
             return
 
         current_module = self.all_modules[module_index]
@@ -566,12 +579,10 @@ class ExperimentConfiguration:
 
         for module, node in solution.items():
             self.netJson['entity'][node]['FRAM'] -= \
-            self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM']
-
-            if debug_mode:
-                print('node: ', node, '\tapp / module : ', int(module.split("_")[0]), '/', int(module.split("_")[1]),
-                      '\tFRAM: ', self.netJson['entity'][node]['FRAM'], '\tRAM: ',
-                      self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM'])
+                self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM']
+            print('node: ', node, '\tapp / module : ', int(module.split("_")[0]), '/', int(module.split("_")[1]),
+                  '\tFRAM: ', self.netJson['entity'][node]['FRAM'], '\tRAM: ',
+                  self.appJson[int(module.split("_")[0])]['module'][int(module.split("_")[1]) - 1]['RAM'])
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
@@ -585,20 +596,21 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
-            allocFile.write(json.dumps(alloc))
-        # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
-        #     allocFile.write(json.dumps(alloc))
-
-        # Update FRAM network Json
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
-        # Unix
-        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def greedy_algorithm(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # best choice for each iteration - node with more FRAM
@@ -657,12 +669,9 @@ class ExperimentConfiguration:
         for current_module in self.all_modules:
             if debug_mode:
                 sorted_nodes = sorted(self.netJson['entity'], key=lambda node: (-node['tier'], -node['FRAM']))
-
-                if debug_mode:
-                    for node in sorted_nodes:
-                        print("ID:", node['id'], "FRAM:", node['FRAM'], "Tier:", node['tier'])
-                    print()
-
+                for node in sorted_nodes:
+                    print("ID:", node['id'], "FRAM:", node['FRAM'], "Tier:", node['tier'])
+                print()
             nodes_retrieved = []
             module_placed = False
             while (not module_placed) and len(nodes_heap):
@@ -683,8 +692,8 @@ class ExperimentConfiguration:
             if nodes_retrieved:
                 for node_retrieved in nodes_retrieved:
                     heapq.heappush(nodes_heap, (node_retrieved[0], node_retrieved[1], node_retrieved[2]))
-        if debug_mode:
-            print(placement)
+
+        print(placement)
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
@@ -698,20 +707,21 @@ class ExperimentConfiguration:
 
             alloc['initialAllocation'].append(temp_dict)
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
-            allocFile.write(json.dumps(alloc))
-        # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
-        #     allocFile.write(json.dumps(alloc))
-
-        # Update FRAM network Json
-        # # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(self.netJson))
-        # # Unix
-        # with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
-        #     netFile.write(json.dumps(self.netJson))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
 
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
@@ -721,7 +731,12 @@ class ExperimentConfiguration:
         services = list()
         best_solution = list()
 
-        apps = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps))
+        if windows_mode:
+            # Win
+            apps = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps))
+        else:
+            # UNIX
+            apps = json.load(open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps))
 
         for app in apps:
             for mod in app['module']:
@@ -738,13 +753,14 @@ class ExperimentConfiguration:
 
         alloc['initialAllocation'] = services
 
-        # # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
-            netFile.write(json.dumps(alloc))
-        # Unix
-        # with open(self.path + '/' + path + "/allocDefinition.json", "w") as netFile:
-        # with open(self.path + '/' + path + file_name, "w") as netFile:
-        #     netFile.write(json.dumps(alloc))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
+        else:
+            # UNIX
+            with open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
 
     def bt_min_mods_(self, available_res, cur_solution, services, best_solution, index=0):
 
@@ -776,6 +792,8 @@ class ExperimentConfiguration:
                 cur_solution.pop(index)
 
         return best_solution
+
+
 
     def resilient_placement(self, file_name_apps='appDefinition.json'):
         # Nota: Este algoritmo de placement tinha em conta que um node só poderia ter um module
@@ -820,13 +838,14 @@ class ExperimentConfiguration:
             if n_comms != 1:
                 comms.append(comms.pop(0))
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
-            json.dump(alloc, f)
-
-        # # Unix
-        # with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
-        #     json.dump(alloc, f)
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps, 'w') as f:
+                json.dump(alloc, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
+                json.dump(alloc, f)
 
     def near_GW_placement(self, file_name_alloc='allocDefinition.json', weight='PR'):
 
@@ -867,7 +886,8 @@ class ExperimentConfiguration:
                     cost = app.nodes[0]['cost']
 
                     # Array com os nodes que conseguem abarcar o 1o modulo da app
-                    candidate_nodes = [nd for nd, res in self.freeNodeResources.items() if res >= cost and nd != self.cloudId]
+                    candidate_nodes = [nd for nd, res in self.freeNodeResources.items() if
+                                       res >= cost and nd != self.cloudId]
 
                     if len(candidate_nodes) == 0:
                         chosen_node = self.cloudId
@@ -877,12 +897,14 @@ class ExperimentConfiguration:
                                         for GW in self.gatewaysDevices) for cnd_nd in candidate_nodes]
 
                         # Dentro destes, escolhe-se os com distancia <
-                        candidate_nodes = [node for i, node in enumerate(candidate_nodes) if GW_dists[i] == min(GW_dists)]
+                        candidate_nodes = [node for i, node in enumerate(candidate_nodes) if
+                                           GW_dists[i] == min(GW_dists)]
 
                         chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
 
                         # Dentro destes, escolhe-se o com FRAM >
-                        chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                        chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][
+                            0]
 
                     self.freeNodeResources[chosen_node] -= cost
                     app.nodes[0]['id_resource'] = chosen_node
@@ -919,14 +941,18 @@ class ExperimentConfiguration:
                                     insuf_res.append(candidate_nodes.pop(i))
 
                             # Calcula-se o sumatorio de PR usado para chegar aos GW's
-                            GW_dists = [nx.shortest_path_length(self.G, source=parent_id_res, target=cnd_nd, weight=weight) for cnd_nd in candidate_nodes]
+                            GW_dists = [
+                                nx.shortest_path_length(self.G, source=parent_id_res, target=cnd_nd, weight=weight) for
+                                cnd_nd in candidate_nodes]
 
                             # Dentro destes, escolhe-se os com peso <
-                            candidate_nodes = [node for i, node in enumerate(candidate_nodes) if GW_dists[i] == min(GW_dists)]
+                            candidate_nodes = [node for i, node in enumerate(candidate_nodes) if
+                                               GW_dists[i] == min(GW_dists)]
 
                             if len(candidate_nodes) != 0:
                                 chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
-                                chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                                chosen_node = \
+                                [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
                                 break
 
                             else:
@@ -961,12 +987,14 @@ class ExperimentConfiguration:
 
             allocDef["initialAllocation"].append(temp_dict)
 
-        # Win
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
-            json.dump(allocDef, f)
-
-        # # Unix
-        # with open(self.path + '/' + s
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
+                json.dump(allocDef, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, 'w') as f:
+                json.dump(allocDef, f)
 
     def lambda_placement(self, file_name_alloc='allocDefinition.json', comm_nr=3):
         # comm_nr = len(self.G.nodes)
@@ -1010,7 +1038,8 @@ class ExperimentConfiguration:
         node2GW_dists = dict()
         for nd in self.G.nodes():
             node2GW_dists[nd] = sum(nx.shortest_path_length(self.G, nd, GW,
-                                                            weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR')) for GW in self.gatewaysDevices)
+                                                            weight=lambda src, dst, data: 1 / data.get('BW') + data.get(
+                                                                'PR')) for GW in self.gatewaysDevices)
 
         # dict {app: {modulo: [id_res, cost]}}
         temp_alloc = dict()
@@ -1034,7 +1063,8 @@ class ExperimentConfiguration:
                         if app_ind in temp_alloc:
                             # Reverte alloc da app
                             for app_nd in temp_alloc[app_ind]:
-                                self.freeNodeResources[temp_alloc[app_ind][app_nd]['id_resource']] += mod2cost[temp_alloc[app_ind][app_nd]['module_name']]
+                                self.freeNodeResources[temp_alloc[app_ind][app_nd]['id_resource']] += mod2cost[
+                                    temp_alloc[app_ind][app_nd]['module_name']]
 
                             del temp_alloc[app_ind]
 
@@ -1049,7 +1079,8 @@ class ExperimentConfiguration:
                     for app_alloc in temp_alloc:
                         # Reverte alloc da app
                         for app_nd in temp_alloc[app_alloc]:
-                            self.freeNodeResources[temp_alloc[app_alloc][app_nd]['id_resource']] += mod2cost[temp_alloc[app_alloc][app_nd]['module_name']]
+                            self.freeNodeResources[temp_alloc[app_alloc][app_nd]['id_resource']] += mod2cost[
+                                temp_alloc[app_alloc][app_nd]['module_name']]
 
                     temp_alloc = dict()
                     break
@@ -1061,7 +1092,9 @@ class ExperimentConfiguration:
         allocDef = {'initialAllocation': list()}
         for app in temp_alloc:
             for app_nd in temp_alloc[app]:
-                allocDef['initialAllocation'].append({"module_name": temp_alloc[app][app_nd]["module_name"], "id_resource": temp_alloc[app][app_nd]["id_resource"], "app": app})
+                allocDef['initialAllocation'].append({"module_name": temp_alloc[app][app_nd]["module_name"],
+                                                      "id_resource": temp_alloc[app][app_nd]["id_resource"],
+                                                      "app": app})
 
         # Win
         with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
@@ -1080,7 +1113,8 @@ class ExperimentConfiguration:
             temp_alloc[app_i] = dict()
 
             # São escolhidos os nodes + proximos
-            candidate_nds = [nd for nd in candidate_nds if node2GW_dists[nd] == min([node2GW_dists[n] for n in candidate_nds])]
+            candidate_nds = [nd for nd in candidate_nds if
+                             node2GW_dists[nd] == min([node2GW_dists[n] for n in candidate_nds])]
 
         else:
             # prnt_nd da app
@@ -1090,16 +1124,19 @@ class ExperimentConfiguration:
 
             # minimal distance to parent
             min_dist = min([nx.shortest_path_length(self.G, prnt_nd, nd,
-                                             weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR')) for nd in candidate_nds])
+                                                    weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR'))
+                            for nd in candidate_nds])
 
             # candidate_nds = nodes com - distancia ao node pai
             candidate_nds = [nd for nd in candidate_nds
                              if nx.shortest_path_length(self.G, prnt_nd, nd,
-                                                 weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR')) == min_dist]
+                                                        weight=lambda src, dst, data: 1 / data.get('BW') + data.get(
+                                                            'PR')) == min_dist]
 
         if len(candidate_nds) != 0:
             chosen_nd = candidate_nds[0]
-            temp_alloc[app_i][app_nd] = {'id_resource': chosen_nd, 'module_name': self.apps[app_i].nodes[app_nd]['module']}
+            temp_alloc[app_i][app_nd] = {'id_resource': chosen_nd,
+                                         'module_name': self.apps[app_i].nodes[app_nd]['module']}
             self.freeNodeResources[chosen_nd] -= cost
 
         else:
@@ -1144,76 +1181,53 @@ class ExperimentConfiguration:
                 alloc['initialAllocation'].append(temp_dict)
 
         # atualiza valores de FRAM
-        net_json = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network))
+        net_json = json.load(open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_network))
 
         for node in net_json['entity']:
             node['FRAM'] = self.freeNodeResources[node['id']]
 
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
-            netFile.write(json.dumps(net_json))
 
-        # Guarda a alocação no .json
-        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
-            netFile.write(json.dumps(alloc))
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(net_json))
 
-    def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
-                          file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json'):
-        self.networkGeneration(n, m, path_network, file_name_network)
-        self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=False)
-        self.backtrack_placement(path_alloc, file_name_alloc)
+            # Guarda a alocação no .json
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(net_json))
 
-    def config_generation_random_resources(self, n=20, m=2, path_network='', file_name_network='netDefinition.json',
-                                           path_apps='',
-                                           file_name_apps='appDefinition.json', path_alloc='',
-                                           file_name_alloc='allocDefinition.json'):
-        self.networkGeneration(n, m, path_network, file_name_network)
-        self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=True)
-        self.backtrack_placement(path_alloc, file_name_alloc, first_alloc=True,
-                                 mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
-
-    def config_generation_timer(self, n=20, m=2, file_name_network='netDefinition.json',
-                                              file_name_apps='appDefinition.json',
-                                              file_name_users='usersDefinition.json',
-                                              file_name_alloc='allocDefinition.json',
-                                              placement_alg='backtrack_placement',
-                                              seed=100000):
-        random.seed(seed)
-        self.networkGeneration(n, m, file_name_network)
-        random.seed(seed)
-        self.app_generation(file_name_apps, 'simple')
-        random.seed(seed)
-        self.user_generation(file_name_users)
-
-        random.seed(seed)
-        ti = time.time()
-
-        if placement_alg == 'backtrack_placement':
-            self.backtrack_placement(file_name_alloc=file_name_alloc, file_name_network=file_name_network, first_alloc=True,
-                                     mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
-
-        elif placement_alg == 'randomPlacement':
-            self.randomPlacement(file_name_network=file_name_network)
-        elif placement_alg == 'bt_min_mods':
-            self.bt_min_mods()
-        elif placement_alg == 'near_GW_placement':
-            self.near_GW_placement()
-        elif placement_alg == 'greedy_algorithm':
-            self.greedy_algorithm()
-
-        tf = time.time()
-
-        return tf-ti
+            # Guarda a alocação no .json
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as netFile:
+                netFile.write(json.dumps(alloc))
 
 
-
-
-# conf = myConfig.myConfig()  # Setting up configuration preferences                                                    #! 27/08
-# random.seed(15612357)                                                                                                 #! 27/08
-
+#     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
+#                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json', file_name_users='usersDefinition.json'):
+#         self.networkGeneration(n, m, path_network, file_name_network)
+#         self.simpleAppsGeneration(path_apps, file_name_apps, random_resources=False)
+#         self.backtrack_placement(path_alloc, file_name_alloc)
 #
-# exp_config = ExperimentConfiguration(conf)                                                                            #! 27/08
-# exp_config.config_generation(n=10)
-# exp_config.config_generation_random_resources(n=10)                                                                   #! 27/08
+#     def config_generation_random_resources(self, n=20, m=2, file_name_network='netDefinition.json',
+#                                            file_name_apps='appDefinition.json',
+#                                            file_name_alloc='allocDefinition.json',
+#                                            file_name_users='usersDefinition.json'):
+#         self.networkGeneration(n, m, file_name_network)
+#         self.simpleAppsGeneration(file_name_apps, random_resources=True)
+#         self.user_generation(file_name_users)
+#         # self.backtrack_placement(file_name_alloc, first_alloc=True, mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
+#         self.greedy_algorithm(file_name_alloc, file_name_network)
+#
+# conf = myConfig.myConfig()  # Setting up configuration preferences
+# random.seed(15612357)
+#
+# #
+# exp_config = ExperimentConfiguration(conf)
+# # exp_config.config_generation(n=10)
+# exp_config.config_generation_random_resources(n=10)
 
 # exp_config.networkGeneration(10)
 # exp_config.simpleAppsGeneration()
