@@ -1204,6 +1204,40 @@ class ExperimentConfiguration:
             with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as netFile:
                 netFile.write(json.dumps(alloc))
 
+    def config_generation_timer(self, n=20, m=2, file_name_network='netDefinition.json',
+                                file_name_apps='appDefinition.json',
+                                file_name_users='usersDefinition.json',
+                                file_name_alloc='allocDefinition.json',
+                                placement_alg='backtrack_placement',
+                                seed=100000):
+        random.seed(seed)
+        self.networkGeneration(n, m, file_name_network)
+        random.seed(seed)
+        self.app_generation(file_name_apps, 'simple')
+        random.seed(seed)
+        self.user_generation(file_name_users)
+
+        random.seed(seed)
+        ti = time.time()
+
+        if placement_alg == 'backtrack_placement':
+            self.backtrack_placement(file_name_alloc=file_name_alloc, file_name_network=file_name_network,
+                                     first_alloc=True,
+                                     mode='high_centrality_and_app_popularity')  # FCFS - high_centrality - Random - high_centrality_and_app_popularity
+
+        elif placement_alg == 'randomPlacement':
+            self.randomPlacement(file_name_network=file_name_network)
+        elif placement_alg == 'bt_min_mods':
+            self.bt_min_mods()
+        elif placement_alg == 'near_GW_placement':
+            self.near_GW_placement()
+        elif placement_alg == 'greedy_algorithm':
+            self.greedy_algorithm()
+
+        tf = time.time()
+
+        return tf - ti
+
 
 #     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
 #                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json', file_name_users='usersDefinition.json'):
