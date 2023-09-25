@@ -91,7 +91,7 @@ def main(stop_time, it, folder_results, algorithm, seed):
         exp_conf.bt_min_mods_()
 
     elif algorithm == 'near_GW_placement_BW_PR':
-        exp_conf.near_GW_placement(weight='_BWPR')
+        exp_conf.near_GW_placement(weight='BW_PR')
 
     elif algorithm == 'near_GW_placement_PR':
         exp_conf.near_GW_placement(weight='PR')
@@ -216,7 +216,10 @@ if __name__ == '__main__':
 
 
     # algorithm_list = ['randomPlacement', 'bt_min_mods_','near_GW_placement', 'greedy_algorithm']
-    algorithm_list = ['randomPlacement',  'near_GW_placement_PR', 'greedy_algorithm']
+    #algorithm_list = ['randomPlacement',  'near_GW_placement_PR', 'greedy_algorithm']
+
+    algorithm_list = ['near_GW_placement_PR', 'near_GW_placement_BW', 'near_GW_placement_BW_PR']
+
     for algorithm in algorithm_list:
         print('\n\n', algorithm,'\n')
         # Iteration for each experiment changing the seed of randoms

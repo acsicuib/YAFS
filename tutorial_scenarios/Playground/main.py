@@ -90,7 +90,9 @@ def main(stop_time, it, folder_results):
     # BW_PR <=> weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR')
     # BW <=> weight=lambda src, dst, data: 1 / data.get('BW')
 
-    exp_conf.near_GW_placement(weight='BW')
+    exp_conf.lambda_placement()
+
+    # exp_conf.near_GW_placement(weight='BW')
     # exp_conf.near_GW_placement(weight='PR')
     # exp_conf.near_GW_placement(weight='BW')
     # exp_conf.near_GW_placement(weight='IPT')
@@ -108,11 +110,6 @@ def main(stop_time, it, folder_results):
     dataNetwork = json.load(open('data/network.json'))
 
     t.load(dataNetwork)
-
-    # if it >= 1:
-    #     t.remove_node(1)
-#
-    # stable_placement(t.G)
 
     """
     APPLICATION or SERVICES
