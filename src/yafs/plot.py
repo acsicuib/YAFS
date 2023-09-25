@@ -218,39 +218,43 @@ def plot_avg_latency(folder_results, plot_name=None):
     plt.show()
 
 
-def scatter_plot_app_latency_per_algorithm(folder_results, algorithm_list):
+def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_list):
     colors = ['red', 'green', 'blue', 'purple', 'orange']
     # dfl = pd.read_csv(folder_results + "algorithm1")
     i = 0
     mean = []
     labels = []
     for algorithm in algorithm_list:
-        dfl = pd.read_csv(folder_results + algorithm + "_sim_trace_link.csv")
+        dfl = pd.read_csv(folder_data_processing + algorithm + "_sim_trace_link.csv")
         apps_deployed = np.unique(dfl.app)
 
         app_lat = []
         for app_ in apps_deployed:
             app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
-        mean += app_lat
+        mean+=app_lat
         plt.scatter(range(len(app_lat)), app_lat, label=algorithm, c=colors[i], marker='o')
         labels.append(algorithm)
         i = (i + 1) % len(colors)
         ticks = range(len(app_lat))
 
     # media = sum(mean)/len(mean)
-    plt.ylim(0, ((sum(mean) / len(mean)) * 1.5))
+    plt.ylim(0, ((sum(mean)/len(mean))*1.5))
     plt.xticks(ticks)
     plt.xlabel(f'Apps')
     plt.ylabel('Latency')
+    plt.title('Average App Latency per algorithm')
     plt.legend(labels, loc='upper right')
+    save_plot('Average App Latency per algorithm')
     plt.show()
 
 
-def plot_latency_per_placement_algorithm(folder_results, algorithm_list):
-    colors = generate_colors(len(algorithm_list))
+
+def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list):
+    colors = ['red', 'green', 'blue', 'purple', 'orange']
     mean = []
+
     for algorithm in algorithm_list:
-        dfl = pd.read_csv(folder_results + algorithm + "_sim_trace_link.csv")
+        dfl = pd.read_csv(folder_data_processing + algorithm + "_sim_trace_link.csv")
         apps_deployed = np.unique(dfl.app)
 
         app_lat = []
@@ -265,15 +269,37 @@ def plot_latency_per_placement_algorithm(folder_results, algorithm_list):
     # plt.xticks(ticks)
     plt.xlabel(f'Placement Algorithms')
     plt.ylabel('Latency')
-    plt.title('latency_per_placement_algorithm')
+    plt.title('Latency Per Placement Algorithm')
     # plt.legend(algorithm_list, loc='upper right')
 
     for bar in bars:
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
 
+    save_plot('barplot_latency_per_placement_algorithm')
     plt.show()
 
+def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list):
+    colors = ['red', 'green', 'blue', 'purple', 'orange']
+    algorithm_latency = [[] for x in range(len(algorithm_list))]
+
+    i = 0
+    for algorithm in algorithm_list:
+        dfl = pd.read_csv(folder_data_processing + algorithm + "_sim_trace_link.csv")
+        apps_deployed = np.unique(dfl.app)
+
+        for app_ in apps_deployed:
+            algorithm_latency[i] += list(np.array(dfl[dfl.app == app_].latency))
+        i+=1
+
+    plt.boxplot(algorithm_latency, labels=algorithm_list, showfliers=False)
+
+    plt.xlabel(f'Placement Algorithms')
+    plt.ylabel('Latency')
+    plt.title('Latency Per Placement Algorithm')
+
+    save_plot('boxplot_latency_per_placement_algorithm')
+    plt.show()
 
 def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False, plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace.csv")
@@ -348,6 +374,56 @@ def modules_per_node(placement, topology, plot_name=None):
 
     plt.show()
 
+#
+# def plot_modules_per_node_per_algorithm(algorithm_list, modules_per_node):
+#     # colors = ['red', 'green', 'blue', 'purple', 'orange']
+#     # dfl = pd.read_csv(folder_results + "algorithm1")
+#
+#     i = 0
+#     ymax=0
+#     mean = dict()
+#     labels = []
+#     for algorithm in algorithm_list:
+#
+#         mean[algorithm] = sum(modules_per_node[algorithm].values())/len(modules_per_node[algorithm])
+#         labels.append(algorithm)
+#         ymax = max(ymax, int(max(modules_per_node[algorithm].values())) + 1)
+#         # i = (i + 1) % len(colors)
+#
+#     plt.bar(mean.keys(), mean.values())
+#     # plt.scatter(range(len(app_lat)), app_lat, label=algorithm, c=colors[i], marker='o')
+#
+#     # plt.yticks(range(0, ymax + 1))
+#     plt.xlabel('algorithm')
+#     plt.ylabel('mean number of modules allocated per node')
+#
+#     plt.legend(labels, loc='upper right')
+#     plt.show()
+
+def plot_modules_per_node_per_algorithm(total_mods_per_node):
+    data_list = [list(total_mods_per_node[algorithm]) for algorithm in total_mods_per_node.keys()]
+    print(data_list)
+    plt.boxplot(data_list, labels=total_mods_per_node.keys())
+    plt.yticks(range(max(max(data) for data in data_list)+1))
+    plt.xlabel('Algorithms')
+    plt.ylabel('Modules per node')
+    plt.title('Modules per node of each algorithm')
+    save_plot('modules_per_node_of_each_algorithm')
+    plt.show()
+
+def plot_max_stress_per_algorithm(total_mods_per_node):
+    colors = ['red', 'green', 'blue', 'purple', 'orange']
+    data_list = [max(list(total_mods_per_node[algorithm])) for algorithm in total_mods_per_node.keys()]
+    bars = plt.bar(total_mods_per_node.keys(), data_list, color=colors)
+    plt.xlabel('Algorithms')
+    plt.ylabel('Max modules per node')
+    plt.title('Max modules in a node for each algorithm')
+    save_plot('modules_per_node_of_each_algorithm')
+
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
+    plt.show()
 
 def plot_messages_node(folder_results, plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace_link.csv")
