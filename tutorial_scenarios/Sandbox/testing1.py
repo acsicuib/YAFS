@@ -288,3 +288,4 @@ if __name__ == '__main__':
     plot.boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
     plot.plot_modules_per_node_per_algorithm(total_mods_per_node)
     plot.plot_max_stress_per_algorithm(total_mods_per_node)
+    plot.plot_used_nodes_per_algorithm(total_mods_per_node,nIterations)
