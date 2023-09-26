@@ -18,7 +18,8 @@ from yafs import Topology
 from yafs import myConfig
 
 debug_mode = False
-windows_mode = True # for Unix set to False
+windows_mode = True  # for Unix set to False
+
 
 def linear_graph(size):
     g = nx.DiGraph()
@@ -88,7 +89,6 @@ class ExperimentConfiguration:
         self.nodeResources = {}
         self.nodeSpeed = {}
 
-
         for i in self.G.nodes:
             self.nodeResources[i] = eval(self.func_NODERESOURECES)
             self.nodeSpeed[i] = eval(self.func_NODESPEED)
@@ -156,7 +156,6 @@ class ExperimentConfiguration:
         self.nodeResources[self.cloudId] = self.CLOUDCAPACITY
         self.node_labels[self.cloudId] = "cloud"
         self.freeNodeResources = self.nodeResources.copy()
-
 
         for cloudGtw in self.cloudgatewaysDevices:
             myLink = {}
@@ -295,12 +294,8 @@ class ExperimentConfiguration:
                 self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"
             elif app_struct == 'simple':
                 self.func_APPGENERATION = "linear_graph(1)"
-            elif app_struct == 'tree':
-                self.func_APPGENERATION = "nx.random_tree(n=random.randint(2, 6), create_using=nx.DiGraph)"
             APP = eval(self.func_APPGENERATION)
 
-            if debug_mode:
-                nx.write_network_text(APP)  # TODO : é preciso a versão 3.1 do nx
             mylabels = {}
 
             for n in range(0, len(APP.nodes)):
@@ -459,10 +454,8 @@ class ExperimentConfiguration:
         for app_index in range(len(self.appJson)):
             self.appJson[app_index]['popularity'] = eval(self.func_REQUESTPROB)
 
-
     def user_generation(self, file_name_users='usersDefinition.json'):
         # Generation of the IoT devices (users)
-
 
         userJson = {}
 
@@ -630,7 +623,6 @@ class ExperimentConfiguration:
             for module in app['module']:
                 self.all_modules.append(module)
 
-
         # tier2_list = [element for element in self.netJson['entity'] if element['tier'] == 2]  # Filtering gateway nodes
         # tier1_list = [element for element in self.netJson['entity'] if element['tier'] == 1]  # Filtering fog nodes
         # tier0_list = self.netJson['entity'][len(self.netJson['entity']) - 1] # Cloud node
@@ -638,11 +630,10 @@ class ExperimentConfiguration:
         # tier0_used = False
         # total_nodes_used = len(tier2_list) - 1
 
-        #initial score
+        # initial score
         # total_FRAM = sum(i['FRAM'] for i in tier2_list)
         # mean_score = total_FRAM / total_nodes_used
         # score = max_deviation = max(tier2_list, key=lambda node_: deviation_from_mean(node['FRAM'], mean_score))
-
 
         # score in each iteration
         # total_FRAM -= self.netJson['entity'][node_id]['FRAM']
@@ -653,7 +644,6 @@ class ExperimentConfiguration:
         #     if tier0_used:
         #         max_deviation = max(max_deviation, deviation_from_mean(tier0_list['FRAM'], mean_score))
         # score = max_deviation
-
 
         placement = {}
 
@@ -682,22 +672,85 @@ class ExperimentConfiguration:
                 node_tier, node_FRAM, node_id = heapq.heappop(nodes_heap)
                 if self.netJson['entity'][node_id]['FRAM'] >= current_module['RAM']:
                     if debug_mode:
-                        print(current_module['name'], 'module RAM: ', current_module['RAM'], '-->> node' , node_id ,'\n')
+                        print(current_module['name'], 'module RAM: ', current_module['RAM'], '-->> node', node_id, '\n')
                     self.netJson['entity'][node_id]['FRAM'] -= current_module['RAM']
                     placement[current_module['name']] = node_id
                     module_placed = True
-                    heapq.heappush(nodes_heap,(-self.netJson['entity'][node_id]['tier'], -self.netJson['entity'][node_id]['FRAM'],node_id))
+                    heapq.heappush(nodes_heap, (
+                    -self.netJson['entity'][node_id]['tier'], -self.netJson['entity'][node_id]['FRAM'], node_id))
                     # print(sorted((node['id'],node['FRAM']) for node in self.netJson) )
 
                 else:
                     nodes_retrieved.append((node_tier, node_FRAM, node_id))
-            if len(nodes_heap)==0:
+            if len(nodes_heap) == 0:
                 print('NO FRAM LEFT FOR MODULE ', current_module['name'])
             if nodes_retrieved:
                 for node_retrieved in nodes_retrieved:
                     heapq.heappush(nodes_heap, (node_retrieved[0], node_retrieved[1], node_retrieved[2]))
 
         print(placement)
+
+        # Alloc será o dicionario convertido para json
+        alloc = dict()
+        alloc['initialAllocation'] = list()
+
+        for module in placement:
+            temp_dict = dict()
+            temp_dict['module_name'] = module
+            temp_dict['app'] = int(module.split("_")[0])
+            temp_dict['id_resource'] = placement[module]  # node
+
+            alloc['initialAllocation'].append(temp_dict)
+
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+
+    def greedy_algorithm_latency(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
+
+        self.app_order = sorted(self.appJson, key=itemgetter('popularity'), reverse=True)
+        self.all_modules = []
+        for app in self.app_order:
+            for module in app['module']:
+                self.all_modules.append(module)
+        print(self.all_modules)
+        placement = {}
+
+        latency_table = dict()
+        # sorted_nodes = sorted(self.netJson['entity'], key=lambda node: (-node['tier'], -node['FRAM']))
+        for node in range(len(self.netJson['entity'])):
+            latency_table[node] = []
+
+        for link in self.netJson['link']:
+            latency = 1 / link['BW'] + link['PR']
+            latency_table[link['s']].append((link['d'], latency))
+            latency_table[link['d']].append((link['s'], latency))
+
+        for node in range(len(latency_table)):
+            latency_table[node].sort(key=lambda link: link[1])
+
+        ordered_nodes = sorted(latency_table, key=lambda k: latency_table[k][0][1])
+
+        for current_module in self.all_modules:
+            if current_module == self.all_modules[-1]:
+                print("\n\nUPasdlhkgbasdf\n", current_module, "\nasdfasdas\n\n")
+            for node_id in ordered_nodes:
+                if self.netJson['entity'][node_id]['FRAM'] >= current_module['RAM']:
+                    self.netJson['entity'][node_id]['FRAM'] -= current_module['RAM']
+                    placement[current_module['name']] = node_id
+                    break
 
         # Alloc será o dicionario convertido para json
         alloc = dict()
@@ -735,7 +788,12 @@ class ExperimentConfiguration:
         services = list()
         best_solution = list()
 
-        apps = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps))
+        if windows_mode:
+            # Win
+            apps = json.load(open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_apps))
+        else:
+            # UNIX
+            apps = json.load(open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps))
 
         for app in apps:
             for mod in app['module']:
@@ -753,10 +811,11 @@ class ExperimentConfiguration:
         alloc['initialAllocation'] = services
 
         if windows_mode:
-            # # Win
+            # Win
             with open(self.path + '\\' + self.cnf.resultFolder + "\\" + file_name_alloc, "w") as netFile:
                 netFile.write(json.dumps(alloc))
         else:
+            # UNIX
             with open(self.path + '/' + self.cnf.resultFolder + "/" + file_name_alloc, "w") as netFile:
                 netFile.write(json.dumps(alloc))
 
@@ -948,7 +1007,7 @@ class ExperimentConfiguration:
                             if len(candidate_nodes) != 0:
                                 chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
                                 chosen_node = \
-                                [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                                    [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
                                 break
 
                             else:
@@ -992,6 +1051,159 @@ class ExperimentConfiguration:
             with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, 'w') as f:
                 json.dump(allocDef, f)
 
+    def lambda_placement(self, file_name_alloc='allocDefinition.json', comm_nr=3):
+        # comm_nr = len(self.G.nodes)
+
+        mod2cost = dict()
+        for app_ind in self.appJson:
+            for mod in app_ind['module']:
+                mod2cost[mod['name']] = mod['RAM']
+
+        # lista que irá guardar as comms em que index = resolution correspondente
+        comms_list = list()
+
+        # Começa com 1 node <=> 1 community
+        max_res = 0
+
+        while True:
+            # Calculam-se as communities para a respetiva resolution
+            comms = nx.community.louvain_communities(self.G, resolution=max_res,
+                                                     weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR'))
+            # Add na lista
+            comms_list.insert(0, comms)
+
+            # Se o nr de communities for = ao nr de nodes, já nao dá para subdividir mais a TOPO
+            if len(comms) >= comm_nr or len(comms) == len(self.G.nodes):
+                break
+            # Senao passa-se para a resolution seguinte
+            else:
+                max_res += 1
+
+        # dict {app: min lambda}
+        min_lambda = dict()
+        for user in self.myUsers:
+            if user['app'] not in min_lambda or min_lambda[user['app']] > user['lambda']:
+                min_lambda[user['app']] = user['lambda']
+
+        # a partir de dict_key as apps sao ordenadas pela sua "urgencia"
+        app_order = list(min_lambda.keys())
+        app_order.sort(key=lambda e: min_lambda[e])
+
+        # dict {node: sum das distancias a cada GW}
+        node2GW_dists = dict()
+        for nd in self.G.nodes():
+            node2GW_dists[nd] = sum(nx.shortest_path_length(self.G, nd, GW,
+                                                            weight=lambda src, dst, data: 1 / data.get('BW') + data.get(
+                                                                'PR')) for GW in self.gatewaysDevices)
+
+        # dict {app: {modulo: [id_res, cost]}}
+        temp_alloc = dict()
+
+        # Ordem de communities: +resolution (+ comms) ---> -resolution (- comms)
+
+        for communities in comms_list:
+
+            # Reordenam-se as communities com a resolucao atual pela distancia as GWs
+            communities.sort(key=lambda e: sum([node2GW_dists[n] for n in e]) / len(e))
+
+            for app_ind in app_order:
+                # app = self.apps[app_ind]
+
+                for comm in communities:
+
+                    allocated = self.lambda_placement_(comm, node2GW_dists, temp_alloc, app_ind)
+
+                    # Se uma comm nao suportar 1 app, procura na seguinte
+                    if not allocated:
+                        if app_ind in temp_alloc:
+                            # Reverte alloc da app
+                            for app_nd in temp_alloc[app_ind]:
+                                self.freeNodeResources[temp_alloc[app_ind][app_nd]['id_resource']] += mod2cost[
+                                    temp_alloc[app_ind][app_nd]['module_name']]
+
+                            del temp_alloc[app_ind]
+
+                    # Se já conseguiu allocar nalguma community, passa para a proxima app
+                    else:
+                        break
+
+                # Se não conseguir em nenhuma das comms, reverte a allocacao e passa para uma resolução <
+                if not allocated:
+                    # Reverte toda a allocação
+
+                    for app_alloc in temp_alloc:
+                        # Reverte alloc da app
+                        for app_nd in temp_alloc[app_alloc]:
+                            self.freeNodeResources[temp_alloc[app_alloc][app_nd]['id_resource']] += mod2cost[
+                                temp_alloc[app_alloc][app_nd]['module_name']]
+
+                    temp_alloc = dict()
+                    break
+
+            # Se conseguiu allocar com a resolution anterior, nao tentar com outra <
+            if allocated:
+                break
+
+        allocDef = {'initialAllocation': list()}
+        for app in temp_alloc:
+            for app_nd in temp_alloc[app]:
+                allocDef['initialAllocation'].append({"module_name": temp_alloc[app][app_nd]["module_name"],
+                                                      "id_resource": temp_alloc[app][app_nd]["id_resource"],
+                                                      "app": app})
+
+        # Win
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
+            json.dump(allocDef, f)
+
+    def lambda_placement_(self, comm, node2GW_dists, temp_alloc, app_i, app_nd=0):
+        # retorna True se a app foi allocada na community com sucesso, ou False senao
+
+        cost = self.apps[app_i].nodes[app_nd]['cost']
+        candidate_nds = [nd for nd in comm if self.freeNodeResources[nd] >= cost]
+
+        if len(candidate_nds) == 0:
+            return False
+
+        if app_nd == 0:
+            temp_alloc[app_i] = dict()
+
+            # São escolhidos os nodes + proximos
+            candidate_nds = [nd for nd in candidate_nds if
+                             node2GW_dists[nd] == min([node2GW_dists[n] for n in candidate_nds])]
+
+        else:
+            # prnt_nd da app
+            prnt_nd = [edge[0] for edge in self.apps[app_i].edges if edge[1] == app_nd][0]
+            # prnt_nd da TOPO
+            prnt_nd = temp_alloc[app_i][prnt_nd]['id_resource']
+
+            # minimal distance to parent
+            min_dist = min([nx.shortest_path_length(self.G, prnt_nd, nd,
+                                                    weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR'))
+                            for nd in candidate_nds])
+
+            # candidate_nds = nodes com - distancia ao node pai
+            candidate_nds = [nd for nd in candidate_nds
+                             if nx.shortest_path_length(self.G, prnt_nd, nd,
+                                                        weight=lambda src, dst, data: 1 / data.get('BW') + data.get(
+                                                            'PR')) == min_dist]
+
+        if len(candidate_nds) != 0:
+            chosen_nd = candidate_nds[0]
+            temp_alloc[app_i][app_nd] = {'id_resource': chosen_nd,
+                                         'module_name': self.apps[app_i].nodes[app_nd]['module']}
+            self.freeNodeResources[chosen_nd] -= cost
+
+        else:
+            return False
+
+        dests = [edge[1] for edge in self.apps[app_i].edges if edge[0] == app_nd]
+
+        for nd_son in dests:
+            return self.lambda_placement_(comm, node2GW_dists, temp_alloc, app_i, nd_son)
+
+        return True
+
     def randomPlacement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # nodes -> self.devices     apps -> self.apps
         rnd_placement = {}
@@ -1029,7 +1241,6 @@ class ExperimentConfiguration:
         for node in net_json['entity']:
             node['FRAM'] = self.freeNodeResources[node['id']]
 
-
         if windows_mode:
             # Win
             with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
@@ -1046,7 +1257,6 @@ class ExperimentConfiguration:
             # Guarda a alocação no .json
             with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as netFile:
                 netFile.write(json.dumps(alloc))
-
 
 #     def config_generation(self, n=20, m=2, path_network='', file_name_network='netDefinition.json', path_apps='',
 #                           file_name_apps='appDefinition.json', path_alloc='', file_name_alloc='allocDefinition.json', file_name_users='usersDefinition.json'):
@@ -1075,4 +1285,4 @@ class ExperimentConfiguration:
 # exp_config.networkGeneration(10)
 # exp_config.simpleAppsGeneration()
 # exp_config.backtrack_placement()
-# print()
+# print()# print()
