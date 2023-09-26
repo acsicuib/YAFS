@@ -208,7 +208,7 @@ def plot_avg_latency(folder_results, plot_name=None):
 
 
 def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_list):
-    colors = ['red', 'green', 'blue', 'purple', 'orange']
+    colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'pink']
     # dfl = pd.read_csv(folder_results + "algorithm1")
     i = 0
     mean = []
@@ -239,7 +239,9 @@ def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_lis
 
 
 def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list):
-    colors = ['red', 'green', 'blue', 'purple', 'orange']
+    # colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+    colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'pink']
+
     mean = []
 
     for algorithm in algorithm_list:
@@ -251,11 +253,18 @@ def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
             app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
         mean.append(sum(app_lat) / len(app_lat))
 
+    plt.figure(figsize=(10, 6))
     bars = plt.bar(algorithm_list, mean, color=colors)
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
+
 
     # media = sum(mean)/len(mean)
+    # plt.figure(figsize=(10, 6))
+    # plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
+
     plt.ylim(0, max(mean) * 1.1)
-    # plt.xticks(ticks)
     plt.xlabel(f'Placement Algorithms')
     plt.ylabel('Latency')
     plt.title('Latency Per Placement Algorithm')
@@ -269,7 +278,7 @@ def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
     plt.show()
 
 def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list):
-    colors = ['red', 'green', 'blue', 'purple', 'orange']
+    colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'pink']
     algorithm_latency = [[] for x in range(len(algorithm_list))]
 
     i = 0
@@ -281,8 +290,12 @@ def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_li
             algorithm_latency[i] += list(np.array(dfl[dfl.app == app_].latency))
         i+=1
 
-    plt.boxplot(algorithm_latency, labels=algorithm_list, showfliers=False)
+    plt.figure(figsize=(10, 6))
 
+    # plt.boxplot(algorithm_latency, labels=algorithm_list, showfliers=False, showmeans=True, meanprops=dict(marker='X', markerfacecolor='c', markeredgecolor='c'))
+    plt.boxplot(algorithm_latency, labels=algorithm_list, showfliers=False)
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
     plt.xlabel(f'Placement Algorithms')
     plt.ylabel('Latency')
     plt.title('Latency Per Placement Algorithm')
@@ -392,12 +405,37 @@ def modules_per_node(placement, topology, plot_name=None):
 def plot_modules_per_node_per_algorithm(total_mods_per_node):
     data_list = [list(total_mods_per_node[algorithm]) for algorithm in total_mods_per_node.keys()]
     print(data_list)
+
+    plt.figure(figsize=(10, 6))
     plt.boxplot(data_list, labels=total_mods_per_node.keys())
+
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
     plt.yticks(range(max(max(data) for data in data_list)+1))
     plt.xlabel('Algorithms')
     plt.ylabel('Modules per node')
     plt.title('Modules per node of each algorithm')
     save_plot('modules_per_node_of_each_algorithm')
+    plt.show()
+
+def plot_max_stress_per_algorithm(total_mods_per_node):
+    colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'pink']
+    data_list = [max(list(total_mods_per_node[algorithm])) for algorithm in total_mods_per_node.keys()]
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(total_mods_per_node.keys(), data_list, color=colors)
+
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
+    plt.yticks(range(max(data_list)))
+    plt.xlabel('Algorithms')
+    plt.ylabel('Max modules per node')
+    plt.title('Max modules in a node for each algorithm')
+    save_plot('max_modules_per_node_of_each_algorithm')
+
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
     plt.show()
 
 def plot_messages_node(folder_results, plot_name=None):
@@ -431,3 +469,25 @@ def plot_messages_node(folder_results, plot_name=None):
         ax.set_title(plot_name)
         save_plot(plot_name)
     plt.show()
+
+
+def plot_algorithm_exec_time(algorithm_clock, iterations):
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+    data_list_temp = [list(algorithm_clock[algorithm]) for algorithm in algorithm_clock.keys()]
+    data_list = [sum(x)/iterations for x in data_list_temp]
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(algorithm_clock.keys(), data_list, color=colors)
+
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
+
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 8), va='bottom', ha='center')
+
+    plt.xlabel('Algorithms')
+    plt.ylabel('Average Execution Time')
+    plt.title('Average Execution Time per Algorithm')
+    plt.show()
+    save_plot("Average_Execution_Time_per_Algorithm")

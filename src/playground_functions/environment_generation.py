@@ -723,6 +723,71 @@ class ExperimentConfiguration:
             with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
                 netFile.write(json.dumps(self.netJson))
 
+
+    def greedy_algorithm_latency(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
+
+        self.app_order = sorted(self.appJson, key=itemgetter('popularity'), reverse=True)
+        self.all_modules = []
+        for app in self.app_order:
+            for module in app['module']:
+                self.all_modules.append(module)
+        print(self.all_modules)
+        placement = {}
+
+        latency_table = dict()
+        # sorted_nodes = sorted(self.netJson['entity'], key=lambda node: (-node['tier'], -node['FRAM']))
+        for node in range(len(self.netJson['entity'])):
+            latency_table[node] = []
+
+        for link in self.netJson['link']:
+            latency = 1/link['BW'] + link['PR']
+            latency_table[link['s']].append((link['d'], latency))
+            latency_table[link['d']].append((link['s'], latency))
+
+        for node in range(len(latency_table)):
+            latency_table[node].sort(key=lambda link: link[1])
+
+        ordered_nodes = sorted(latency_table, key = lambda k: latency_table[k][0][1])
+
+
+        for current_module in self.all_modules:
+            if current_module == self.all_modules[-1]:
+                print("\n\nUPasdlhkgbasdf\n", current_module, "\nasdfasdas\n\n")
+            for node_id in ordered_nodes:
+                if self.netJson['entity'][node_id]['FRAM'] >= current_module['RAM']:
+                    self.netJson['entity'][node_id]['FRAM'] -= current_module['RAM']
+                    placement[current_module['name']] = node_id
+                    break
+
+        # Alloc será o dicionario convertido para json
+        alloc = dict()
+        alloc['initialAllocation'] = list()
+
+        for module in placement:
+            temp_dict = dict()
+            temp_dict['module_name'] = module
+            temp_dict['app'] = int(module.split("_")[0])
+            temp_dict['id_resource'] = placement[module]  # node
+
+            alloc['initialAllocation'].append(temp_dict)
+
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+
+
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
         available_res.pop(max(available_res))  # Remove-se o node da Cloud
@@ -995,6 +1060,160 @@ class ExperimentConfiguration:
             # Unix
             with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, 'w') as f:
                 json.dump(allocDef, f)
+
+    def lambda_placement(self, file_name_alloc='allocDefinition.json', comm_nr=3):
+        # comm_nr = len(self.G.nodes)
+
+        mod2cost = dict()
+        for app_ind in self.appJson:
+            for mod in app_ind['module']:
+                mod2cost[mod['name']] = mod['RAM']
+
+        # lista que irá guardar as comms em que index = resolution correspondente
+        comms_list = list()
+
+        # Começa com 1 node <=> 1 community
+        max_res = 0
+
+        while True:
+            # Calculam-se as communities para a respetiva resolution
+            comms = nx.community.louvain_communities(self.G, resolution=max_res,
+                                                     weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR'))
+            # Add na lista
+            comms_list.insert(0, comms)
+
+            # Se o nr de communities for = ao nr de nodes, já nao dá para subdividir mais a TOPO
+            if len(comms) >= comm_nr or len(comms) == len(self.G.nodes):
+                break
+            # Senao passa-se para a resolution seguinte
+            else:
+                max_res += 1
+
+        # dict {app: min lambda}
+        min_lambda = dict()
+        for user in self.myUsers:
+            if user['app'] not in min_lambda or min_lambda[user['app']] > user['lambda']:
+                min_lambda[user['app']] = user['lambda']
+
+        # a partir de dict_key as apps sao ordenadas pela sua "urgencia"
+        app_order = list(min_lambda.keys())
+        app_order.sort(key=lambda e: min_lambda[e])
+
+        # dict {node: sum das distancias a cada GW}
+        node2GW_dists = dict()
+        for nd in self.G.nodes():
+            node2GW_dists[nd] = sum(nx.shortest_path_length(self.G, nd, GW,
+                                                            weight=lambda src, dst, data: 1 / data.get('BW') + data.get(
+                                                                'PR')) for GW in self.gatewaysDevices)
+
+        # dict {app: {modulo: [id_res, cost]}}
+        temp_alloc = dict()
+
+        # Ordem de communities: +resolution (+ comms) ---> -resolution (- comms)
+
+        for communities in comms_list:
+
+            # Reordenam-se as communities com a resolucao atual pela distancia as GWs
+            communities.sort(key=lambda e: sum([node2GW_dists[n] for n in e]) / len(e))
+
+            for app_ind in app_order:
+                # app = self.apps[app_ind]
+
+                for comm in communities:
+
+                    allocated = self.lambda_placement_(comm, node2GW_dists, temp_alloc, app_ind)
+
+                    # Se uma comm nao suportar 1 app, procura na seguinte
+                    if not allocated:
+                        if app_ind in temp_alloc:
+                            # Reverte alloc da app
+                            for app_nd in temp_alloc[app_ind]:
+                                self.freeNodeResources[temp_alloc[app_ind][app_nd]['id_resource']] += mod2cost[
+                                    temp_alloc[app_ind][app_nd]['module_name']]
+
+                            del temp_alloc[app_ind]
+
+                    # Se já conseguiu allocar nalguma community, passa para a proxima app
+                    else:
+                        break
+
+                # Se não conseguir em nenhuma das comms, reverte a allocacao e passa para uma resolução <
+                if not allocated:
+                    # Reverte toda a allocação
+
+                    for app_alloc in temp_alloc:
+                        # Reverte alloc da app
+                        for app_nd in temp_alloc[app_alloc]:
+                            self.freeNodeResources[temp_alloc[app_alloc][app_nd]['id_resource']] += mod2cost[
+                                temp_alloc[app_alloc][app_nd]['module_name']]
+
+                    temp_alloc = dict()
+                    break
+
+            # Se conseguiu allocar com a resolution anterior, nao tentar com outra <
+            if allocated:
+                break
+
+        allocDef = {'initialAllocation': list()}
+        for app in temp_alloc:
+            for app_nd in temp_alloc[app]:
+                allocDef['initialAllocation'].append({"module_name": temp_alloc[app][app_nd]["module_name"],
+                                                      "id_resource": temp_alloc[app][app_nd]["id_resource"],
+                                                      "app": app})
+
+        # Win
+        with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
+            json.dump(allocDef, f)
+
+    def lambda_placement_(self, comm, node2GW_dists, temp_alloc, app_i, app_nd=0):
+        # retorna True se a app foi allocada na community com sucesso, ou False senao
+
+        cost = self.apps[app_i].nodes[app_nd]['cost']
+        candidate_nds = [nd for nd in comm if self.freeNodeResources[nd] >= cost]
+
+        if len(candidate_nds) == 0:
+            return False
+
+        if app_nd == 0:
+            temp_alloc[app_i] = dict()
+
+            # São escolhidos os nodes + proximos
+            candidate_nds = [nd for nd in candidate_nds if
+                             node2GW_dists[nd] == min([node2GW_dists[n] for n in candidate_nds])]
+
+        else:
+            # prnt_nd da app
+            prnt_nd = [edge[0] for edge in self.apps[app_i].edges if edge[1] == app_nd][0]
+            # prnt_nd da TOPO
+            prnt_nd = temp_alloc[app_i][prnt_nd]['id_resource']
+
+            # minimal distance to parent
+            min_dist = min([nx.shortest_path_length(self.G, prnt_nd, nd,
+                                                    weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR'))
+                            for nd in candidate_nds])
+
+            # candidate_nds = nodes com - distancia ao node pai
+            candidate_nds = [nd for nd in candidate_nds
+                             if nx.shortest_path_length(self.G, prnt_nd, nd,
+                                                        weight=lambda src, dst, data: 1 / data.get('BW') + data.get(
+                                                            'PR')) == min_dist]
+
+        if len(candidate_nds) != 0:
+            chosen_nd = candidate_nds[0]
+            temp_alloc[app_i][app_nd] = {'id_resource': chosen_nd,
+                                         'module_name': self.apps[app_i].nodes[app_nd]['module']}
+            self.freeNodeResources[chosen_nd] -= cost
+
+        else:
+            return False
+
+        dests = [edge[1] for edge in self.apps[app_i].edges if edge[0] == app_nd]
+
+        for nd_son in dests:
+            return self.lambda_placement_(comm, node2GW_dists, temp_alloc, app_i, nd_son)
+
+        return True
+
 
     def randomPlacement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # nodes -> self.devices     apps -> self.apps
