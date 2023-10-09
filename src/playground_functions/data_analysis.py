@@ -176,7 +176,7 @@ def plot_latency(folder_results, plot_name=None):
     plt.xticks(range(1, len(apps_deployed) + 1), apps_deployed)
 
     ax.set_xlabel(f'Apps')
-    ax.set_ylabel('Latency')
+    ax.set_ylabel('Latency (\u03bcs)')
 
     if plot_name is None:
         ax.set_title('Latency')
@@ -206,7 +206,7 @@ def plot_avg_latency(folder_results, plot_name=None):
     plt.xticks(range(0, len(apps_deployed)), apps_deployed)
 
     ax.set_xlabel(f'Apps')
-    ax.set_ylabel('Latency')
+    ax.set_ylabel('Latency (\u03bcs)')
 
     if plot_name is None:
         ax.set_title('Average Latency')
@@ -244,7 +244,7 @@ def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_lis
 
     plt.xticks(ticks)
     plt.xlabel(f'Apps')
-    plt.ylabel('Latency')
+    plt.ylabel('Latency (\u03bcs)')
     plt.title('Average App Latency per algorithm')
     plt.legend(labels, loc='upper right', bbox_to_anchor=(1.25, 1))
     plt.subplots_adjust(right=0.8)
@@ -280,7 +280,7 @@ def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
 
     plt.ylim(0, max(mean) * 1.1)
     plt.xlabel(f'Placement Algorithms')
-    plt.ylabel('Latency')
+    plt.ylabel('Latency (\u03bcs)')
     plt.title('Latency Per Placement Algorithm')
     # plt.legend(algorithm_list, loc='upper right')
 
@@ -311,7 +311,7 @@ def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_li
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
     plt.xticks(rotation=45)
     plt.xlabel(f'Placement Algorithms')
-    plt.ylabel('Latency')
+    plt.ylabel('Latency (\u03bcs)')
     plt.title('Latency Per Placement Algorithm')
 
     save_plot('boxplot_latency_per_placement_algorithm')
@@ -473,6 +473,8 @@ def plot_used_nodes_per_algorithm(total_mods_per_node, n_iterations):
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
     plt.show()
 
+
+
 def plot_messages_node(folder_results, plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace_link.csv")
     res_used = df['dst']
@@ -522,7 +524,7 @@ def plot_algorithm_exec_time(algorithm_clock, iterations):
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 8), va='bottom', ha='center')
 
     plt.xlabel('Algorithms')
-    plt.ylabel('Average Execution Time')
+    plt.ylabel('Average Execution Time (s)')
     plt.title('Average Execution Time per Algorithm')
     plt.show()
     save_plot("Average_Execution_Time_per_Algorithm")
