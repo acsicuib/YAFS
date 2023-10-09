@@ -470,6 +470,37 @@ def plot_used_nodes_per_algorithm(total_mods_per_node, n_iterations):
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
     plt.show()
 
+def plot_percentage_used_nodes_per_algorithm(total_mods_per_node):
+    colors = ['C0', 'C1']
+    labels=["Unused", "Used"]
+    wedges = []
+
+    n = len(total_mods_per_node)
+    nrows = int(n / 2) + n % 2
+    ncols = 2 if n > 1 else 1
+
+    fig, ax = plt.subplots(nrows, ncols)
+    i = 0
+    for algorithm in total_mods_per_node.keys():
+
+        row = int(i / ncols)
+        col = i % ncols
+        i += 1
+
+        total_nodes = len(list(total_mods_per_node[algorithm]))
+        unused_nodes = list(total_mods_per_node[algorithm]).count(0)
+
+        wedges, _, __ = ax[row, col].pie([unused_nodes/total_nodes * 100, (total_nodes-unused_nodes)/total_nodes * 100], autopct='%1.1f%%', colors=colors)
+        ax[row, col].set_title(algorithm)
+
+
+    fig.suptitle('Percentage of Used Nodes in Each Algorithm')
+    fig.legend(wedges, labels, loc='lower center')
+    save_plot('percentage_used_nodes_per_algorithm')
+
+    plt.show()
+
+
 def plot_messages_node(folder_results, plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace_link.csv")
     res_used = df['dst']
