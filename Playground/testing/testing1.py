@@ -265,7 +265,7 @@ if __name__ == '__main__':
     folder_data_processing.mkdir(parents=True, exist_ok=True)
     folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
 
-    nIterations = 50  # iteration for each experiment
+    nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
