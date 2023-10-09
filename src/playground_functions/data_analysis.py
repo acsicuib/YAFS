@@ -6,6 +6,8 @@ import pandas as pd
 import networkx as nx
 from math import ceil, floor
 from collections import Counter
+
+import statistics
 import json
 
 # from pathlib import Path
@@ -23,6 +25,15 @@ def save_plot(plot_name):
 
     plt.savefig('data_analysis/' + plot_name)
 
+def remove_outliers(values_list):
+    q1 = np.percentile(values_list, 25)
+    q3 = np.percentile(values_list, 75)
+    iqr = q3 - q1
+    threshold = 1.5 * iqr
+    upper_bound = q3 + threshold
+    lower_bound = q1 - threshold
+    no_outliers_list = [x for x in values_list if lower_bound < x < upper_bound]
+    return no_outliers_list
 
 def plot_paths_taken(folder_results, plot_name=None):
     dfl = pd.read_csv(folder_results + "sim_trace" + "_link.csv")
@@ -209,6 +220,7 @@ def plot_avg_latency(folder_results, plot_name=None):
 
 def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_list):
     colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'pink']
+    plt.figure(figsize=(10, 6))
     # dfl = pd.read_csv(folder_results + "algorithm1")
     i = 0
     mean = []
@@ -226,16 +238,18 @@ def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_lis
         i = (i + 1) % len(colors)
         ticks = range(len(app_lat))
 
-    # media = sum(mean)/len(mean)
-    plt.ylim(0, ((sum(mean)/len(mean))*1.5))
+    no_outliers = remove_outliers(mean)
+    plt.ylim(max(min(no_outliers)-0.5, 0), max(no_outliers)+0.5)
+
+
     plt.xticks(ticks)
     plt.xlabel(f'Apps')
     plt.ylabel('Latency')
     plt.title('Average App Latency per algorithm')
-    plt.legend(labels, loc='upper right')
+    plt.legend(labels, loc='upper right', bbox_to_anchor=(1.25, 1))
+    plt.subplots_adjust(right=0.8)
     save_plot('Average App Latency per algorithm')
     plt.show()
-
 
 
 def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list):
@@ -432,6 +446,27 @@ def plot_max_stress_per_algorithm(total_mods_per_node):
     plt.ylabel('Max modules per node')
     plt.title('Max modules in a node for each algorithm')
     save_plot('max_modules_per_node_of_each_algorithm')
+
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
+    plt.show()
+
+def plot_used_nodes_per_algorithm(total_mods_per_node, n_iterations):
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+    data_list = [
+        (len(list(total_mods_per_node[algorithm])) - list(total_mods_per_node[algorithm]).count(0)) / n_iterations
+        for algorithm in total_mods_per_node.keys()]
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(total_mods_per_node.keys(), data_list, color=colors)
+
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
+    plt.xlabel('Algorithms')
+    plt.ylabel('Number of Nodes')
+    plt.title('Number of Used Nodes in Each Algorithm')
+    save_plot('used_nodes_per_algorithm')
 
     for bar in bars:
         yval = bar.get_height()
