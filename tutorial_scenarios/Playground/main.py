@@ -90,7 +90,8 @@ def main(stop_time, it, folder_results):
     # BW_PR <=> weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR')
     # BW <=> weight=lambda src, dst, data: 1 / data.get('BW')
 
-    exp_conf.lambda_placement()
+    # exp_conf.lambda_placement()
+    exp_conf.RR_IPT_placement()
     plot_name = 'lambda_placement'
 
     # exp_conf.near_GW_placement(weight='BW')

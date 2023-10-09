@@ -17,6 +17,8 @@ import os
 from yafs import Topology
 from playground_funcs import myConfig
 
+from math import ceil
+
 debug_mode = False
 windows_mode = True # for Unix set to False
 
@@ -1013,7 +1015,7 @@ class ExperimentConfiguration:
         while True:
             # Calculam-se as communities para a respetiva resolution
             comms = nx.community.louvain_communities(self.G, resolution=max_res,
-                                                     weight=lambda src, dst, data: 1 / data.get('BW') + data.get('PR'))
+                                                     weight='PR')
             # Add na lista
             comms_list.insert(0, comms)
 
@@ -1045,15 +1047,12 @@ class ExperimentConfiguration:
         temp_alloc = dict()
 
         # Ordem de communities: +resolution (+ comms) ---> -resolution (- comms)
-
         for communities in comms_list:
 
             # Reordenam-se as communities com a resolucao atual pela distancia as GWs
             communities.sort(key=lambda e: sum([node2GW_dists[n] for n in e]) / len(e))
 
             for app_ind in app_order:
-                # app = self.apps[app_ind]
-
                 for comm in communities:
 
                     allocated = self.lambda_placement_(comm, node2GW_dists, temp_alloc, app_ind)
@@ -1148,6 +1147,112 @@ class ExperimentConfiguration:
             return self.lambda_placement_(comm, node2GW_dists, temp_alloc, app_i, nd_son)
 
         return True
+
+    def RR_IPT_placement(self, file_name_alloc='allocDefinition.json', comms_nr=3):
+
+        # Começa com 1 node / community
+        resolution = 0
+
+        comms = list()
+
+        # Se o nr de communities for = ao nr de nodes, já nao dá para subdividir mais a TOPO
+        while not len(comms) >= comms_nr or len(comms) == len(self.G.nodes):
+
+            # Calculam-se as communities para a respetiva resolution
+            comms = nx.community.louvain_communities(self.G, resolution=resolution, weight='PR')
+
+            resolution += 1
+
+        comms_nr = len(comms)
+
+        # Ordenam-se as communities da community com + IPT para a com -
+        comms.sort(key=lambda comm: -sum([self.netJson['entity'][c]['IPT'] for c in comm]))
+
+        # As communities passam de sets para lists para poderem ser ordenadas
+        comms = [list(comm) for comm in comms]
+
+        # Communities sao ordenadas consoante o IPT dos seus nodes
+        for comm in comms:
+            comm.sort(key=lambda nd: -self.netJson['entity'][nd]['IPT'])
+
+        # As apps sao ordenadas consoante o sumatorio do # instrucoes das suas mensagens (+ -> -)
+        appsOrder = [app['id'] for app in self.appJson]
+        appsOrder.sort(key=lambda ind: -sum([msg['instructions'] for msg in self.appJson[ind]['message']]))
+
+        appsPerComm = len(self.appJson) // comms_nr
+        comm_count = [0] * comms_nr
+
+        apps2Comm = dict()
+        for i in range(comms_nr):
+            apps2Comm[i] = list()
+
+        tempFreeRes = self.freeNodeResources.copy()
+
+        alloc = dict()
+        # apps2mod = [[app.nodes[nd]['module'] for nd in app] for app in self.apps]
+
+        apps2mod = dict(zip([app['id'] for app in self.appJson], [[mod['name'] for mod in app['module']] for app in self.appJson]))
+
+        # Por cada app
+        for app_i in appsOrder:
+            app = self.apps[app_i]
+
+            # Percorre-se as communities para tentar colocar na com + IPT
+            for comm in comms:
+                for app_nd in app:
+                    cost = self.apps[app_i].nodes[app_nd]['cost']
+                    for comm_nd in comm:
+                        # Se conseguir abarcar o modulo
+                        if tempFreeRes[comm_nd] >= cost:
+                            # Os recursos do node sao atualizados
+                            tempFreeRes[comm_nd] -= cost
+
+                            alloc[self.apps[app_i].nodes[app_nd]['module']] = comm_nd
+
+                            # O node usado é passado para o fim (RoundRobin)
+                            comm.append(comm.pop(comm.index(comm_nd)))
+                            break
+
+                        # Caso nao tenha conseguido colocar todos os nodes na community
+                        if comm_nd == comm[-1]:
+                            # Reverte a alocaçao e passa para a community seguinte
+                            tempFreeRes = self.freeNodeResources.copy()
+
+                            for alloc_nd in alloc:
+                                if alloc_nd in apps2mod[app_i]:
+                                    del alloc_nd
+
+                if app.nodes[0]['module'] in alloc:
+                    # Se todos os nodes foram allocados, guarda permanentemente o progressso
+                    self.freeNodeResources = tempFreeRes.copy()
+                    comm_count[comms.index(comm)] += 1
+
+                    comm_ind = comms.index(comm)
+                    if comm_count[comm_ind] >= appsPerComm:
+                        # Se a community tiver alcançado o nr de apps / comm, passa para ultimo
+                        comm_count.pop(comm_ind)
+                        comm_count.append(0)
+                        comms.append(comms.pop(comm_ind))
+
+                if app.nodes[0]['module'] in alloc:
+                    break
+
+        allocJson = {'initialAllocation': list()}
+
+        for app_i, mods in apps2mod.items():
+            for mod in mods:
+                allocJson['initialAllocation'].append({'module_name': mod, 'app': app_i, 'id_resource': alloc[mod]})
+
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(allocJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(allocJson))
+
+        print('DEBUG')
 
     def randomPlacement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # nodes -> self.devices     apps -> self.apps

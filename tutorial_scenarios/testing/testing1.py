@@ -86,7 +86,6 @@ def append_mods_per_node(placement, total_mods_per_node):
 
 def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, total_mods_per_node):
 
-
     global nodes
     random.seed(seed)
     conf = myConfig.myConfig()
