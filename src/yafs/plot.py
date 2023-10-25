@@ -574,7 +574,7 @@ def plot_algorithm_exec_time(algorithm_clock, iterations):
 def plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, n_iterations):
     i = 0
     fig, axs = plt.subplots(len(total_mods_per_node_with_node_id), 1, figsize=(5, len(total_mods_per_node_with_node_id)*3))
-
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
     for algorithm in total_mods_per_node_with_node_id.keys():
         tier_dict = {}
         for node in total_mods_per_node_with_node_id[algorithm]:
@@ -585,15 +585,16 @@ def plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, n_
 
         tier_list = tier_dict.keys()
         info_list = [sum(tier_dict[x]) / n_iterations for x in tier_list]
-        axs[i].bar(tier_list, info_list)
+        max_info = int(max(info_list))
+        axs[i].bar(tier_list, info_list, color=colors)
         axs[i].set_title(algorithm)
         axs[i].set_xlabel('Tier')
         axs[i].set_xticks(range(0, len(tier_list)))
+        axs[i].set_yticks(range(0, max_info, int(max_info/5)))
         axs[i].set_ylabel('Number of Modules Allocated')
         i += 1
 
     plt.subplots_adjust(hspace=0.5)
-    #plt.subplots_adjust(top=0.85)
     #plt.tight_layout()
     fig.suptitle('plot_modules_in_each_tier_per_algorithm')
     plt.show()
