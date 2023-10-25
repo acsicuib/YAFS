@@ -92,7 +92,7 @@ def main(stop_time, it, folder_results):
 
     # exp_conf.lambda_placement()
     exp_conf.RR_IPT_placement()
-    plot_name = 'lambda_placement'
+    plot_name = 'RR_IPT_placement'
 
     # exp_conf.near_GW_placement(weight='BW')
     # exp_conf.near_GW_placement(weight='PR')

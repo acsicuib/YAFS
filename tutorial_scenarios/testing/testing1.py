@@ -121,6 +121,9 @@ def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, 
     elif algorithm == 'lambda_placement':
         exp_conf.lambda_placement()
 
+    elif algorithm == 'RR_IPT_placement':
+        exp_conf.RR_IPT_placement()
+
     plot_name = algorithm
 
 
@@ -267,7 +270,7 @@ if __name__ == '__main__':
 
     # algorithm_list = ['randomPlacement', 'bt_min_mods','near_GW_placement', 'greedy_algorithm']
     # algorithm_list = ['bt_min_mods']
-    algorithm_list = ['near_GW_placement_PR', 'near_GW_placement_BW', 'near_GW_placement_BW_PR', 'lambda_placement']
+    algorithm_list = ['RR_IPT_placement', 'near_GW_placement_PR', 'near_GW_placement_BW', 'near_GW_placement_BW_PR', 'lambda_placement']
     for algorithm in algorithm_list:
         print('\n\n', algorithm,'\n')
         # Iteration for each experiment changing the seed of randoms

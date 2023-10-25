@@ -1148,25 +1148,53 @@ class ExperimentConfiguration:
 
         return True
 
-    def RR_IPT_placement(self, file_name_alloc='allocDefinition.json', comms_nr=3):
+    def RR_IPT_placement(self, file_name_alloc='allocDefinition.json', comms_nr=None):
+        """
+        Tries to place apps that have a high average of instructions per message in communities with nodes with higher average IPT
 
-        # Começa com 1 node / community
-        resolution = 0
+        Algorithm:
+            - Divides the network in communities with louvain algorithm.
+            - Orders communities by its nodes average IPT in descending order.
+            - Orders apps by the average number of instructions of a message in descending order.
+            - An app goes through the communities and tries to allocate its modules in one.
+            - Inside the community it uses a roundrobin
+        """
 
         comms = list()
 
-        # Se o nr de communities for = ao nr de nodes, já nao dá para subdividir mais a TOPO
-        while not len(comms) >= comms_nr or len(comms) == len(self.G.nodes):
+        resolution = 0
+        # Se for dado um numero minimo de communities, divide-se a rede consoante o mesmo
+        if comms_nr is not None:
 
-            # Calculam-se as communities para a respetiva resolution
+            # Se o nr de communities for = ao nr de nodes, já nao dá para subdividir mais a TOPO
+            while not len(comms) >= comms_nr or len(comms) == len(self.G.nodes):
+
+                # Calculam-se as communities para a respetiva resolution
+                comms = nx.community.louvain_communities(self.G, resolution=resolution, weight='PR')
+
+                resolution += 1
+
+        # Caso contrário, a rede divide-se o maximo possivel, resultando em communities cada vez mais pequenas mas que tenham #nodes >= max_mods
+        else:
+            # Numero maximo de nodes que uma app tem
+            max_mods = max([len(app['module']) for app in self.appJson])
+
             comms = nx.community.louvain_communities(self.G, resolution=resolution, weight='PR')
+            temp_comms = list()
 
-            resolution += 1
+            # Divide-se a rede até alguma community ter #nodes <= max_mods, ficando com a da interação anterior
+            while max([len(comm) for comm in comms]) >= max_mods:
+                temp_comms = comms.copy()
+                resolution += 1
+                comms = nx.community.louvain_communities(self.G, resolution=resolution, weight='PR')
+
+            if len(temp_comms) != 0:
+                comms = temp_comms
 
         comms_nr = len(comms)
 
         # Ordenam-se as communities da community com + IPT para a com -
-        comms.sort(key=lambda comm: -sum([self.netJson['entity'][c]['IPT'] for c in comm]))
+        comms.sort(key=lambda comm: -sum([self.netJson['entity'][c]['IPT'] for c in comm])/len(comm))
 
         # As communities passam de sets para lists para poderem ser ordenadas
         comms = [list(comm) for comm in comms]
@@ -1177,10 +1205,10 @@ class ExperimentConfiguration:
 
         # As apps sao ordenadas consoante o sumatorio do # instrucoes das suas mensagens (+ -> -)
         appsOrder = [app['id'] for app in self.appJson]
-        appsOrder.sort(key=lambda ind: -sum([msg['instructions'] for msg in self.appJson[ind]['message']]))
+        appsOrder.sort(key=lambda ind: -sum([msg['instructions'] for msg in self.appJson[ind]['message']])/len(self.appJson[ind]['message']))
 
         appsPerComm = len(self.appJson) // comms_nr
-        comm_count = [0] * comms_nr
+        appsCount = [0] * comms_nr
 
         apps2Comm = dict()
         for i in range(comms_nr):
@@ -1201,7 +1229,7 @@ class ExperimentConfiguration:
             for comm in comms:
                 for app_nd in app:
                     cost = self.apps[app_i].nodes[app_nd]['cost']
-                    for comm_nd in comm:
+                    for i, comm_nd in enumerate(comm):
                         # Se conseguir abarcar o modulo
                         if tempFreeRes[comm_nd] >= cost:
                             # Os recursos do node sao atualizados
@@ -1213,28 +1241,28 @@ class ExperimentConfiguration:
                             comm.append(comm.pop(comm.index(comm_nd)))
                             break
 
-                        # Caso nao tenha conseguido colocar todos os nodes na community
-                        if comm_nd == comm[-1]:
-                            # Reverte a alocaçao e passa para a community seguinte
-                            tempFreeRes = self.freeNodeResources.copy()
+                    # Se o app_nd nao tiver sido allocado, passa para a community seguinte
+                    if self.apps[app_i].nodes[app_nd]['module'] not in alloc:
+                        # Reverte a alocaçao e passa para a community seguinte
+                        tempFreeRes = self.freeNodeResources.copy()
 
-                            for alloc_nd in alloc:
-                                if alloc_nd in apps2mod[app_i]:
-                                    del alloc_nd
+                        for alloc_nd in alloc:
+                            if alloc_nd in apps2mod[app_i]:
+                                del alloc_nd
+                        break
 
                 if app.nodes[0]['module'] in alloc:
                     # Se todos os nodes foram allocados, guarda permanentemente o progressso
                     self.freeNodeResources = tempFreeRes.copy()
-                    comm_count[comms.index(comm)] += 1
+                    appsCount[comms.index(comm)] += 1
 
                     comm_ind = comms.index(comm)
-                    if comm_count[comm_ind] >= appsPerComm:
+                    if appsCount[comm_ind] >= appsPerComm:
                         # Se a community tiver alcançado o nr de apps / comm, passa para ultimo
-                        comm_count.pop(comm_ind)
-                        comm_count.append(0)
+                        appsCount.pop(comm_ind)
+                        appsCount.append(0)
                         comms.append(comms.pop(comm_ind))
 
-                if app.nodes[0]['module'] in alloc:
                     break
 
         allocJson = {'initialAllocation': list()}
@@ -1251,8 +1279,6 @@ class ExperimentConfiguration:
             # Unix
             with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
                 allocFile.write(json.dumps(allocJson))
-
-        print('DEBUG')
 
     def randomPlacement(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
         # nodes -> self.devices     apps -> self.apps
