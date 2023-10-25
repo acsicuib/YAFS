@@ -73,18 +73,24 @@ def sum_mods_per_node(placement, nodes):
     for dt in placement.data['initialAllocation']:
         nodes[int(dt['id_resource'])] += 1
 
-def append_mods_per_node(placement, total_mods_per_node):
+def append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, data_network, total_mods_cloud):
     mods_per_node = dict()
     for i in range(NUMBER_OF_NODES+1):
-        mods_per_node[i] = 0
+        mods_per_node[i] = [0, 0]
+        mods_per_node[i][1] = max([node['tier'] if node['id'] == i else -1 for node in data_network['entity']])
+
 
     for dt in placement.data['initialAllocation']:
-        mods_per_node[int(dt['id_resource'])] += 1
+        mods_per_node[int(dt['id_resource'])][0] += 1
+        mods_per_node[int(dt['id_resource'])][1] = max([node['tier'] if node['id'] == dt['id_resource'] else -1 for node in data_network['entity']])
 
-    total_mods_per_node[algorithm] += list(mods_per_node.values())
+
+    total_mods_per_node[algorithm] += [n_mods[0] for n_mods in mods_per_node.values()]
+    total_mods_per_node_with_node_id[algorithm] += mods_per_node.values()
+    total_mods_cloud[algorithm] += mods_per_node[NUMBER_OF_NODES][0]
 
 
-def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, total_mods_per_node):
+def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed, total_mods_per_node, total_mods_per_node_with_node_id, total_mods_cloud):
 
     global nodes
     random.seed(seed)
@@ -167,7 +173,7 @@ def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, 
             nodes[int(n)] = 0
 
     # sum_mods_per_node(placement, nodes)
-    append_mods_per_node(placement, total_mods_per_node)
+    append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, dataNetwork, total_mods_cloud)
 
 
     """
@@ -264,7 +270,7 @@ if __name__ == '__main__':
     folder_data_processing.mkdir(parents=True, exist_ok=True)
     folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
 
-    nIterations = 50  # iteration for each experiment
+    nIterations = 2  # iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
@@ -278,14 +284,18 @@ if __name__ == '__main__':
 
     modules_per_node = dict()
     total_mods_per_node = dict()
+    total_mods_per_node_with_node_id = dict()
     placement_clock = dict()
-
+    total_mods_cloud = dict()
     # algorithm_list = ['randomPlacement', 'bt_min_mods','near_GW_placement', 'greedy_algorithm']
     # algorithm_list = ['bt_min_mods']
 
-    # algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR', 'lambda' ]
-    algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR']
-
+    #algorithm_list = ['random', 'greedy_FRAM']
+    algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR', 'lambda' ]
+    #algorithm_list = ['greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR']
+    for algorithm in algorithm_list:
+        total_mods_per_node_with_node_id[algorithm] = []
+        total_mods_cloud[algorithm] = 0
     for algorithm in algorithm_list:
         placement_clock[algorithm] = []
         print('\n\n', algorithm,'\n')
@@ -296,7 +306,7 @@ if __name__ == '__main__':
 
             start_time = time.time()
             main(stop_time=simulationDuration,
-                 it=iteration, folder_results=folder_results, folder_data_processing=folder_data_processing,algorithm=algorithm, seed=seed_list[iteration], total_mods_per_node=total_mods_per_node)
+                 it=iteration, folder_results=folder_results, folder_data_processing=folder_data_processing,algorithm=algorithm, seed=seed_list[iteration], total_mods_per_node=total_mods_per_node, total_mods_per_node_with_node_id=total_mods_per_node_with_node_id, total_mods_cloud=total_mods_cloud)
             sim_duration = time.time() - start_time
             print("\n--- %s seconds ---" % (sim_duration))
 
@@ -313,3 +323,5 @@ if __name__ == '__main__':
     # plot.plot_algorithm_exec_time(placement_clock, nIterations)
     plot.plot_used_nodes_per_algorithm(total_mods_per_node, nIterations)
     plot.plot_percentage_used_nodes_per_algorithm(total_mods_per_node)
+    plot.plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, nIterations)
+    plot.plot_number_modules_in_cloud(total_mods_cloud, nIterations)

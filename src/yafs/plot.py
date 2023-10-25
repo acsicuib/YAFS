@@ -231,14 +231,14 @@ def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_lis
         app_lat = []
         for app_ in apps_deployed:
             app_lat.append(np.average(np.array(dfl[dfl.app == app_].latency)))
-        mean+=app_lat
+        mean += app_lat
         plt.scatter(range(len(app_lat)), app_lat, label=algorithm, c=colors[i], marker='o')
         labels.append(algorithm)
         i = (i + 1) % len(colors)
         ticks = range(len(app_lat))
 
     # media = sum(mean)/len(mean)
-    plt.ylim(0, ((sum(mean)/len(mean))*1.5))
+    plt.ylim(0, ((sum(mean) / len(mean)) * 1.5))
     plt.xticks(ticks)
     plt.xlabel(f'Apps')
     plt.ylabel('Latency')
@@ -246,7 +246,6 @@ def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_lis
     plt.legend(labels, loc='upper right')
     save_plot('Average App Latency per algorithm')
     plt.show()
-
 
 
 def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list):
@@ -269,7 +268,6 @@ def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
     plt.xticks(rotation=45)
 
-
     # media = sum(mean)/len(mean)
     # plt.figure(figsize=(10, 6))
     # plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
@@ -288,6 +286,7 @@ def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
     save_plot('barplot_latency_per_placement_algorithm')
     plt.show()
 
+
 def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list):
     colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'pink']
     algorithm_latency = [[] for x in range(len(algorithm_list))]
@@ -299,7 +298,7 @@ def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_li
 
         for app_ in apps_deployed:
             algorithm_latency[i] += list(np.array(dfl[dfl.app == app_].latency))
-        i+=1
+        i += 1
 
     plt.figure(figsize=(10, 6))
 
@@ -313,6 +312,7 @@ def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_li
 
     save_plot('boxplot_latency_per_placement_algorithm')
     plt.show()
+
 
 def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False, plot_name=None):
     df = pd.read_csv(folder_results + "sim_trace.csv")
@@ -387,6 +387,7 @@ def modules_per_node(placement, topology, plot_name=None):
 
     plt.show()
 
+
 #
 # def plot_modules_per_node_per_algorithm(algorithm_list, modules_per_node):
 #     # colors = ['red', 'green', 'blue', 'purple', 'orange']
@@ -422,12 +423,13 @@ def plot_modules_per_node_per_algorithm(total_mods_per_node):
 
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
     plt.xticks(rotation=45)
-    plt.yticks(range(max(max(data) for data in data_list)+1))
+    plt.yticks(range(max(max(data) for data in data_list) + 1))
     plt.xlabel('Algorithms')
     plt.ylabel('Modules per node')
     plt.title('Modules per node of each algorithm')
     save_plot('modules_per_node_of_each_algorithm')
     plt.show()
+
 
 def plot_max_stress_per_algorithm(total_mods_per_node):
     colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'pink']
@@ -448,6 +450,7 @@ def plot_max_stress_per_algorithm(total_mods_per_node):
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
     plt.show()
+
 
 def plot_used_nodes_per_algorithm(total_mods_per_node, n_iterations):
     colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
@@ -470,10 +473,12 @@ def plot_used_nodes_per_algorithm(total_mods_per_node, n_iterations):
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
     plt.show()
 
+
 def plot_percentage_used_nodes_per_algorithm(total_mods_per_node):
     colors = ['C0', 'C1']
-    labels=["Unused", "Used"]
+    labels = ["Unused", "Used"]
     wedges = []
+    row = col = 0
 
     n = len(total_mods_per_node)
     nrows = int(n / 2) + n % 2
@@ -482,7 +487,6 @@ def plot_percentage_used_nodes_per_algorithm(total_mods_per_node):
     fig, ax = plt.subplots(nrows, ncols)
     i = 0
     for algorithm in total_mods_per_node.keys():
-
         row = int(i / ncols)
         col = i % ncols
         i += 1
@@ -490,9 +494,20 @@ def plot_percentage_used_nodes_per_algorithm(total_mods_per_node):
         total_nodes = len(list(total_mods_per_node[algorithm]))
         unused_nodes = list(total_mods_per_node[algorithm]).count(0)
 
-        wedges, _, __ = ax[row, col].pie([unused_nodes/total_nodes * 100, (total_nodes-unused_nodes)/total_nodes * 100], autopct='%1.1f%%', colors=colors)
-        ax[row, col].set_title(algorithm)
+        if nrows == 1:
+            wedges, _, __ = ax[col].pie(
+                [unused_nodes / total_nodes * 100, (total_nodes - unused_nodes) / total_nodes * 100], autopct='%1.1f%%',
+                colors=colors)
+            ax[col].set_title(algorithm)
 
+        else:
+            wedges, _, __ = ax[row, col].pie(
+                [unused_nodes / total_nodes * 100, (total_nodes - unused_nodes) / total_nodes * 100], autopct='%1.1f%%',
+                colors=colors)
+            ax[row, col].set_title(algorithm)
+
+    if n % 2 == 1:
+        fig.delaxes(ax[row, col + 1])
 
     fig.suptitle('Percentage of Used Nodes in Each Algorithm')
     fig.legend(wedges, labels, loc='lower center')
@@ -537,7 +552,7 @@ def plot_messages_node(folder_results, plot_name=None):
 def plot_algorithm_exec_time(algorithm_clock, iterations):
     colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
     data_list_temp = [list(algorithm_clock[algorithm]) for algorithm in algorithm_clock.keys()]
-    data_list = [sum(x)/iterations for x in data_list_temp]
+    data_list = [sum(x) / iterations for x in data_list_temp]
 
     plt.figure(figsize=(10, 6))
     bars = plt.bar(algorithm_clock.keys(), data_list, color=colors)
@@ -554,3 +569,52 @@ def plot_algorithm_exec_time(algorithm_clock, iterations):
     plt.title('Average Execution Time per Algorithm')
     plt.show()
     save_plot("Average_Execution_Time_per_Algorithm")
+
+
+def plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, n_iterations):
+    i = 0
+    fig, axs = plt.subplots(len(total_mods_per_node_with_node_id), 1, figsize=(5, len(total_mods_per_node_with_node_id)*3))
+
+    for algorithm in total_mods_per_node_with_node_id.keys():
+        tier_dict = {}
+        for node in total_mods_per_node_with_node_id[algorithm]:
+            if node[1] not in tier_dict.keys():
+                tier_dict[node[1]] = []
+
+            tier_dict[node[1]] += [node[0]]
+
+        tier_list = tier_dict.keys()
+        info_list = [sum(tier_dict[x]) / n_iterations for x in tier_list]
+        axs[i].bar(tier_list, info_list)
+        axs[i].set_title(algorithm)
+        axs[i].set_xlabel('Tier')
+        axs[i].set_xticks(range(0, len(tier_list)))
+        axs[i].set_ylabel('Number of Modules Allocated')
+        i += 1
+
+    plt.subplots_adjust(hspace=0.5)
+    #plt.subplots_adjust(top=0.85)
+    #plt.tight_layout()
+    fig.suptitle('plot_modules_in_each_tier_per_algorithm')
+    plt.show()
+
+
+def plot_number_modules_in_cloud(total_modules_cloud, n_iterations):
+    algorithms = total_modules_cloud.keys()
+    n_modules_cloud = [total_modules_cloud[x] / n_iterations for x in algorithms]
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(algorithms, n_modules_cloud, color=colors)
+
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
+    plt.xlabel('Algorithms')
+    plt.ylabel('Number of Modules in the Cloud')
+    plt.title('Number of modules in the cloud per algorithm')
+    save_plot('used_nodes_per_algorithm')
+
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
+    plt.show()
