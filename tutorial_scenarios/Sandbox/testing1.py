@@ -73,21 +73,30 @@ def sum_mods_per_node(placement, nodes):
     for dt in placement.data['initialAllocation']:
         nodes[int(dt['id_resource'])] += 1
 
-def append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, data_network, total_mods_cloud):
+def append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, data_network, total_mods_cloud, avg_mods_per_tier_node):
     mods_per_node = dict()
+    temp_tier = {}
     for i in range(NUMBER_OF_NODES+1):
         mods_per_node[i] = [0, 0]
-        mods_per_node[i][1] = max([node['tier'] if node['id'] == i else -1 for node in data_network['entity']])
+        tier = max([node['tier'] if node['id'] == i else -1 for node in data_network['entity']])
+        mods_per_node[i][1] = tier
+        if tier not in temp_tier.keys():
+            temp_tier[tier] = []
+        if tier not in avg_mods_per_tier_node[algorithm].keys():
+            avg_mods_per_tier_node[algorithm][tier] = []
 
 
     for dt in placement.data['initialAllocation']:
         mods_per_node[int(dt['id_resource'])][0] += 1
         mods_per_node[int(dt['id_resource'])][1] = max([node['tier'] if node['id'] == dt['id_resource'] else -1 for node in data_network['entity']])
-
+    for element in mods_per_node.values():
+        temp_tier[element[1]] += [element[0]]
 
     total_mods_per_node[algorithm] += [n_mods[0] for n_mods in mods_per_node.values()]
     total_mods_per_node_with_node_id[algorithm] += mods_per_node.values()
     total_mods_cloud[algorithm] += mods_per_node[NUMBER_OF_NODES][0]
+    for key, values in temp_tier.items():
+        avg_mods_per_tier_node[algorithm][key] += [sum(values)/len(values)]
 
 
 def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed, total_mods_per_node, total_mods_per_node_with_node_id, total_mods_cloud):
@@ -100,7 +109,7 @@ def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed,
     random.seed(seed)
     exp_conf.app_generation(app_struct='linear')
     random.seed(seed)
-    exp_conf.networkGeneration(n=NUMBER_OF_NODES, file_name_network='network.json')
+    exp_conf.networkGeneration(n=NUMBER_OF_NODES)
     random.seed(seed)
     exp_conf.user_generation()
 
@@ -109,7 +118,7 @@ def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed,
     start_clock = time.time()
 
     if algorithm == 'random':
-        exp_conf.randomPlacement(file_name_network='network.json')
+        exp_conf.randomPlacement()
 
     elif algorithm == 'bt_min_mods':
         exp_conf.bt_min_mods()
@@ -142,7 +151,7 @@ def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed,
     TOPOLOGY
     """
     t = Topology()
-    dataNetwork = json.load(open('data/network.json'))
+    dataNetwork = json.load(open('data/netDefinition.json'))
 
     t.load(dataNetwork)
 
@@ -173,7 +182,7 @@ def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed,
             nodes[int(n)] = 0
 
     # sum_mods_per_node(placement, nodes)
-    append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, dataNetwork, total_mods_cloud)
+    append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, dataNetwork, total_mods_cloud, avg_mods_per_tier_node)
 
 
     """
@@ -270,7 +279,7 @@ if __name__ == '__main__':
     folder_data_processing.mkdir(parents=True, exist_ok=True)
     folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
 
-    nIterations = 1  # iteration for each experiment
+    nIterations = 2  # iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
@@ -287,16 +296,18 @@ if __name__ == '__main__':
     total_mods_per_node_with_node_id = dict()
     placement_clock = dict()
     total_mods_cloud = dict()
+    avg_mods_per_tier_node = dict()
     # algorithm_list = ['randomPlacement', 'bt_min_mods','near_GW_placement', 'greedy_algorithm']
     # algorithm_list = ['bt_min_mods']
 
-    algorithm_list = ['random']
-    #algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR', 'lambda' ]
+    #algorithm_list = ['random', 'greedy_FRAM']
+    algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR', 'lambda' ]
     #algorithm_list = ['greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR']
     for algorithm in algorithm_list:
         total_mods_per_node_with_node_id[algorithm] = []
         total_mods_cloud[algorithm] = 0
-    for algorithm in algorithm_list:
+        avg_mods_per_tier_node[algorithm] = dict()
+
         placement_clock[algorithm] = []
         print('\n\n', algorithm,'\n')
         # Iteration for each experiment changing the seed of randoms
@@ -323,5 +334,6 @@ if __name__ == '__main__':
     # plot.plot_algorithm_exec_time(placement_clock, nIterations)
     # plot.plot_used_nodes_per_algorithm(total_mods_per_node, nIterations)
     plot.plot_percentage_used_nodes_per_algorithm(total_mods_per_node)
-    plot.plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, nIterations)
-    plot.plot_number_modules_in_cloud(total_mods_cloud, nIterations)
+    #plot.plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, nIterations)
+    #plot.plot_number_modules_in_cloud(total_mods_cloud, nIterations)
+    plot.plot_average_n_mods_in_each_node_per_tier(avg_mods_per_tier_node)

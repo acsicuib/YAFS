@@ -637,3 +637,32 @@ def plot_number_modules_in_cloud(total_modules_cloud, n_iterations):
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
     plt.show()
+
+def plot_average_n_mods_in_each_node_per_tier(avg_mods_per_tier_node):
+    i = 0
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+    fig, axs = plt.subplots(len(avg_mods_per_tier_node), 1, figsize=(5, len(avg_mods_per_tier_node)*3))
+    for algorithm, values in avg_mods_per_tier_node.items():
+        tier_avg = dict()
+        for tier, avg_n_modules in values.items():
+            tier_avg[tier] = sum(avg_n_modules) / len(avg_n_modules)
+        if len(avg_mods_per_tier_node) == 1:
+            axs.bar(tier_avg.keys(), tier_avg.values(), color=colors)
+            axs.set_title(algorithm)
+            axs.set_xlabel('Tier')
+            axs.set_xticks(range(0, len(tier_avg)))
+            # axs.set_yticks(range(0, max_info, int(max_info / 5)))
+            axs.set_ylabel('Avg Num of Modules in a Node')
+
+        else:
+            axs[i].bar(tier_avg.keys(), tier_avg.values(), color=colors)
+            axs[i].set_title(algorithm)
+            axs[i].set_xlabel('Tier')
+            axs[i].set_xticks(range(0, len(tier_avg)))
+            #axs.set_yticks(range(0, max_info, int(max_info / 5)))
+            axs[i].set_ylabel('Avg Num of Modules in a Node')
+        i += 1
+    plt.subplots_adjust(hspace=0.5)
+    fig.suptitle('Average Number of Mods in Each Node per Tier')
+    #save_plot('average_n_mods_in_each_node_per_tier')
+    plt.show()
