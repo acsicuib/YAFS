@@ -495,10 +495,17 @@ def plot_percentage_used_nodes_per_algorithm(total_mods_per_node):
         unused_nodes = list(total_mods_per_node[algorithm]).count(0)
 
         if nrows == 1:
-            wedges, _, __ = ax[col].pie(
-                [unused_nodes / total_nodes * 100, (total_nodes - unused_nodes) / total_nodes * 100], autopct='%1.1f%%',
-                colors=colors)
-            ax[col].set_title(algorithm)
+            if ncols != 1:
+                wedges, _, __ = ax[col].pie(
+                    [unused_nodes / total_nodes * 100, (total_nodes - unused_nodes) / total_nodes * 100], autopct='%1.1f%%',
+                    colors=colors)
+                ax[col].set_title(algorithm)
+            else:
+                wedges, _, __ = ax.pie(
+                    [unused_nodes / total_nodes * 100, (total_nodes - unused_nodes) / total_nodes * 100],
+                    autopct='%1.1f%%',
+                    colors=colors)
+                ax.set_title(algorithm)
 
         else:
             wedges, _, __ = ax[row, col].pie(
@@ -506,7 +513,7 @@ def plot_percentage_used_nodes_per_algorithm(total_mods_per_node):
                 colors=colors)
             ax[row, col].set_title(algorithm)
 
-    if n % 2 == 1:
+    if n % 2 == 1 and n != 1:
         fig.delaxes(ax[row, col + 1])
 
     fig.suptitle('Percentage of Used Nodes in Each Algorithm')
@@ -586,15 +593,26 @@ def plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, n_
         tier_list = tier_dict.keys()
         info_list = [sum(tier_dict[x]) / n_iterations for x in tier_list]
         max_info = int(max(info_list))
-        axs[i].bar(tier_list, info_list, color=colors)
-        axs[i].set_title(algorithm)
-        axs[i].set_xlabel('Tier')
-        axs[i].set_xticks(range(0, len(tier_list)))
-        axs[i].set_yticks(range(0, max_info, int(max_info/5)))
-        axs[i].set_ylabel('Number of Modules Allocated')
+        if len(total_mods_per_node_with_node_id) == 1:
+            axs.bar(tier_list, info_list, color=colors)
+            axs.set_title(algorithm)
+            axs.set_xlabel('Tier')
+            axs.set_xticks(range(0, len(tier_list)))
+            axs.set_yticks(range(0, max_info, int(max_info / 5)))
+            axs.set_ylabel('Number of Modules Allocated')
+        else:
+            axs[i].bar(tier_list, info_list, color=colors)
+            axs[i].set_title(algorithm)
+            axs[i].set_xlabel('Tier')
+            axs[i].set_xticks(range(0, len(tier_list)))
+            axs[i].set_yticks(range(0, max_info, int(max_info/5)))
+            axs[i].set_ylabel('Number of Modules Allocated')
         i += 1
 
     plt.subplots_adjust(hspace=0.5)
+    #plt.subplots_adjust(top=0.9, bottom=0.1)
+    #plt.tight_layout(rect=(0.9, 0.9, 0.1, 0.1))  # Increase or decrease the pad parameter to control spacing
+
     #plt.tight_layout()
     fig.suptitle('plot_modules_in_each_tier_per_algorithm')
     plt.show()

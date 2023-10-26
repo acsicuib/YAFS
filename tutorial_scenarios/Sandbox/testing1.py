@@ -238,7 +238,7 @@ def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed,
         # plt.title(algorithm)
         # plt.show()
         # data_analysis.plot_latency(folder_results, plot_name=plot_name)
-        plot.plot_avg_latency(folder_results, plot_name=plot_name)
+        # plot.plot_avg_latency(folder_results, plot_name=plot_name)
 
         src_csv = folder_results + "sim_trace_link.csv"
         dst_csv = folder_data_processing + algorithm + "_sim_trace_link.csv"
@@ -270,7 +270,7 @@ if __name__ == '__main__':
     folder_data_processing.mkdir(parents=True, exist_ok=True)
     folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
 
-    nIterations = 2  # iteration for each experiment
+    nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
@@ -290,8 +290,8 @@ if __name__ == '__main__':
     # algorithm_list = ['randomPlacement', 'bt_min_mods','near_GW_placement', 'greedy_algorithm']
     # algorithm_list = ['bt_min_mods']
 
-    #algorithm_list = ['random', 'greedy_FRAM']
-    algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR', 'lambda' ]
+    algorithm_list = ['random']
+    #algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR', 'lambda' ]
     #algorithm_list = ['greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR']
     for algorithm in algorithm_list:
         total_mods_per_node_with_node_id[algorithm] = []
@@ -321,7 +321,7 @@ if __name__ == '__main__':
     # plot.plot_modules_per_node_per_algorithm(total_mods_per_node)
     # plot.plot_max_stress_per_algorithm(total_mods_per_node)
     # plot.plot_algorithm_exec_time(placement_clock, nIterations)
-    plot.plot_used_nodes_per_algorithm(total_mods_per_node, nIterations)
+    # plot.plot_used_nodes_per_algorithm(total_mods_per_node, nIterations)
     plot.plot_percentage_used_nodes_per_algorithm(total_mods_per_node)
     plot.plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, nIterations)
     plot.plot_number_modules_in_cloud(total_mods_cloud, nIterations)
