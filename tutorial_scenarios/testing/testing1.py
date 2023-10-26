@@ -11,6 +11,7 @@ import random
 import logging.config
 import shutil
 import networkx as nx
+import matplotlib.pyplot as plt
 
 from pathlib import Path
 
@@ -100,32 +101,40 @@ def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, 
 
     # Algoritmo de alloc
 
-    if algorithm == 'randomPlacement':
+    start_clock = time.time()
+
+    if algorithm == 'random':
         exp_conf.randomPlacement(file_name_network='network.json')
 
     elif algorithm == 'bt_min_mods':
         exp_conf.bt_min_mods()
 
-    elif algorithm == 'near_GW_placement_BW_PR':
+    elif algorithm == 'near_GW_BW_PR':
         exp_conf.near_GW_placement(weight='BW_PR')
 
-    elif algorithm == 'near_GW_placement_PR':
+    elif algorithm == 'near_GW_PR':
         exp_conf.near_GW_placement(weight='PR')
 
-    elif algorithm == 'near_GW_placement_BW':
+    elif algorithm == 'near_GW_BW':
         exp_conf.near_GW_placement(weight='BW')
 
-    elif algorithm == 'greedy_algorithm':
+    elif algorithm == 'greedy_FRAM':
         exp_conf.greedy_algorithm()
 
-    elif algorithm == 'lambda_placement':
+    elif algorithm == 'lambda':
         exp_conf.lambda_placement()
+
+    elif algorithm == 'greedy_latency':
+        exp_conf.greedy_algorithm_latency()
 
     elif algorithm == 'RR_IPT_placement':
         exp_conf.RR_IPT_placement()
 
-    plot_name = algorithm
+    placement_clock[algorithm].append(time.time() - start_clock)
 
+
+
+    plot_name = algorithm
 
     """
     TOPOLOGY
@@ -222,6 +231,10 @@ def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, 
 
 
     if it == nIterations-1:
+        # pos = nx.spring_layout(t.G, seed=seed)
+        # nx.draw_networkx(t.G, pos)
+        # plt.title(algorithm)
+        # plt.show()
         # data_analysis.plot_latency(folder_results, plot_name=plot_name)
         data_analysis.plot_avg_latency(folder_results, plot_name=plot_name)
 
@@ -255,23 +268,30 @@ if __name__ == '__main__':
     folder_data_processing.mkdir(parents=True, exist_ok=True)
     folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
 
-    nIterations = 50  # iteration for each experiment
+    nIterations = 1  # iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
     random_seed = True
     if random_seed:
-        seed = time.time()
+        seed = int(time.time())
     else:
         seed = god_tier_seed
 
+    seed_list = [random.randint(1, 100000) for _ in range(nIterations)]
+
     modules_per_node = dict()
     total_mods_per_node = dict()
+    placement_clock = dict()
 
     # algorithm_list = ['randomPlacement', 'bt_min_mods','near_GW_placement', 'greedy_algorithm']
     # algorithm_list = ['bt_min_mods']
-    algorithm_list = ['RR_IPT_placement', 'near_GW_placement_PR', 'near_GW_placement_BW', 'near_GW_placement_BW_PR', 'lambda_placement']
+
+    # algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR', 'lambda' ]
+    algorithm_list = ['RR_IPT_placement', 'random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR']
+
     for algorithm in algorithm_list:
+        placement_clock[algorithm] = []
         print('\n\n', algorithm,'\n')
         # Iteration for each experiment changing the seed of randoms
         for iteration in range(nIterations):
@@ -280,15 +300,18 @@ if __name__ == '__main__':
 
             start_time = time.time()
             main(stop_time=simulationDuration,
-                 it=iteration, folder_results=folder_results, folder_data_processing=folder_data_processing,algorithm=algorithm, seed=seed, total_mods_per_node=total_mods_per_node)
-
-            print("\n--- %s seconds ---" % (time.time() - start_time))
+                 it=iteration, folder_results=folder_results, folder_data_processing=folder_data_processing,algorithm=algorithm, seed=seed_list[iteration], total_mods_per_node=total_mods_per_node)
+            sim_duration = time.time() - start_time
+            print("\n--- %s seconds ---" % (sim_duration))
 
         print("Simulation Done!")
 
     print(modules_per_node)
+    print(placement_clock)
 
     data_analysis.scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_list)
     data_analysis.plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
     data_analysis.boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
     data_analysis.plot_modules_per_node_per_algorithm(total_mods_per_node)
+    data_analysis.plot_max_stress_per_algorithm(total_mods_per_node)
+    data_analysis.plot_algorithm_exec_time(placement_clock, nIterations)

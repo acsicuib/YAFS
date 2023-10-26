@@ -91,15 +91,15 @@ def main(stop_time, it, folder_results):
     # BW <=> weight=lambda src, dst, data: 1 / data.get('BW')
 
     # exp_conf.lambda_placement()
-    exp_conf.RR_IPT_placement()
-    plot_name = 'RR_IPT_placement'
+    # exp_conf.RR_IPT_placement()
+    # plot_name = 'RR_IPT_placement'
 
     # exp_conf.near_GW_placement(weight='BW')
-    # exp_conf.near_GW_placement(weight='PR')
+    exp_conf.near_GW_placement(weight='PR')
     # exp_conf.near_GW_placement(weight='BW')
     # exp_conf.near_GW_placement(weight='IPT')
 
-    # plot_name = 'near_GW_placement'
+    plot_name = 'near_GW_placement'
 
     # exp_conf.greedy_algorithm()
     # plot_name = 'greedy_algorithm'

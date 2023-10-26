@@ -725,6 +725,68 @@ class ExperimentConfiguration:
             with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
                 netFile.write(json.dumps(self.netJson))
 
+    def greedy_algorithm_latency(self, file_name_alloc='allocDefinition.json', file_name_network='netDefinition.json'):
+
+        self.app_order = sorted(self.appJson, key=itemgetter('popularity'), reverse=True)
+        self.all_modules = []
+        for app in self.app_order:
+            for module in app['module']:
+                self.all_modules.append(module)
+        print(self.all_modules)
+        placement = {}
+
+        latency_table = dict()
+        # sorted_nodes = sorted(self.netJson['entity'], key=lambda node: (-node['tier'], -node['FRAM']))
+        for node in range(len(self.netJson['entity'])):
+            latency_table[node] = []
+
+        for link in self.netJson['link']:
+            latency = 1 / link['BW'] + link['PR']
+            latency_table[link['s']].append((link['d'], latency))
+            latency_table[link['d']].append((link['s'], latency))
+
+        for node in range(len(latency_table)):
+            latency_table[node].sort(key=lambda link: link[1])
+
+        ordered_nodes = sorted(latency_table, key=lambda k: latency_table[k][0][1])
+
+        for current_module in self.all_modules:
+            if current_module == self.all_modules[-1]:
+                print("\n\nUPasdlhkgbasdf\n", current_module, "\nasdfasdas\n\n")
+            for node_id in ordered_nodes:
+                if self.netJson['entity'][node_id]['FRAM'] >= current_module['RAM']:
+                    self.netJson['entity'][node_id]['FRAM'] -= current_module['RAM']
+                    placement[current_module['name']] = node_id
+                    break
+
+        # Alloc será o dicionario convertido para json
+        alloc = dict()
+        alloc['initialAllocation'] = list()
+
+        for module in placement:
+            temp_dict = dict()
+            temp_dict['module_name'] = module
+            temp_dict['app'] = int(module.split("_")[0])
+            temp_dict['id_resource'] = placement[module]  # node
+
+            alloc['initialAllocation'].append(temp_dict)
+
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+            # Update FRAM network Json
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, "w") as allocFile:
+                allocFile.write(json.dumps(alloc))
+                # Unix
+            with open('/' + self.path + '/' + self.cnf.resultFolder + '/' + file_name_network, "w") as netFile:
+                netFile.write(json.dumps(self.netJson))
+
     def bt_min_mods(self, file_name_apps='appDefinition.json', file_name_alloc='allocDefinition.json'):
         available_res = self.freeNodeResources.copy()
         available_res.pop(max(available_res))  # Remove-se o node da Cloud
@@ -868,9 +930,9 @@ class ExperimentConfiguration:
 
         # Separam-se os nodes por comprimentos até à origem
         for app_i, app in enumerate(self.apps):
-            for cand_nd in app:
+            for app_node in app:
 
-                length = len(nx.shortest_path(app, 0, cand_nd)) - 1
+                length = len(nx.shortest_path(app, 0, app_node)) - 1
 
                 if length not in origin_lens:
                     origin_lens[length] = dict()
@@ -878,11 +940,11 @@ class ExperimentConfiguration:
                 if app_i not in origin_lens[length]:
                     origin_lens[length][app_i] = list()
 
-                origin_lens[length][app_i].append(cand_nd)
+                origin_lens[length][app_i].append(app_node)
 
-        max_branch_len = max(origin_lens.keys())
+        max_len = max(origin_lens.keys())
 
-        for length in range(max_branch_len + 1):
+        for length in origin_lens:
             for app_i, app in enumerate(self.apps):
                 if length == 0:
                     cost = app.nodes[0]['cost']
@@ -929,11 +991,6 @@ class ExperimentConfiguration:
                         visited_nodes = list()
 
                         while True:
-                            # Se, apos todos os nodes serem vistos, nao foi possivel alocar o modulo, aloca-se na cloud
-                            if len(candidate_nodes) == 0:
-                                chosen_node = self.cloudId
-                                break
-
                             # lista que guarda temporariamente os nodes que nao conseguem abarcar o modulo
                             insuf_res = list()
 
@@ -953,8 +1010,7 @@ class ExperimentConfiguration:
 
                             if len(candidate_nodes) != 0:
                                 chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
-                                chosen_node = \
-                                [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                                chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
                                 break
 
                             else:
@@ -971,6 +1027,11 @@ class ExperimentConfiguration:
                                 # Removem-se elementos repetidos (vizinhos em comum) e os já vistos
                                 candidate_nodes = list(set(candidate_nodes))
                                 candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes]
+
+                            # Se, apos todos os nodes serem vistos, nao foi possivel alocar o modulo, aloca-se na cloud
+                            if len(candidate_nodes) == 0:
+                                chosen_node = self.cloudId
+                                break
 
                         self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
 
@@ -1264,6 +1325,9 @@ class ExperimentConfiguration:
                         comms.append(comms.pop(comm_ind))
 
                     break
+
+            # if app.nodes[0]['module'] not in alloc:
+
 
         allocJson = {'initialAllocation': list()}
 
