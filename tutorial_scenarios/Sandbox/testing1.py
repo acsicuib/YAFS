@@ -348,4 +348,4 @@ if __name__ == '__main__':
     plot.plot_number_modules_in_cloud(total_mods_cloud, nIterations)
     plot.plot_average_n_mods_in_each_node_per_tier(avg_mods_per_tier_node)
     plot.plot_fram_per_tier_per_algorithm(total_FRAM_per_tier, nIterations)
-    plot.compile_images()
+    plot.compile_images_to_pdf()

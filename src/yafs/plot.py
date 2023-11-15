@@ -7,8 +7,8 @@ from math import ceil, floor
 from collections import Counter
 # from pathlib import Path
 from PIL import Image
-
-
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 # folder_results = Path("../../tutorial_scenarios/Playground/results/")
 # folder_results.mkdir(parents=True, exist_ok=True)
@@ -638,7 +638,7 @@ def plot_number_modules_in_cloud(total_modules_cloud, n_iterations):
     for bar in bars:
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
-    save_plot('used_nodes_per_algorithm')
+    save_plot('plot_number_modules_in_cloud')
     plt.show()
 
 def plot_average_n_mods_in_each_node_per_tier(avg_mods_per_tier_node):
@@ -708,6 +708,49 @@ def plot_fram_per_tier_per_algorithm(total_FRAM_per_tier, nIterations):
     fig.suptitle('FRAM per Tier per Algorithm')
     save_plot('FRAM_per_tier_per_algorithm')
     plt.show()
+
+
+
+def compile_images_to_pdf():
+    images = []
+    input_folder = 'data_analysis\\'
+    output_pdf = 'compiled_images.pdf'
+    # Iterate over all files in the input folder
+    for filename in sorted(os.listdir(input_folder)):
+        if filename.endswith(".png"):
+            img_path = os.path.join(input_folder, filename)
+            img = Image.open(img_path)
+            images.append(img)
+
+    # Create a PDF file
+    pdf = canvas.Canvas(output_pdf, pagesize=letter)
+
+    # Set the width and height of the PDF page
+    pdf_width, pdf_height = letter
+
+    # Iterate over each image and draw it on the PDF
+    for i, img in enumerate(images):
+        # Calculate the scaling factor to fit the image within the PDF page
+        scale_factor = min(pdf_width / img.width, pdf_height / img.height)
+
+        # Calculate the new dimensions of the image
+        new_width = img.width * scale_factor
+        new_height = img.height * scale_factor
+
+        # Calculate the position to center the image on the page
+        x_pos = (pdf_width - new_width) / 2
+        y_pos = (pdf_height - new_height) / 2
+
+        # Draw the image on the PDF
+        pdf.drawInlineImage(img, x_pos, y_pos, width=new_width, height=new_height)
+
+        # Add a new page for each image except the last one
+        if i < len(images) - 1:
+            pdf.showPage()
+
+    # Save the PDF
+    pdf.save()
+
 
     '''
 
