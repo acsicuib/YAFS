@@ -93,7 +93,7 @@ def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, 
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
 
     random.seed(seed)
-    exp_conf.app_generation(app_struct='linear')
+    exp_conf.app_generation()
     random.seed(seed)
     exp_conf.networkGeneration(n=NUMBER_OF_NODES, file_name_network='network.json')
     random.seed(seed)
@@ -128,7 +128,7 @@ def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, 
         exp_conf.greedy_algorithm_latency()
 
     elif algorithm == 'RR_IPT_placement':
-        exp_conf.RR_IPT_placement()
+        exp_conf.RR_IPT_placement(comms_nr=3)
 
     placement_clock[algorithm].append(time.time() - start_clock)
 

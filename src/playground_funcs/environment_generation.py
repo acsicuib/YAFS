@@ -59,9 +59,12 @@ class ExperimentConfiguration:
         self.func_USERREQRAT = "random.randint(200,1000)"
 
         # APP and SERVICES
-        self.TOTALNUMBEROFAPPS = 10
+        # self.TOTALNUMBEROFAPPS = 10 # 35
+        self.TOTALNUMBEROFAPPS = 35
+        self.func_APPGENERATION = "nx.gn_graph(random.randint(10,11))"  # algorithm for the generation of the random applications
+
         # !!!
-        self.func_APPGENERATION = "nx.gn_graph(random.randint(2,4))"  # algorithm for the generation of the random applications
+        # self.func_APPGENERATION = "nx.gn_graph(random.randint(2,4))"  # algorithm for the generation of the random applications
         # self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"  # algorithm for the generation of the random applications (agora linear)
         self.func_SERVICEINSTR = "random.randint(20000,60000)"  # INSTR --> teniedno en cuenta nodespped esto nos da entre 200 y 600 MS
         self.func_SERVICEMESSAGESIZE = "random.randint(1500000,4500000)"  # BYTES y teniendo en cuenta net bandwidth nos da entre 20 y 60 MS
@@ -911,6 +914,7 @@ class ExperimentConfiguration:
             with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
                 json.dump(alloc, f)
 
+
     def near_GW_placement(self, file_name_alloc='allocDefinition.json', weight='PR'):
 
         # Funcao de peso utilizada no algoritmo de routing de min_path (o meu)
@@ -942,10 +946,13 @@ class ExperimentConfiguration:
 
                 origin_lens[length][app_i].append(app_node)
 
-        max_len = max(origin_lens.keys())
-
         for length in origin_lens:
             for app_i, app in enumerate(self.apps):
+
+                # Verifica se existe algum elemento desse comprimento na app
+                if app_i not in origin_lens[length]:
+                    continue
+
                 if length == 0:
                     cost = app.nodes[0]['cost']
 
@@ -967,19 +974,22 @@ class ExperimentConfiguration:
                         chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
 
                         # Dentro destes, escolhe-se o com FRAM >
-                        chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][
-                            0]
+                        chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
 
+                    if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
+                        print()
                     self.freeNodeResources[chosen_node] -= cost
+                    if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
+                        print()
+
                     app.nodes[0]['id_resource'] = chosen_node
 
                     alloc[app.nodes[0]['module']] = chosen_node
                     module2app_map[app.nodes[0]['module']] = app_i
 
                 else:
-                    # Verifica se existe algum elemento desse comprimento na app
-                    if app_i not in origin_lens[length]:
-                        continue
+                    if length == 1:
+                        print()
 
                     for app_node in origin_lens[length][app_i]:
                         cost = app.nodes[app_node]['cost']
@@ -991,13 +1001,9 @@ class ExperimentConfiguration:
                         visited_nodes = list()
 
                         while True:
-                            # lista que guarda temporariamente os nodes que nao conseguem abarcar o modulo
-                            insuf_res = list()
 
-                            # guardam-se os nodes que nao conseguem abarcar o modulo
-                            for i, nd in enumerate(candidate_nodes):
-                                if self.freeNodeResources[nd] < cost:
-                                    insuf_res.append(candidate_nodes.pop(i))
+                            insuf_res = [nd for nd in candidate_nodes if self.freeNodeResources[nd] < cost]
+                            candidate_nodes = [nd for nd in candidate_nodes if self.freeNodeResources[nd] >= cost]
 
                             # Calcula-se o sumatorio de PR usado para chegar aos GW's
                             GW_dists = [
@@ -1010,6 +1016,8 @@ class ExperimentConfiguration:
 
                             if len(candidate_nodes) != 0:
                                 chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
+                                if chosen_node_FRAM < cost:
+                                    print()
                                 chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
                                 break
 
@@ -1033,11 +1041,18 @@ class ExperimentConfiguration:
                                 chosen_node = self.cloudId
                                 break
 
+                        if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
+                            print()
                         self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
+                        if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
+                            print()
 
                         app.nodes[app_node]['id_resource'] = chosen_node
                         alloc[app.nodes[app_node]['module']] = chosen_node
                         module2app_map[app.nodes[app_node]['module']] = app_i
+
+            # if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
+            #     print()
 
         allocDef = dict()
         allocDef["initialAllocation"] = list()
@@ -1307,9 +1322,9 @@ class ExperimentConfiguration:
                         # Reverte a alocaçao e passa para a community seguinte
                         tempFreeRes = self.freeNodeResources.copy()
 
-                        for alloc_nd in alloc:
-                            if alloc_nd in apps2mod[app_i]:
-                                del alloc_nd
+                        for alloc_nd in apps2mod[app_i]:
+                            if alloc_nd in alloc:
+                                alloc.pop(alloc_nd)
                         break
 
                 if app.nodes[0]['module'] in alloc:
@@ -1326,8 +1341,12 @@ class ExperimentConfiguration:
 
                     break
 
-            # if app.nodes[0]['module'] not in alloc:
-
+            # Se a app nao coube em nenhuma community, vai para a cloud
+            if app.nodes[0]['module'] not in alloc:
+                for app_nd in app:
+                    cost = self.apps[app_i].nodes[app_nd]['cost']
+                    self.freeNodeResources[self.cloudId] -= cost
+                    alloc[self.apps[app_i].nodes[app_nd]['module']] = self.cloudId
 
         allocJson = {'initialAllocation': list()}
 
