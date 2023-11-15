@@ -98,6 +98,14 @@ def append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_wit
     for key, values in temp_tier.items():
         avg_mods_per_tier_node[algorithm][key] += [sum(values)/len(values)]
 
+# appends the FRAM per tier
+def append_FRAM_per_tier(data_network, total_FRAM_per_tier):
+    for node in data_network['entity']:
+        if node['tier'] not in total_FRAM_per_tier[algorithm].keys():
+            total_FRAM_per_tier[algorithm][int(node['tier'])] = [0, 0]
+
+        total_FRAM_per_tier[algorithm][int(node['tier'])][0] += node['FRAM']
+        total_FRAM_per_tier[algorithm][int(node['tier'])][1] += node['RAM']
 
 def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed, total_mods_per_node, total_mods_per_node_with_node_id, total_mods_cloud):
 
@@ -183,7 +191,7 @@ def main(stop_time, it, folder_results, folder_data_processing, algorithm, seed,
 
     # sum_mods_per_node(placement, nodes)
     append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, dataNetwork, total_mods_cloud, avg_mods_per_tier_node)
-
+    append_FRAM_per_tier(dataNetwork, total_FRAM_per_tier)
 
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
@@ -297,6 +305,7 @@ if __name__ == '__main__':
     placement_clock = dict()
     total_mods_cloud = dict()
     avg_mods_per_tier_node = dict()
+    total_FRAM_per_tier = dict()
     # algorithm_list = ['randomPlacement', 'bt_min_mods','near_GW_placement', 'greedy_algorithm']
     # algorithm_list = ['bt_min_mods']
 
@@ -307,6 +316,7 @@ if __name__ == '__main__':
         total_mods_per_node_with_node_id[algorithm] = []
         total_mods_cloud[algorithm] = 0
         avg_mods_per_tier_node[algorithm] = dict()
+        total_FRAM_per_tier[algorithm] = dict()
 
         placement_clock[algorithm] = []
         print('\n\n', algorithm,'\n')
@@ -326,14 +336,16 @@ if __name__ == '__main__':
     print(modules_per_node)
     print(placement_clock)
 
-    # plot.scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_list)
-    # plot.plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
-    # plot.boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
-    # plot.plot_modules_per_node_per_algorithm(total_mods_per_node)
-    # plot.plot_max_stress_per_algorithm(total_mods_per_node)
-    # plot.plot_algorithm_exec_time(placement_clock, nIterations)
-    # plot.plot_used_nodes_per_algorithm(total_mods_per_node, nIterations)
+    plot.scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_list)
+    plot.plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
+    plot.boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
+    plot.plot_modules_per_node_per_algorithm(total_mods_per_node)
+    plot.plot_max_stress_per_algorithm(total_mods_per_node)
+    plot.plot_algorithm_exec_time(placement_clock, nIterations)
+    plot.plot_used_nodes_per_algorithm(total_mods_per_node, nIterations)
     plot.plot_percentage_used_nodes_per_algorithm(total_mods_per_node)
-    #plot.plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, nIterations)
-    #plot.plot_number_modules_in_cloud(total_mods_cloud, nIterations)
+    plot.plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, nIterations)
+    plot.plot_number_modules_in_cloud(total_mods_cloud, nIterations)
     plot.plot_average_n_mods_in_each_node_per_tier(avg_mods_per_tier_node)
+    plot.plot_fram_per_tier_per_algorithm(total_FRAM_per_tier, nIterations)
+    plot.compile_images()

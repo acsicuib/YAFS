@@ -6,6 +6,8 @@ import networkx as nx
 from math import ceil, floor
 from collections import Counter
 # from pathlib import Path
+from PIL import Image
+
 
 
 # folder_results = Path("../../tutorial_scenarios/Playground/results/")
@@ -615,6 +617,7 @@ def plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, n_
 
     #plt.tight_layout()
     fig.suptitle('plot_modules_in_each_tier_per_algorithm')
+    save_plot('plot_modules_in_each_tier_per_algorithm')
     plt.show()
 
 
@@ -631,11 +634,11 @@ def plot_number_modules_in_cloud(total_modules_cloud, n_iterations):
     plt.xlabel('Algorithms')
     plt.ylabel('Number of Modules in the Cloud')
     plt.title('Number of modules in the cloud per algorithm')
-    save_plot('used_nodes_per_algorithm')
 
     for bar in bars:
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
+    save_plot('used_nodes_per_algorithm')
     plt.show()
 
 def plot_average_n_mods_in_each_node_per_tier(avg_mods_per_tier_node):
@@ -664,5 +667,75 @@ def plot_average_n_mods_in_each_node_per_tier(avg_mods_per_tier_node):
         i += 1
     plt.subplots_adjust(hspace=0.5)
     fig.suptitle('Average Number of Mods in Each Node per Tier')
-    #save_plot('average_n_mods_in_each_node_per_tier')
+    save_plot('average_n_mods_in_each_node_per_tier')
     plt.show()
+
+# plot FRAM per tier per algorithm
+def plot_fram_per_tier_per_algorithm(total_FRAM_per_tier, nIterations):
+    i = 0
+    fig, axs = plt.subplots(len(total_FRAM_per_tier), 1, figsize=(5, len(total_FRAM_per_tier)*3))
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+
+    for algorithm in total_FRAM_per_tier.keys():
+
+        tier_list = total_FRAM_per_tier[algorithm].keys()
+        info_list_FRAM = [total_FRAM_per_tier[algorithm][x][0] / total_FRAM_per_tier[algorithm][x][1] * 100 for x in tier_list]
+        max_info = int(max(info_list_FRAM))
+        incremento = 20
+        if len(total_FRAM_per_tier) == 1:
+            axs.bar(tier_list, info_list_FRAM, color=colors)
+            axs.set_title(algorithm)
+            axs.set_xlabel('Tier')
+            axs.set_xticks(range(0, len(tier_list)))
+            axs.set_yticks(range(0, max_info, incremento))
+            axs.set_ylabel('FRAM (%)')
+            axs[i].set_ylim(0, 110)
+        else:
+            axs[i].bar(tier_list, info_list_FRAM, color=colors)
+            axs[i].set_title(algorithm)
+            axs[i].set_xlabel('Tier')
+            axs[i].set_xticks(range(0, len(tier_list)))
+            axs[i].set_yticks(range(0, max_info, incremento))
+            axs[i].set_ylabel('FRAM (%)')
+            axs[i].set_ylim(0, 110)
+
+        for x, y in zip(tier_list, info_list_FRAM):
+            axs[i].text(x, y + 1, round(total_FRAM_per_tier[algorithm][x][0] / nIterations, 2), ha='center')
+
+        i += 1
+
+    plt.subplots_adjust(hspace=0.5)
+    fig.suptitle('FRAM per Tier per Algorithm')
+    save_plot('FRAM_per_tier_per_algorithm')
+    plt.show()
+
+    '''
+
+def get_max_dimentions(tuple_list):
+    max_x = max(tuple_list, key=lambda x: x[0])[0]
+    max_y = max(tuple_list, key=lambda x: x[1])[1]
+    return max_x, max_y
+def compile_images():
+    folder = 'data_analysis\\'
+    file_name = folder + 'compiled_image.png'
+    images = []
+
+    # Iterate over all files in the input folder
+    for filename in sorted(os.listdir(folder)):
+        if filename.endswith(".png"):
+            img_path = os.path.join(folder, filename)
+            img = Image.open(img_path)
+            images.append(img)
+
+    # Get the dimensions of the first image in the list
+    (width, height) = get_max_dimentions([i.size for i in images])
+
+    # Create a new image with the total width and the height of a single image
+    compiled_image = Image.new("RGBA", (len(images) * width, height))
+
+    # Paste each image into the compiled image
+    for i, img in enumerate(images):
+        compiled_image.paste(img, (i * width, 0))
+
+    compiled_image.save(file_name)
+'''
