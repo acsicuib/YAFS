@@ -93,7 +93,6 @@ class ExperimentConfiguration:
         self.nodeResources = {}
         self.nodeSpeed = {}
 
-
         for i in self.G.nodes:
             self.nodeResources[i] = eval(self.func_NODERESOURECES)
             self.nodeSpeed[i] = eval(self.func_NODESPEED)
@@ -171,6 +170,11 @@ class ExperimentConfiguration:
             myLink['BW'] = self.CLOUDBW
 
             myEdges.append(myLink)
+
+            # !!!
+            self.G.add_edge(cloudGtw, self.cloudId)
+            self.G[cloudGtw][self.cloudId]['PR'] = self.CLOUDPR
+            self.G[cloudGtw][self.cloudId]['BW'] = self.CLOUDBW
 
         for node in self.devices:
             if 'tier' not in node:
@@ -946,8 +950,10 @@ class ExperimentConfiguration:
 
                 origin_lens[length][app_i].append(app_node)
 
-        for length in origin_lens:
-            for app_i, app in enumerate(self.apps):
+        # for length in origin_lens:
+        #     for app_i, app in enumerate(self.apps):
+        for app_i, app in enumerate(self.apps):
+            for length in origin_lens:
 
                 # Verifica se existe algum elemento desse comprimento na app
                 if app_i not in origin_lens[length]:
@@ -976,11 +982,7 @@ class ExperimentConfiguration:
                         # Dentro destes, escolhe-se o com FRAM >
                         chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
 
-                    if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
-                        print()
                     self.freeNodeResources[chosen_node] -= cost
-                    if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
-                        print()
 
                     app.nodes[0]['id_resource'] = chosen_node
 
@@ -1001,9 +1003,12 @@ class ExperimentConfiguration:
                         visited_nodes = list()
 
                         while True:
+                            if self.cloudId in candidate_nodes:
+                                chosen_node = self.cloudId
+                                break
 
                             insuf_res = [nd for nd in candidate_nodes if self.freeNodeResources[nd] < cost]
-                            candidate_nodes = [nd for nd in candidate_nodes if self.freeNodeResources[nd] >= cost]
+                            candidate_nodes = [nd for nd in candidate_nodes if self.freeNodeResources[nd] >= cost and nd != self.cloudId]
 
                             # Calcula-se o sumatorio de PR usado para chegar aos GW's
                             GW_dists = [
@@ -1016,8 +1021,6 @@ class ExperimentConfiguration:
 
                             if len(candidate_nodes) != 0:
                                 chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
-                                if chosen_node_FRAM < cost:
-                                    print()
                                 chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
                                 break
 
@@ -1034,18 +1037,14 @@ class ExperimentConfiguration:
 
                                 # Removem-se elementos repetidos (vizinhos em comum) e os já vistos
                                 candidate_nodes = list(set(candidate_nodes))
-                                candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes]
+                                candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes and nd != self.cloudId]
 
                             # Se, apos todos os nodes serem vistos, nao foi possivel alocar o modulo, aloca-se na cloud
                             if len(candidate_nodes) == 0:
                                 chosen_node = self.cloudId
                                 break
 
-                        if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
-                            print()
                         self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
-                        if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
-                            print()
 
                         app.nodes[app_node]['id_resource'] = chosen_node
                         alloc[app.nodes[app_node]['module']] = chosen_node

@@ -288,7 +288,8 @@ if __name__ == '__main__':
     # algorithm_list = ['bt_min_mods']
 
     # algorithm_list = ['random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR', 'lambda' ]
-    algorithm_list = ['RR_IPT_placement', 'random', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR']
+    algorithm_list = ['RR_IPT_placement', 'greedy_FRAM' ,'greedy_latency', 'near_GW_BW', 'near_GW_PR', 'near_GW_BW_PR']
+    # algorithm_list = ['near_GW_PR']
 
     for algorithm in algorithm_list:
         placement_clock[algorithm] = []
