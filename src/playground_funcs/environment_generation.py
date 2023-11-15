@@ -918,7 +918,6 @@ class ExperimentConfiguration:
             with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_apps, 'w') as f:
                 json.dump(alloc, f)
 
-
     def near_GW_placement(self, file_name_alloc='allocDefinition.json', weight='PR'):
 
         # Funcao de peso utilizada no algoritmo de routing de min_path (o meu)
@@ -950,8 +949,158 @@ class ExperimentConfiguration:
 
                 origin_lens[length][app_i].append(app_node)
 
-        # for length in origin_lens:
-        #     for app_i, app in enumerate(self.apps):
+        for length in origin_lens:
+            for app_i, app in enumerate(self.apps):
+
+                # Verifica se existe algum elemento desse comprimento na app
+                if app_i not in origin_lens[length]:
+                    continue
+
+                if length == 0:
+                    cost = app.nodes[0]['cost']
+
+                    # Array com os nodes que conseguem abarcar o 1o modulo da app
+                    candidate_nodes = [nd for nd, res in self.freeNodeResources.items() if
+                                       res >= cost and nd != self.cloudId]
+
+                    if len(candidate_nodes) == 0:
+                        chosen_node = self.cloudId
+                    else:
+                        # Calcula-se o sumatorio das distancias aos GW's
+                        GW_dists = [sum(nx.shortest_path_length(self.G, source=GW, target=cnd_nd, weight=weight)
+                                        for GW in self.gatewaysDevices) for cnd_nd in candidate_nodes]
+
+                        # Dentro destes, escolhe-se os com distancia <
+                        candidate_nodes = [node for i, node in enumerate(candidate_nodes) if
+                                           GW_dists[i] == min(GW_dists)]
+
+                        chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
+
+                        # Dentro destes, escolhe-se o com FRAM >
+                        chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+
+                    self.freeNodeResources[chosen_node] -= cost
+
+                    app.nodes[0]['id_resource'] = chosen_node
+
+                    alloc[app.nodes[0]['module']] = chosen_node
+                    module2app_map[app.nodes[0]['module']] = app_i
+
+                else:
+                    if length == 1:
+                        print()
+
+                    for app_node in origin_lens[length][app_i]:
+                        cost = app.nodes[app_node]['cost']
+
+                        parent_app_nd = [edge[0] for edge in app.edges()][0]
+                        parent_id_res = alloc[app.nodes[parent_app_nd]['module']]
+
+                        candidate_nodes = [parent_id_res]
+                        visited_nodes = list()
+
+                        while True:
+                            if self.cloudId in candidate_nodes:
+                                chosen_node = self.cloudId
+                                break
+
+                            insuf_res = [nd for nd in candidate_nodes if self.freeNodeResources[nd] < cost]
+                            candidate_nodes = [nd for nd in candidate_nodes if self.freeNodeResources[nd] >= cost and nd != self.cloudId]
+
+                            # Calcula-se o sumatorio de PR usado para chegar aos GW's
+                            GW_dists = [
+                                nx.shortest_path_length(self.G, source=parent_id_res, target=cnd_nd, weight=weight) for
+                                cnd_nd in candidate_nodes]
+
+                            # Dentro destes, escolhe-se os com peso <
+                            candidate_nodes = [node for i, node in enumerate(candidate_nodes) if
+                                               GW_dists[i] == min(GW_dists)]
+
+                            if len(candidate_nodes) != 0:
+                                chosen_node_FRAM = max(self.freeNodeResources[n] for n in candidate_nodes)
+                                chosen_node = [nd for nd in candidate_nodes if self.freeNodeResources[nd] == chosen_node_FRAM][0]
+                                break
+
+                            else:
+                                # Voltam-se a adicionar os insuf_res para considerarmos os seus vizinhos
+                                candidate_nodes += insuf_res
+
+                                # Atualiza a lista de nodes já visitados
+                                visited_nodes += candidate_nodes
+
+                                # Vao se buscar os nodes vizinhos dos candidate anteriores
+                                candidate_nodes = [e[1] for e in self.G.edges if e[0] in candidate_nodes] + \
+                                                  [e[0] for e in self.G.edges if e[1] in candidate_nodes]
+
+                                # Removem-se elementos repetidos (vizinhos em comum) e os já vistos
+                                candidate_nodes = list(set(candidate_nodes))
+                                candidate_nodes = [nd for nd in candidate_nodes if nd not in visited_nodes and nd != self.cloudId]
+
+                            # Se, apos todos os nodes serem vistos, nao foi possivel alocar o modulo, aloca-se na cloud
+                            if len(candidate_nodes) == 0:
+                                chosen_node = self.cloudId
+                                break
+
+                        self.freeNodeResources[chosen_node] -= app.nodes[app_node]['cost']
+
+                        app.nodes[app_node]['id_resource'] = chosen_node
+                        alloc[app.nodes[app_node]['module']] = chosen_node
+                        module2app_map[app.nodes[app_node]['module']] = app_i
+
+            # if len([nd for nd in self.freeNodeResources if self.freeNodeResources[nd] < 0]) >= 1:
+            #     print()
+
+        allocDef = dict()
+        allocDef["initialAllocation"] = list()
+        for mod, id_res in alloc.items():
+            temp_dict = dict()
+
+            temp_dict['module_name'] = mod
+            temp_dict['id_resource'] = id_res
+            temp_dict['app'] = module2app_map[mod]
+
+            allocDef["initialAllocation"].append(temp_dict)
+
+        if windows_mode:
+            # Win
+            with open(self.path + '\\' + self.cnf.resultFolder + '\\' + file_name_alloc, 'w') as f:
+                json.dump(allocDef, f)
+        else:
+            # Unix
+            with open(self.path + '/' + self.cnf.resultFolder + '/' + file_name_alloc, 'w') as f:
+                json.dump(allocDef, f)
+
+    def near_GW_placement_app1st(self, file_name_alloc='allocDefinition.json', weight='PR'):
+
+        # Funcao de peso utilizada no algoritmo de routing de min_path (o meu)
+        if weight == 'BW_PR':
+            weight = lambda src, dst, data: 1 / data.get('BW') + data.get('PR')
+
+        elif weight == 'BW':
+            weight = lambda src, dst, data: 1 / data.get('BW')
+
+        elif weight == 'IPT':
+            weight = lambda src, dst, data: 1 / self.netJson['entity'][dst]['IPT']
+
+        alloc = dict()
+        module2app_map = dict()
+
+        origin_lens = dict()
+
+        # Separam-se os nodes por comprimentos até à origem
+        for app_i, app in enumerate(self.apps):
+            for app_node in app:
+
+                length = len(nx.shortest_path(app, 0, app_node)) - 1
+
+                if length not in origin_lens:
+                    origin_lens[length] = dict()
+
+                if app_i not in origin_lens[length]:
+                    origin_lens[length][app_i] = list()
+
+                origin_lens[length][app_i].append(app_node)
+
         for app_i, app in enumerate(self.apps):
             for length in origin_lens:
 
