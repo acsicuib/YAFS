@@ -91,5 +91,3 @@ plt.savefig('figure8b.pdf', format='pdf', dpi=600)
 #    time_labels.append( "%3.0f"%(t*300))
 #ax1.set_xticklabels(time_labels)
 
-
-

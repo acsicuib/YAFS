@@ -11,7 +11,6 @@ import logging.config
 
 import networkx as nx
 from pathlib import Path
-import matplotlib.pyplot as plt
 
 import pandas as pd
 import numpy as np
@@ -20,6 +19,8 @@ from yafs.core import Sim
 from yafs.application import create_applications_from_json
 from yafs.topology import Topology
 
+from playground_funcs.routing_algorithms import MaxBW, MaxBW_Root
+
 from yafs.placement import JSONPlacement
 
 from yafs.path_routing import DeviceSpeedAwareRouting
@@ -27,8 +28,9 @@ from shortest_path import MinimunPath
 
 from yafs.distribution import deterministic_distribution
 
+from playground_funcs import data_analysis
 
-
+from playground_funcs.environment_generation import stable_placement, random_placement
 
 def main(stop_time, it,folder_results):
 
@@ -39,42 +41,9 @@ def main(stop_time, it,folder_results):
     dataNetwork = json.load(open('data/network.json'))
     t.load(dataNetwork)
 
-    '''
-    # You also can create a topology using JSONs files. Check out examples folder
-    size = 5
-    t.G = nx.generators.binomial_tree(size) # In NX-lib there are a lot of Graphs generators
+    # stable_placement(t.G)
+    random_placement(t.G)
 
-    # Definition of mandatory attributes of a Topology
-    ## Attr. on edges
-    # PR and BW are 1 unit
-    attPR_BW = {x: 1 for x in t.G.edges()}
-
-    #attPR_BW[(0, 4)] = attPR_BW[(4, 5)] = attPR_BW[(5, 6)] = 1000                                           ##
-    #attPR_BW[(0, 1)] = 1000
-
-    nx.set_edge_attributes(t.G, name="PR", values=attPR_BW)
-    nx.set_edge_attributes(t.G, name="BW", values=attPR_BW)
-
-
-
-    ## Attr. on nodes
-    # IPT
-    attIPT = {x: 100 for x in t.G.nodes()}
-
-
-    #attIPT[4] = attIPT[5] = attIPT[6] = 10000
-
-    nx.set_node_attributes(t.G, name="IPT", values=attIPT)
-
-    nx.write_gexf(t.G,folder_results+"graph_binomial_tree_%i.gexf"%size) # you can export the Graph in multiples format to view in tools like Gephi, and so on.
-
-    print(t.G.nodes()) # nodes id can be str or int
-
-    # Plotting the graph
-    pos=nx.spring_layout(t.G)
-    nx.draw_networkx(t.G, pos, with_labels=True)
-    nx.draw_networkx_edge_labels(t.G, pos,alpha=0.5,font_size=5,verticalalignment="top")
-    '''
 
     """
     APPLICATION or SERVICES
@@ -92,8 +61,10 @@ def main(stop_time, it,folder_results):
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
 
+
     # selectorPath = DeviceSpeedAwareRouting()
     selectorPath = MinimunPath()
+
 
 
     """
@@ -107,6 +78,8 @@ def main(stop_time, it,folder_results):
     for aName in apps.keys():
         s.deploy_app(apps[aName], placement, selectorPath) # Note: each app can have a different routing algorithm
 
+    # s.deploy_app(apps[4], placement, minP)  # Aplicação 4 passa a ter o algoritmo "Minimum path" enquanto que as outras ficam com a mesma
+
     """
     Deploy users
     """
@@ -119,12 +92,17 @@ def main(stop_time, it,folder_results):
         dist = deterministic_distribution(100, name="Deterministic")
         idDES = s.deploy_source(app_name, id_node=node, msg=msg, distribution=dist)
 
+
     """
     RUNNING - last step
     """
     logging.info(" Performing simulation: %i " % it)
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
+
+    # data_analysis.plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None)
+
+    # data_analysis.plot_app_path(folder_results, 1, t, placement=placement)
 
 
 if __name__ == '__main__':
@@ -136,7 +114,7 @@ if __name__ == '__main__':
     folder_results = str(folder_results)+"/"
 
     nIterations = 1  # iteration for each experiment
-    simulationDuration = 20000  
+    simulationDuration = 20000
 
     # Iteration for each experiment changing the seed of randoms
     for iteration in range(nIterations):
@@ -145,12 +123,12 @@ if __name__ == '__main__':
 
         start_time = time.time()
         main(stop_time=simulationDuration,
-             it=iteration,folder_results=folder_results)
+             it=iteration, folder_results=folder_results)
 
         print("\n--- %s seconds ---" % (time.time() - start_time))
 
     print("Simulation Done!")
-  
+
     # Analysing the results. 
     dfl = pd.read_csv(folder_results+"sim_trace"+"_link.csv")
     print("Number of total messages between nodes: %i"%len(dfl))
@@ -160,7 +138,7 @@ if __name__ == '__main__':
 
     dfapp2 = df[df.app == 6].copy() # a new df with the requests handled by app 2
     print(dfapp2.head())
-    
+
     dfapp2.loc[:,"transmission_time"] = dfapp2.time_emit - dfapp2.time_reception # Transmission time
     dfapp2.loc[:,"service_time"] = dfapp2.time_out - dfapp2.time_in
 
@@ -168,7 +146,15 @@ if __name__ == '__main__':
 
     print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
-    
+
+    # data_analysis.plot_paths_taken(folder_results)
+
+    # data_analysis.plot_avg_latency(folder_results)
+    # data_analysis.plot_latency(folder_results)
+    # data_analysis.plot_nodes_per_time_window(folder_results, t)
+    # data_analysis.plot_occurrences(folder_results, mode='module')
+
+
     # -----------------------
     # PLAY WITH THIS EXAMPLE!
     # -----------------------
@@ -179,7 +165,7 @@ if __name__ == '__main__':
     #   "id_resource": 3
     # },
     ## What has happened to the results? Take a look at the network image available in the results folder to understand the "allocation" of app2-related entities.
-    
+
     # ! IMPORTANT. The scheduler & routing algorithm (aka. selectorPath = DeviceSpeedAwareRouting()) chooses the instance that will attend the request according to the latency -in this case-.
     #  For that reason, the initial instance deployed at node 0 is not used. It is further away than the instance located at node3.
     # Add another app2-user at node 16, add the next json inside of userDefinition.json file and try again. Enjoy it! 

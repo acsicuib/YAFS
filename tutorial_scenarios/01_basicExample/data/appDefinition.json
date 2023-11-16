@@ -101,7 +101,7 @@
     "name": 3,
     "HwReqs": 1,
     "MaxReqs": 200,
-    "MaxLatency": 50,
+    "MaxLatency": 500,
 
 
     "transmission": [
@@ -157,7 +157,7 @@
         "name": "M.USER.APP.4",
         "s": "None",
         "d": "4_01",
-        "bytes": 20,
+        "bytes": 200,
         "instructions": 30
       }
     ]
@@ -168,7 +168,6 @@
     "HwReqs": 1,
     "MaxReqs": 200,
     "MaxLatency": 50,
-
 
     "transmission": [
       {

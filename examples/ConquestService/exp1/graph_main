@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
-  <meta lastmodifieddate="2022-11-19">
-    <creator>NetworkX 2.8.8</creator>
+  <meta lastmodifieddate="2023-05-26">
+    <creator>NetworkX 2.8.4</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
     <attributes mode="static" class="edge">
