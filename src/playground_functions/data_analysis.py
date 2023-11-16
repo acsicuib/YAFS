@@ -248,7 +248,7 @@ def scatter_plot_app_latency_per_algorithm(folder_data_processing, algorithm_lis
     plt.title('Average App Latency per algorithm')
     plt.legend(labels, loc='upper right', bbox_to_anchor=(1.25, 1))
     plt.subplots_adjust(right=0.8)
-    save_plot('Average App Latency per algorithm')
+    save_plot('Latency__Average_App_Latency_per_algorithm')
     plt.show()
 
 
@@ -288,7 +288,7 @@ def plot_latency_per_placement_algorithm(folder_data_processing, algorithm_list)
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
 
-    save_plot('barplot_latency_per_placement_algorithm')
+    save_plot('Latency__Barplot_Latency_per_Placement_Algorithm')
     plt.show()
 
 def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_list):
@@ -314,7 +314,7 @@ def boxplot_latency_per_placement_algorithm(folder_data_processing, algorithm_li
     plt.ylabel('Latency (\u03bcs)')
     plt.title('Latency Per Placement Algorithm')
 
-    save_plot('boxplot_latency_per_placement_algorithm')
+    save_plot('Latency__Boxplot_Latency_per_Placement_Algorithm')
     plt.show()
 
 def plot_nodes_per_time_window(folder_results, t, n_wind=10, graph_type=None, show_values=False, plot_name=None):
@@ -391,30 +391,7 @@ def modules_per_node(placement, topology, plot_name=None):
     plt.show()
 
 #
-# def plot_modules_per_node_per_algorithm(algorithm_list, modules_per_node):
-#     # colors = ['red', 'green', 'blue', 'purple', 'orange']
-#     # dfl = pd.read_csv(folder_results + "algorithm1")
-#
-#     i = 0
-#     ymax=0
-#     mean = dict()
-#     labels = []
-#     for algorithm in algorithm_list:
-#
-#         mean[algorithm] = sum(modules_per_node[algorithm].values())/len(modules_per_node[algorithm])
-#         labels.append(algorithm)
-#         ymax = max(ymax, int(max(modules_per_node[algorithm].values())) + 1)
-#         # i = (i + 1) % len(colors)
-#
-#     plt.bar(mean.keys(), mean.values())
-#     # plt.scatter(range(len(app_lat)), app_lat, label=algorithm, c=colors[i], marker='o')
-#
-#     # plt.yticks(range(0, ymax + 1))
-#     plt.xlabel('algorithm')
-#     plt.ylabel('mean number of modules allocated per node')
-#
-#     plt.legend(labels, loc='upper right')
-#     plt.show()
+
 
 def plot_modules_per_node_per_algorithm(total_mods_per_node):
     data_list = [list(total_mods_per_node[algorithm]) for algorithm in total_mods_per_node.keys()]
@@ -429,7 +406,7 @@ def plot_modules_per_node_per_algorithm(total_mods_per_node):
     plt.xlabel('Algorithms')
     plt.ylabel('Modules per node')
     plt.title('Modules per node of each algorithm')
-    save_plot('modules_per_node_of_each_algorithm')
+    save_plot('ModsNodes__Modules_per_Node_of_each_Algorithm')
     plt.show()
 
 def plot_max_stress_per_algorithm(total_mods_per_node):
@@ -445,7 +422,7 @@ def plot_max_stress_per_algorithm(total_mods_per_node):
     plt.xlabel('Algorithms')
     plt.ylabel('Max modules per node')
     plt.title('Max modules in a node for each algorithm')
-    save_plot('max_modules_per_node_of_each_algorithm')
+    save_plot('ModsNodes__Max_Modules_per_Node_of_each_Algorithm')
 
     for bar in bars:
         yval = bar.get_height()
@@ -466,13 +443,61 @@ def plot_used_nodes_per_algorithm(total_mods_per_node, n_iterations):
     plt.xlabel('Algorithms')
     plt.ylabel('Number of Nodes')
     plt.title('Number of Used Nodes in Each Algorithm')
-    save_plot('used_nodes_per_algorithm')
+    save_plot('ModsNodes__Used_Nodes_per_Algorithm')
 
     for bar in bars:
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
     plt.show()
 
+
+def plot_percentage_used_nodes_per_algorithm(total_mods_per_node):
+    colors = ['C0', 'C1']
+    labels = ["Unused", "Used"]
+    wedges = []
+    row = col = 0
+
+    n = len(total_mods_per_node)
+    nrows = int(n / 2) + n % 2
+    ncols = 2 if n > 1 else 1
+
+    fig, ax = plt.subplots(nrows, ncols)
+    i = 0
+    for algorithm in total_mods_per_node.keys():
+        row = int(i / ncols)
+        col = i % ncols
+        i += 1
+
+        total_nodes = len(list(total_mods_per_node[algorithm]))
+        unused_nodes = list(total_mods_per_node[algorithm]).count(0)
+
+        if nrows == 1:
+            if ncols != 1:
+                wedges, _, __ = ax[col].pie(
+                    [unused_nodes / total_nodes * 100, (total_nodes - unused_nodes) / total_nodes * 100], autopct='%1.1f%%',
+                    colors=colors)
+                ax[col].set_title(algorithm)
+            else:
+                wedges, _, __ = ax.pie(
+                    [unused_nodes / total_nodes * 100, (total_nodes - unused_nodes) / total_nodes * 100],
+                    autopct='%1.1f%%',
+                    colors=colors)
+                ax.set_title(algorithm)
+
+        else:
+            wedges, _, __ = ax[row, col].pie(
+                [unused_nodes / total_nodes * 100, (total_nodes - unused_nodes) / total_nodes * 100], autopct='%1.1f%%',
+                colors=colors)
+            ax[row, col].set_title(algorithm)
+
+    if n % 2 == 1 and n != 1:
+        fig.delaxes(ax[row, col + 1])
+
+    fig.suptitle('Percentage of Used Nodes in Each Algorithm')
+    fig.legend(wedges, labels, loc='lower center')
+    save_plot('ModsNodes__Percentage_Used_Nodes_per_Algorithm')
+
+    plt.show()
 
 
 def plot_messages_node(folder_results, plot_name=None):
@@ -526,5 +551,140 @@ def plot_algorithm_exec_time(algorithm_clock, iterations):
     plt.xlabel('Algorithms')
     plt.ylabel('Average Execution Time (s)')
     plt.title('Average Execution Time per Algorithm')
+    save_plot("ExecutionTime__Average_Execution_Time_per_Algorithm")
     plt.show()
-    save_plot("Average_Execution_Time_per_Algorithm")
+
+
+
+
+def plot_modules_in_each_tier_per_algorithm(total_mods_per_node_with_node_id, n_iterations):
+    i = 0
+    fig, axs = plt.subplots(len(total_mods_per_node_with_node_id), 1, figsize=(5, len(total_mods_per_node_with_node_id)*3))
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+    for algorithm in total_mods_per_node_with_node_id.keys():
+        tier_dict = {}
+        for node in total_mods_per_node_with_node_id[algorithm]:
+            if node[1] not in tier_dict.keys():
+                tier_dict[node[1]] = []
+
+            tier_dict[node[1]] += [node[0]]
+
+        tier_list = tier_dict.keys()
+        info_list = [sum(tier_dict[x]) / n_iterations for x in tier_list]
+        max_info = int(max(info_list))
+        if len(total_mods_per_node_with_node_id) == 1:
+            axs.bar(tier_list, info_list, color=colors)
+            axs.set_title(algorithm)
+            axs.set_xlabel('Tier')
+            axs.set_xticks(range(0, len(tier_list)))
+            axs.set_yticks(range(0, max_info, int(max_info / 5)))
+            axs.set_ylabel('Number of Modules Allocated')
+        else:
+            axs[i].bar(tier_list, info_list, color=colors)
+            axs[i].set_title(algorithm)
+            axs[i].set_xlabel('Tier')
+            axs[i].set_xticks(range(0, len(tier_list)))
+            axs[i].set_yticks(range(0, max_info, int(max_info/5)))
+            axs[i].set_ylabel('Number of Modules Allocated')
+        i += 1
+
+    plt.subplots_adjust(hspace=0.5)
+    #plt.subplots_adjust(top=0.9, bottom=0.1)
+    #plt.tight_layout(rect=(0.9, 0.9, 0.1, 0.1))  # Increase or decrease the pad parameter to control spacing
+
+    #plt.tight_layout()
+    fig.suptitle('plot_modules_in_each_tier_per_algorithm')
+    save_plot('ModsTiers__Plot_Modules_in_each_Tier_per_Algorithm')
+    plt.show()
+
+def plot_average_n_mods_in_each_node_per_tier(avg_mods_per_tier_node):
+    i = 0
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+    fig, axs = plt.subplots(len(avg_mods_per_tier_node), 1, figsize=(5, len(avg_mods_per_tier_node)*3))
+    for algorithm, values in avg_mods_per_tier_node.items():
+        tier_avg = dict()
+        for tier, avg_n_modules in values.items():
+            tier_avg[tier] = sum(avg_n_modules) / len(avg_n_modules)
+        if len(avg_mods_per_tier_node) == 1:
+            axs.bar(tier_avg.keys(), tier_avg.values(), color=colors)
+            axs.set_title(algorithm)
+            axs.set_xlabel('Tier')
+            axs.set_xticks(range(0, len(tier_avg)))
+            # axs.set_yticks(range(0, max_info, int(max_info / 5)))
+            axs.set_ylabel('Avg Num of Modules in a Node')
+
+        else:
+            axs[i].bar(tier_avg.keys(), tier_avg.values(), color=colors)
+            axs[i].set_title(algorithm)
+            axs[i].set_xlabel('Tier')
+            axs[i].set_xticks(range(0, len(tier_avg)))
+            #axs.set_yticks(range(0, max_info, int(max_info / 5)))
+            axs[i].set_ylabel('Avg Num of Modules in a Node')
+        i += 1
+    plt.subplots_adjust(hspace=0.5)
+    fig.suptitle('Average Number of Mods in Each Node per Tier')
+    save_plot('ModsTiers__Average_N_Mods_in_each_Node_per_Tier')
+    plt.show()
+
+
+def plot_number_modules_in_cloud(total_modules_cloud, n_iterations):
+    algorithms = total_modules_cloud.keys()
+    n_modules_cloud = [total_modules_cloud[x] / n_iterations for x in algorithms]
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(algorithms, n_modules_cloud, color=colors)
+
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.21, top=0.9)
+    plt.xticks(rotation=45)
+    plt.xlabel('Algorithms')
+    plt.ylabel('Number of Modules in the Cloud')
+    plt.title('Number of modules in the cloud per algorithm')
+
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), va='bottom', ha='center')
+
+    save_plot('ModsCloud__Plot_Number_Modules_in_Cloud')
+    plt.show()
+
+
+# plot FRAM per tier per algorithm
+def plot_fram_per_tier_per_algorithm(total_FRAM_per_tier, nIterations):
+    i = 0
+    fig, axs = plt.subplots(len(total_FRAM_per_tier), 1, figsize=(5, len(total_FRAM_per_tier) * 3))
+    colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']
+
+    for algorithm in total_FRAM_per_tier.keys():
+
+        tier_list = total_FRAM_per_tier[algorithm].keys()
+        info_list_FRAM = [total_FRAM_per_tier[algorithm][x][0] / total_FRAM_per_tier[algorithm][x][1] * 100 for x in
+                          tier_list]
+        max_info = int(max(info_list_FRAM))
+        incremento = 20
+        if len(total_FRAM_per_tier) == 1:
+            axs.bar(tier_list, info_list_FRAM, color=colors)
+            axs.set_title(algorithm)
+            axs.set_xlabel('Tier')
+            axs.set_xticks(range(0, len(tier_list)))
+            axs.set_yticks(range(0, max_info, incremento))
+            axs.set_ylabel('FRAM (%)')
+            axs[i].set_ylim(0, 110)
+        else:
+            axs[i].bar(tier_list, info_list_FRAM, color=colors)
+            axs[i].set_title(algorithm)
+            axs[i].set_xlabel('Tier')
+            axs[i].set_xticks(range(0, len(tier_list)))
+            axs[i].set_yticks(range(0, max_info, incremento))
+            axs[i].set_ylabel('FRAM (%)')
+            axs[i].set_ylim(0, 110)
+
+        for x, y in zip(tier_list, info_list_FRAM):
+            axs[i].text(x, y + 1, round(total_FRAM_per_tier[algorithm][x][0] / nIterations, 2), ha='center')
+
+        i += 1
+
+    plt.subplots_adjust(hspace=0.5)
+    fig.suptitle('FRAM per Tier per Algorithm')
+    save_plot('ModsTiers__FRAM_per_Tier_per_Algorithm')
+    plt.show()
