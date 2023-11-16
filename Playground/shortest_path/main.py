@@ -3,12 +3,15 @@
 
     @author: Isaac Lera
 """
+import os
 import time
 import json
 import random
 import logging.config
 
+import networkx as nx
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 import pandas as pd
 import numpy as np
@@ -18,10 +21,11 @@ from yafs.application import create_applications_from_json
 from yafs.topology import Topology
 
 from yafs.placement import JSONPlacement
-from yafs.bw_path_selection import MyPathSelector
+
+from yafs.path_routing import DeviceSpeedAwareRouting
+from shortest_path import MinimunPath
 
 from yafs.distribution import deterministic_distribution
-from yafs.plot import plot_app_path, plot_messages_node, plot_occurrences
 
 
 
@@ -32,13 +36,12 @@ def main(stop_time, it,folder_results):
     TOPOLOGY
     """
     t = Topology()
-
-    dataTop = json.load(open('data/network.json'))
-    t.load(dataTop)
+    dataNetwork = json.load(open('data/network.json'))
+    t.load(dataNetwork)
 
     '''
     # You also can create a topology using JSONs files. Check out examples folder
-    size = 3
+    size = 5
     t.G = nx.generators.binomial_tree(size) # In NX-lib there are a lot of Graphs generators
 
     # Definition of mandatory attributes of a Topology
@@ -73,8 +76,6 @@ def main(stop_time, it,folder_results):
     nx.draw_networkx_edge_labels(t.G, pos,alpha=0.5,font_size=5,verticalalignment="top")
     '''
 
-    print("Edges:\n", t.get_edges())
-    print(t.get_nodes())
     """
     APPLICATION or SERVICES
     """
@@ -90,21 +91,22 @@ def main(stop_time, it,folder_results):
     """
     Defining ROUTING algorithm to define how path messages in the topology among modules
     """
-    #selectorPath = First_ShortestPath()
-    #selectorPath = DeviceSpeedAwareRouting()
-    selectorPath = MyPathSelector()
 
+    # selectorPath = DeviceSpeedAwareRouting()
+    selectorPath = MinimunPath()
 
 
     """
     SIMULATION ENGINE
     """
     s = Sim(t, default_results_path=folder_results+"sim_trace")
+
     """
     Deploy services == APP's modules
     """
     for aName in apps.keys():
         s.deploy_app(apps[aName], placement, selectorPath) # Note: each app can have a different routing algorithm
+
     """
     Deploy users
     """
@@ -116,21 +118,14 @@ def main(stop_time, it,folder_results):
         node = user["id_resource"]
         dist = deterministic_distribution(100, name="Deterministic")
         idDES = s.deploy_source(app_name, id_node=node, msg=msg, distribution=dist)
+
     """
     RUNNING - last step
     """
     logging.info(" Performing simulation: %i " % it)
     s.run(stop_time)  # To test deployments put test_initial_deploy a TRUE
     s.print_debug_assignaments()
-    #print("------------------path------------------\n", selectorPath.path_final)
-    #selectorPath.get_path(s, 0, "teste_mensagem", 0, ...)
-    pos = {0: (2, 0), 1: (4, 0), 2: (3, 1), 3: (4, 2), 4: (5, 1), 5: (6, 0), 6: (0, 0)}
 
-    for a in apps:
-        plot_app_path(folder_results, a, t, pos, graph_file='Routes_taken', placement=placement)
-    #plot_latency("./results/")
-    plot_occurrences("./results/", 'node')
-    plot_messages_node("./results/")
 
 if __name__ == '__main__':
     LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
@@ -163,7 +158,7 @@ if __name__ == '__main__':
     df = pd.read_csv(folder_results+"sim_trace.csv")
     print("Number of requests handled by deployed services: %i"%len(df))
 
-    dfapp2 = df[df.app == 6].copy() # a new df with the requests handled by app 2
+    dfapp2 = df[df.app == 0].copy() # a new df with the requests handled by app 0
     print(dfapp2.head())
     
     dfapp2.loc[:,"transmission_time"] = dfapp2.time_emit - dfapp2.time_reception # Transmission time
@@ -173,24 +168,4 @@ if __name__ == '__main__':
 
     print("The app2 is deployed in the folling nodes: %s"%np.unique(dfapp2["TOPO.dst"]))
     print("The number of instances of App2 deployed is: %s"%np.unique(dfapp2["DES.dst"]))
-    #plt.show()
-    # -----------------------
-    # PLAY WITH THIS EXAMPLE!
-    # -----------------------
-    # Add another app2-instance in allocDefinition.json file adding the next data and run the main.py file again to see the new results:
-    # {
-    #   "module_name": "2_01",
-    #   "app": 2,
-    #   "id_resource": 3
-    # },
-    ## What has happened to the results? Take a look at the network image available in the results folder to understand the "allocation" of app2-related entities.
     
-    # ! IMPORTANT. The scheduler & routing algorithm (aka. selectorPath = DeviceSpeedAwareRouting()) chooses the instance that will attend the request according to the latency -in this case-.
-    #  For that reason, the initial instance deployed at node 0 is not used. It is further away than the instance located at node3.
-    # Add another app2-user at node 16, add the next json inside of userDefinition.json file and try again. Enjoy it! 
-    # {
-    #   "id_resource": 16,
-    #   "app": 2,
-    #   "message": "M.USER.APP.2",
-    #   "lambda": 100
-    # },

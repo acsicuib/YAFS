@@ -24,6 +24,7 @@ from yafs.stats import Stats
 from yafs.distribution import deterministic_distribution
 from yafs.application import fractional_selectivity
 
+
 RANDOM_SEED = 1
 
 def create_application():
