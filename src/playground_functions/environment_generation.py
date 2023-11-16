@@ -49,7 +49,7 @@ class ExperimentConfiguration:
         self.func_BANDWITDH = "random.randint(75000,75000)"
 
         # NODE CONFIG
-        self.func_NODERESOURECES = "random.randint(10,25)"  # random distribution for the resources of the fog devices
+        self.func_NODERESOURECES = "random.randint(25,30)"  # random distribution for the resources of the fog devices
         self.func_NODESPEED = "random.randint(500,1000)"  # random distribution for the speed of the fog devices
 
         # USER CONFIG.
@@ -57,14 +57,14 @@ class ExperimentConfiguration:
         self.func_USERREQRAT = "random.randint(200,1000)"
 
         # APP and SERVICES
-        self.TOTALNUMBEROFAPPS = 35
+        self.TOTALNUMBEROFAPPS = 20
         # !!!
-        self.func_APPGENERATION = "nx.gn_graph(random.randint(10,11))"  # algorithm for the generation of the random applications
+        self.func_APPGENERATION = "nx.gn_graph(random.randint(7,8))"  # algorithm for the generation of the random applications
         # self.func_APPGENERATION = "linear_graph(random.randint(2, 4))"  # algorithm for the generation of the random applications (agora linear)
         self.func_SERVICEINSTR = "random.randint(20000,60000)"  # INSTR --> teniedno en cuenta nodespped esto nos da entre 200 y 600 MS
         self.func_SERVICEMESSAGESIZE = "random.randint(1500000,4500000)"  # BYTES y teniendo en cuenta net bandwidth nos da entre 20 y 60 MS
 
-        self.func_SERVICERESOURCES = "random.randint(1,5)"  # MB de ram que consume el servicio, teniendo en cuenta noderesources y appgeneration tenemos que nos caben aprox 1 app por nodo o unos 10 servicios
+        self.func_SERVICERESOURCES = "random.randint(4,5)"  # MB de ram que consume el servicio, teniendo en cuenta noderesources y appgeneration tenemos que nos caben aprox 1 app por nodo o unos 10 servicios
 
         self.func_APPDEADLINE = "random.randint(2600,6600)"  # MS
 

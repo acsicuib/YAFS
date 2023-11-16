@@ -33,7 +33,7 @@ from yafs.path_routing import DeviceSpeedAwareRouting
 
 
 # NUMBER_OF_APPS = 10
-NUMBER_OF_NODES = 10
+NUMBER_OF_NODES = 15
 
 def append_results(it, path):
     if it == 0:
@@ -357,7 +357,7 @@ if __name__ == '__main__':
     list_for_app1st = ['greedy_latency_app1st', 'greedy_FRAM_app1st','near_GW_BW_PR_app1st', 'near_GW_PR_app1st', 'near_GW_BW_app1st']
     list_for_communities = ['RR_IPT_placement']
 
-    algorithm_list=  list_for_near_GW
+    algorithm_list= list_for_communities + list_for_mod1st
 
 
     # for algorithm in algorithm_list:
