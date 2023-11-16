@@ -149,7 +149,7 @@ def main(simulated_time):
     """
     RUNNING - last step
     """
-    s.run(stop_time, show_progress_monitor=False)
+    s.run(stop_time,show_progress_monitor=False)
     s.print_debug_assignaments()
 
     # s.draw_allocated_topology() # for debugging

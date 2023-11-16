@@ -19,15 +19,9 @@
       "lambda": 500
     },
     {
-      "id_resource": 3,
+      "id_resource": 4,
       "app": 3,
       "message": "M.USER.APP.3",
-      "lambda": 500
-    },
-    {
-      "id_resource": 0,
-      "app": 4,
-      "message": "M.USER.APP.4",
       "lambda": 500
     },
     {
