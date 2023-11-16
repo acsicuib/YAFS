@@ -86,7 +86,7 @@
         "name": "MESSAGE2",
         "s": "0_1",
         "d": "0_2",
-        "bytes": 10000,
+        "bytes": 20,
         "instructions": 30
       },
       {

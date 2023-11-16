@@ -1,88 +1,78 @@
 from yafs.selection import Selection
+from yafs.topology import *
 import networkx as nx
-from collections import Counter
 
 class DeviceSpeedAwareRouting(Selection):
-
     def __init__(self):
         self.cache = {}
-        self.counter = Counter(list())
-        self.invalid_cache_value = True
-
-        self.controlServices = {}
-        # key: a service
-        # value : a list of idDevices
+        self.invalid_cache_value = -1
+        self.previous_number_of_nodes = -1
         super(DeviceSpeedAwareRouting, self).__init__()
 
-    def compute_BEST_DES(self, node_src, alloc_DES, sim, DES_dst,message):
+
+
+    def compute_DSAR(self, node_src, alloc_DES, sim, DES_dst,message):
         try:
-            bestLong = float('inf')
+            bestSpeed = float('inf')
             minPath = []
             bestDES = []
-            moreDES = []
             #print len(DES_dst)
             for dev in DES_dst:
+                #print "DES :",dev
                 node_dst = alloc_DES[dev]
-                path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst, weight='BW'))
-                long = len(path)
+                path = list(nx.shortest_path(sim.topology.G, source=node_src, target=node_dst))
+                speed = 0
+                for i in range(len(path) - 1):
+                    link = (path[i], path[i + 1])
+                   # print "LINK : ",link
+                   # print " BYTES :", message.bytes
+                    speed += sim.topology.G.edges[link][Topology.LINK_PR] + (message.bytes/sim.topology.G.edges[link][Topology.LINK_BW])
+                    #print sim.topology.G.edges[link][Topology.LINK_BW]
 
-                if long < bestLong:
-                    bestLong = long
+                att_node = sim.topology.get_nodes_att()[path[-1]]
+
+                time_service = message.inst / float(att_node["IPT"])
+                speed += time_service  # HW - computation of last node
+                #print "SPEED: ",speed
+                if  speed < bestSpeed:
+                    bestSpeed = speed
                     minPath = path
                     bestDES = dev
-                    moreDES = []
-                elif long == bestLong:
-                    # Another instance service is deployed in the same node
-                    if len(moreDES)==0:
-                        moreDES.append(bestDES)
-                    moreDES.append(dev)
 
-
-            # There are two or more options in a node: #ROUND ROBIN Schedule
-            if len(moreDES)>0:
-                ### RETURN
-                bestValue = 0
-                minCounter =  float('inf')
-                for idx,service in enumerate(moreDES):
-                    if not service in self.counter:
-                        return minPath, service
-                    else:
-                        if minCounter < self.counter[service]:
-                            minCounter = self.counter
-                            bestValue = idx
-                return minPath, moreDES[bestValue]
-            else:
-                return minPath, bestDES
+            #print bestDES,minPath
+            return minPath, bestDES
 
         except (nx.NetworkXNoPath, nx.NodeNotFound) as e:
             self.logger.warning("There is no path between two nodes: %s - %s " % (node_src, node_dst))
-            # print("Simulation must ends?)"
+            # print "Simulation ends?"
             return [], None
 
     def get_path(self, sim, app_name, message, topology_src, alloc_DES, alloc_module, traffic, from_des):
         node_src = topology_src #entity that sends the message
-        service = message.dst         # Name of the service
+
         DES_dst = alloc_module[app_name][message.dst] #module sw that can serve the message
 
-        #The number of nodes control the updating of the cache. If the number of nodes changes, the cache is totally cleaned.
-        path, des = self.compute_BEST_DES(node_src, alloc_DES, sim, DES_dst,message)
+        #print "Enrouting from SRC: %i  -<->- DES %s"%(node_src,DES_dst)
 
-        try:
-            dc = int(des)
-            self.counter[dc] += 1
-            self.controlServices[(node_src, service)] = (path, des)
-        except TypeError: # The node is not linked with other nodes
-            return [], None
+        #The number of nodes control the updating of the cache. If the number of nodes changes, the cache is totally cleaned.
+        currentNodes = len(sim.topology.G.nodes)
+        if not self.invalid_cache_value == currentNodes:
+            self.invalid_cache_value = currentNodes
+            self.cache = {}
+
+
+        if (node_src,tuple(DES_dst)) not in self.cache.keys():
+            self.cache[node_src,tuple(DES_dst)] = self.compute_DSAR(node_src, alloc_DES, sim, DES_dst,message)
+
+        path, des = self.cache[node_src,tuple(DES_dst)]
 
         return [path], [des]
 
-    def clear_routing_cache(self):
-        self.invalid_cache_value = False
-        self.cache = {}
-        self.counter = Counter(list())
-        self.controlServices = {}
-
     def get_path_from_failure(self, sim, message, link, alloc_DES, alloc_module, traffic, ctime, from_des):
+        # print "Example of enrouting"
+        #print message.path # [86, 242, 160, 164, 130, 301, 281, 216]
+        #print message.dst_int  # 301
+        #print link #(130, 301) link is broken! 301 is unreacheble
 
         idx = message.path.index(link[0])
         #print "IDX: ",idx
@@ -111,5 +101,3 @@ class DeviceSpeedAwareRouting(Selection):
                 return [concPath], des
             else:
                 return [],[]
-
-

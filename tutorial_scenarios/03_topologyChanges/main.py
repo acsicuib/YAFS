@@ -81,7 +81,7 @@ class CustomStrategy():
 
         # logging.info("Activating Custom process - number %i "%self.activations)
         self.activations += 1
-        routing.invalid_cache_value = True # when the topology changes the cache of the Path.routing is outdated.
+        routing.invalid_cache_value = True # when the topology changes the cache of the Path.routing is outdated. //TODO: .
 
         if random.random()<0.7:
         # We create a new node, between two other nodes.
