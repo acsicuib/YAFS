@@ -78,7 +78,7 @@ class JSONPlacement(Placement):
                 idtopo = item["id_resource"]
                 app = sim.apps[app_name]
                 services = app.services
-                idDES = sim.deploy_module(app_name, module, services[module], [idtopo])
+                idDES = sim.deploy_module(app_name, module, services[module],[idtopo])
 
 
 class JSONPlacementOnCloud(Placement):

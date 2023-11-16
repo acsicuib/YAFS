@@ -73,7 +73,7 @@ def main(simulated_time):
 
     sorted_clustMeasure = sorted(centrality.items(), key=operator.itemgetter(1), reverse=True)
 
-    top20_devices = sorted_clustMeasure[:20]
+    top20_devices =  sorted_clustMeasure[:20]
     main_fog_device = copy.copy(top20_devices[0][0])
 
     print("-" * 20)

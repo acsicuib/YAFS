@@ -2,7 +2,6 @@ from yafs.selection import Selection
 import networkx as nx
 from collections import Counter
 
-
 class DeviceSpeedAwareRouting(Selection):
 
     def __init__(self):
@@ -15,7 +14,7 @@ class DeviceSpeedAwareRouting(Selection):
         # value : a list of idDevices
         super(DeviceSpeedAwareRouting, self).__init__()
 
-    def compute_BEST_DES(self, node_src, alloc_DES, sim, DES_dst, message):
+    def compute_BEST_DES(self, node_src, alloc_DES, sim, DES_dst,message):
         try:
             bestLong = float('inf')
             minPath = []
@@ -112,3 +111,5 @@ class DeviceSpeedAwareRouting(Selection):
                 return [concPath], des
             else:
                 return [],[]
+
+

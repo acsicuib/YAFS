@@ -5,11 +5,6 @@
     @author: isaac
 
 """
-# !!!
-import json
-from yafs.application import create_applications_from_json
-
-
 import random
 import networkx as nx
 import argparse
@@ -105,9 +100,7 @@ def main(simulated_time):
     TOPOLOGY from a json
     """
     t = Topology()
-
     t_json = create_json_topology()
-    t_json = json.load(open('C:\\Users\\santo\\OneDrive\\Ambiente de Trabalho\\ES\\YAFS\\Repo\\YAFS\\tutorial_scenarios\\01_basicExample\\data\\network.json'))
     t.load(t_json)
     nx.write_gexf(t.G,folder_results+"graph_main1") # you can export the Graph in multiples format to view in tools like Gephi, and so on.
 
@@ -115,9 +108,6 @@ def main(simulated_time):
     APPLICATION
     """
     app = create_application()
-
-    dataApp = json.load(open('data/appDefinition.json'))
-    apps = create_applications_from_json(dataApp)
 
     """
     PLACEMENT algorithm
