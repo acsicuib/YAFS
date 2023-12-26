@@ -18,7 +18,7 @@ from yafs import Topology
 from playground_functions import myConfig
 
 debug_mode = False
-windows_mode = False # for Unix set to False
+windows_mode = True # for Unix set to False
 
 def linear_graph(size):
     g = nx.DiGraph()

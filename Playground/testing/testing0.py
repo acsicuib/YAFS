@@ -230,3 +230,5 @@ if __name__ == '__main__':
 
     print("The app0 is deployed in the folling nodes: %s"%np.unique(dfapp["TOPO.dst"]))
     print("The number of instances of App0 deployed is: %s"%np.unique(dfapp["DES.dst"]))
+
+# teste
