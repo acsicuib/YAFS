@@ -32,8 +32,8 @@ from yafs.distribution import deterministic_distribution
 from yafs.path_routing import DeviceSpeedAwareRouting
 
 
-# NUMBER_OF_APPS = 10
-NUMBER_OF_NODES = 15
+
+# NUMBER_OF_NODES = 15
 
 def append_results(it, path):
     if it == 0:
@@ -84,6 +84,7 @@ def sum_mods_per_node(placement, nodes):
 #
 #     total_mods_per_node[algorithm] += list(mods_per_node.values())
 def append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, data_network, total_mods_cloud, avg_mods_per_tier_node):
+    print(NUMBER_OF_NODES)
     mods_per_node = dict()
     temp_tier = {}
     for i in range(NUMBER_OF_NODES+1):
@@ -97,6 +98,7 @@ def append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_wit
 
 
     for dt in placement.data['initialAllocation']:
+        mods_per_node[int(dt['id_resource'])]
         mods_per_node[int(dt['id_resource'])][0] += 1
         mods_per_node[int(dt['id_resource'])][1] = max([node['tier'] if node['id'] == dt['id_resource'] else -1 for node in data_network['entity']])
     for element in mods_per_node.values():
@@ -123,6 +125,9 @@ def main(stop_time, it, folder_results,folder_data_processing, algorithm, seed, 
     random.seed(seed)
     conf = myConfig.myConfig()
     exp_conf = eg.ExperimentConfiguration(conf, lpath=os.path.dirname(__file__))
+    global NUMBER_OF_NODES
+    NUMBER_OF_NODES = exp_conf.loadNetworkConfiguration(conf.myConfiguration)
+
 
     random.seed(seed)
     exp_conf.app_generation(app_struct='linear')
@@ -320,7 +325,7 @@ if __name__ == '__main__':
     folder_data_processing.mkdir(parents=True, exist_ok=True)
     folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
 
-    nIterations = 50# iteration for each experiment
+    nIterations = 1# iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
