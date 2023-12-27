@@ -7,7 +7,7 @@ class myConfig:
 
         self.graphicTerminal = True
         self.verbose_log = False
-        self.myConfiguration = 'small'
+        self.myConfiguration = 'large'
         self.resultFolder = 'data'
 
         try:

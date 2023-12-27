@@ -10,6 +10,7 @@ from math import floor
 import matplotlib.pyplot as plt
 import copy
 import heapq
+from community import community_louvain
 
 import operator
 import json
@@ -1472,17 +1473,28 @@ class ExperimentConfiguration:
             # Numero maximo de nodes que uma app tem
             max_mods = max([len(app['module']) for app in self.appJson])
 
-            comms = nx.community.louvain_communities(self.G, resolution=resolution, weight='PR')
-            temp_comms = list()
+            best_partition = community_louvain.best_partition(self.G)
+            del best_partition[self.cloudId]
+            comms = dict()
 
-            # Divide-se a rede até alguma community ter #nodes <= max_mods, ficando com a da interação anterior
-            while max([len(comm) for comm in comms]) >= max_mods:
-                temp_comms = comms.copy()
-                resolution += 1
-                comms = nx.community.louvain_communities(self.G, resolution=resolution, weight='PR')
+            for node, community in best_partition.items():
+                if community not in comms:
+                    comms[community] = set()
+                comms[community].add(node)
 
-            if len(temp_comms) != 0:
-                comms = temp_comms
+            comms = list(comms.values())
+            # comms = nx.community.louvain_communities(self.G, resolution=resolution, weight='PR')
+            #
+            # temp_comms = list()
+            #
+            # # Divide-se a rede até alguma community ter #nodes <= max_mods, ficando com a da interação anterior
+            # while max([len(comm) for comm in comms]) >= max_mods:
+            #     temp_comms = comms.copy()
+            #     resolution += 1
+            #     comms = nx.community.louvain_communities(self.G, resolution=resolution, weight='PR')
+            #
+            # if len(temp_comms) != 0:
+            #     comms = temp_comms
 
         comms_nr = len(comms)
 

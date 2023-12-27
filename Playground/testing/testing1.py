@@ -19,6 +19,7 @@ import pandas as pd
 import numpy as np
 
 # Meus imports
+import plots_concatenator
 from playground_functions import data_analysis
 from playground_functions import environment_generation as eg, myConfig
 from playground_functions.routing_algorithms import MaxBW, MaxBW_Root
@@ -34,6 +35,21 @@ from yafs.path_routing import DeviceSpeedAwareRouting
 
 
 # NUMBER_OF_NODES = 15
+
+def delete_files_in_folder(folder_path):
+    # Check if the folder exists
+    if not os.path.exists(folder_path):
+        print("Folder does not exist:", folder_path)
+        return
+
+    # Iterate over all files in the folder
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+
+        # Check if it's a file and not a directory
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+            print(f"Deleted {filename}")
 
 def append_results(it, path):
     if it == 0:
@@ -84,7 +100,6 @@ def sum_mods_per_node(placement, nodes):
 #
 #     total_mods_per_node[algorithm] += list(mods_per_node.values())
 def append_mods_per_node(placement, total_mods_per_node, total_mods_per_node_with_node_id, data_network, total_mods_cloud, avg_mods_per_tier_node):
-    print(NUMBER_OF_NODES)
     mods_per_node = dict()
     temp_tier = {}
     for i in range(NUMBER_OF_NODES+1):
@@ -317,6 +332,8 @@ if __name__ == '__main__':
     # LOGGING_CONFIG = Path(__file__).parent / 'logging.ini'
     # logging.config.fileConfig(LOGGING_CONFIG)
 
+    delete_files_in_folder("data_analysis")
+
     folder_results = Path("results")
     folder_results.mkdir(parents=True, exist_ok=True)
     folder_results = str(folder_results) + '/'  # TODO bool
@@ -325,7 +342,7 @@ if __name__ == '__main__':
     folder_data_processing.mkdir(parents=True, exist_ok=True)
     folder_data_processing = str(folder_data_processing) + '/'  # TODO bool
 
-    nIterations = 1# iteration for each experiment
+    nIterations = 50# iteration for each experiment
     simulationDuration = 20000
 
     god_tier_seed = 15612357
@@ -362,7 +379,9 @@ if __name__ == '__main__':
     list_for_app1st = ['greedy_latency_app1st', 'greedy_FRAM_app1st','near_GW_BW_PR_app1st', 'near_GW_PR_app1st', 'near_GW_BW_app1st']
     list_for_communities = ['RR_IPT_placement']
 
+
     algorithm_list= list_for_communities + list_for_mod1st
+    # algorithm_list = list_for_communities
 
 
     # for algorithm in algorithm_list:
@@ -412,3 +431,4 @@ if __name__ == '__main__':
     # modules distribution in cloud
     data_analysis.plot_number_modules_in_cloud(total_mods_cloud, nIterations)
     # data_analysis.plot_number_modules_in_cloud(total_mods_cloud, nIterations)
+    plots_concatenator.concatenate_images('collection.png')
