@@ -1,0 +1,10 @@
+!.gitignore
+.gitconfig
+*.log
+**/__pycache__/
+*.pyc
+!.vscode/settings.json
+!.vscode/launch.json
+build/
+src/yafs.egg-info/
+

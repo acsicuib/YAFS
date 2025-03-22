@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="Wikiloc - http://www.wikiloc.com" version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <trk>
+    <name>Ibiza - Campo de tiro</name>
+    <cmt></cmt>
+    <desc></desc>
+    <trkseg>
+      <trkpt lat="38.913618" lon="1.430079">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:04:30Z</time>
+      </trkpt>
+      <trkpt lat="38.912082" lon="1.434048">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:05:50Z</time>
+      </trkpt>
+      <trkpt lat="38.916498" lon="1.437042">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:07:10Z</time>
+      </trkpt>
+      <trkpt lat="38.917099" lon="1.438630">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:08:30Z</time>
+      </trkpt>
+      <trkpt lat="38.918076" lon="1.441709">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:09:50Z</time>
+      </trkpt>
+      <trkpt lat="38.921552" lon="1.443999">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:11:10Z</time>
+      </trkpt>
+      <trkpt lat="38.923877" lon="1.448323">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:12:30Z</time>
+      </trkpt>
+      <trkpt lat="38.924436" lon="1.450431">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:13:50Z</time>
+      </trkpt>
+      <trkpt lat="38.924657" lon="1.454160">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:15:10Z</time>
+      </trkpt>
+      <trkpt lat="38.921999" lon="1.455222">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:16:30Z</time>
+      </trkpt>
+      <trkpt lat="38.920843" lon="1.458076">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:17:50Z</time>
+      </trkpt>
+      <trkpt lat="38.919966" lon="1.460195">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:19:10Z</time>
+      </trkpt>
+      <trkpt lat="38.918042" lon="1.463488">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:20:30Z</time>
+      </trkpt>
+      <trkpt lat="38.918101" lon="1.466117">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:21:50Z</time>
+      </trkpt>
+      <trkpt lat="38.917625" lon="1.468794">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:23:10Z</time>
+      </trkpt>
+      <trkpt lat="38.916473" lon="1.469861">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:24:30Z</time>
+      </trkpt>
+      <trkpt lat="38.914352" lon="1.470387">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:25:50Z</time>
+      </trkpt>
+      <trkpt lat="38.913543" lon="1.471739">
+        <ele>0.0</ele>
+        <time>2015-07-08T12:27:10Z</time>
+      </trkpt>
+    </trkseg>
+  </trk></gpx>

@@ -1,0 +1,27 @@
+{
+  "sources": [
+    {
+      "id_resource": 0,
+      "entity": 6711313,
+      "distribution":"exponential_distribution",
+      "args":{
+        "lambd": 100
+
+      },
+      "app": "2",
+      "message": "M.USER.APP.2"
+    },
+     {
+      "id_resource": 0,
+      "entity": 636798,
+      "distribution":"exponential_distribution",
+      "args":{
+        "lambd": 100
+
+      },
+      "app": "2",
+      "message": "M.USER.APP.2"
+    }
+  ]
+}
+

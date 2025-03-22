@@ -1,0 +1,29 @@
+{
+  "initialAllocation": [
+    {
+      "module_name": "14_80",
+      "app": "14",
+      "id_resource": 835
+    },
+    {
+      "module_name": "14_76",
+      "app": "14",
+      "id_resource": 835
+    },
+    {
+      "module_name": "14_77",
+      "app": "14",
+      "id_resource": 835
+    },
+    {
+      "module_name": "14_78",
+      "app": "14",
+      "id_resource": 835
+    },
+    {
+      "module_name": "14_79",
+      "app": "14",
+      "id_resource": 835
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "initialAllocation": [
+    {
+      "module_name": "2_19",
+      "app": "2",
+      "id_resource":45
+    },
+    {
+      "module_name": "3_22",
+      "app": "3",
+      "id_resource": 45
+    }
+  ]
+}

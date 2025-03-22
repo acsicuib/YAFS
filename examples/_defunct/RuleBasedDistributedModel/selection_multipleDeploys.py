@@ -63,7 +63,7 @@ class DeviceSpeedAwareRouting(Selection):
         return [path], [des]
 
     def get_path_from_failure(self, sim, message, link, alloc_DES, alloc_module, traffic, ctime, from_des):
-        # print("Example of enrouting")
+        # print("example of enrouting")
         #print(message.path # [86, 242, 160, 164, 130, 301, 281, 216])
         #print(message.dst_int  # 301)
         #print(link #(130, 301) link is broken! 301 is unreacheble)
