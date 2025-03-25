@@ -1,7 +1,7 @@
 import json
 import random
 
-def generate_random_tasks(num_apps=1, tasks_per_app=2, filename='data/appDefinition.json'):
+def generate_random_tasks(num_apps=2, tasks_per_app=2, filename='data/appDefinition.json'):
     apps = []
     task_id_counter = 0
     message_id_counter = 0

@@ -5,6 +5,12 @@
       "app": "0",
       "message": "M.USER.APP.0.0",
       "lambda": 200
+    },
+    {
+      "id_resource": 2,
+      "app": "1",
+      "message": "M.USER.APP.1.0",
+      "lambda": 200
     }
   ]
 }

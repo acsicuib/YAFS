@@ -100,8 +100,7 @@ if __name__ == '__main__':
         logging.info("Running experiment it: - %i" % iteration)
 
         start_time = time.time()
-        main(stop_time=simulationDuration,
-             it=iteration, folder_results=folder_results)
+        main(stop_time=simulationDuration, it=iteration, folder_results=folder_results)
 
         print("\n--- %s seconds ---" % (time.time() - start_time))
 

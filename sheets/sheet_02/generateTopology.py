@@ -3,6 +3,18 @@ import random
 import json
 import matplotlib.pyplot as plt
 
+def estimate_cost(device_type, RAM):
+    if device_type == 'CLOUD':
+        # Base cost for 4GB RAM cloud instance: ~$0.0416/hour
+        return round(0.0416 * (RAM / 4), 4)
+    elif device_type == 'FOG':
+        # Assume 70% of cloud cost
+        return round(0.0416 * (RAM / 4) * 0.7, 4)
+    elif device_type == 'EDGE':
+        # Assume 35% of cloud cost
+        return round(0.0416 * (RAM / 4) * 0.35, 4)
+    return 0.0
+
 def generate_cloud_fog_edge_network(cloud_count, fog_count, edge_count, filename='data/network.json'):
     G = nx.Graph()
 
@@ -12,10 +24,9 @@ def generate_cloud_fog_edge_network(cloud_count, fog_count, edge_count, filename
     node_colors = []
 
     # Add cloud nodes
-    # AWS EC2 instance types (t3.xlarge, t3.2xlarge, m5.4xlarge)
     cloud_specs = [
         {'RAM': 16, 'HD': 20, 'IPT': 4},  # t3.xlarge
-        {'RAM': 32, 'HD': 40, 'IPT': 8},  # t3.2xlarge 
+        {'RAM': 32, 'HD': 40, 'IPT': 8},  # t3.2xlarge
         {'RAM': 64, 'HD': 100, 'IPT': 16}  # m5.4xlarge
     ]
     for _ in range(cloud_count):
@@ -28,7 +39,8 @@ def generate_cloud_fog_edge_network(cloud_count, fog_count, edge_count, filename
 
     # Add fog nodes
     for _ in range(fog_count):
-        G.add_node(node_id, RAM=random.randint(16, 32), HD=1, IPT=1, type='FOG')
+        RAM = random.randint(16, 32)
+        G.add_node(node_id, RAM=RAM, HD=1, IPT=1, type='FOG')
         node_mapping[f'fog_{node_id}'] = node_id
         node_positions[node_id] = (random.uniform(0.2, 0.8), 0.5)
         node_colors.append('blue')
@@ -36,7 +48,8 @@ def generate_cloud_fog_edge_network(cloud_count, fog_count, edge_count, filename
 
     # Add edge nodes
     for _ in range(edge_count):
-        G.add_node(node_id, RAM=random.randint(4, 16), HD=1, IPT=1, type='EDGE')
+        RAM = random.randint(4, 16)
+        G.add_node(node_id, RAM=RAM, HD=1, IPT=1, type='EDGE')
         node_mapping[f'edge_{node_id}'] = node_id
         node_positions[node_id] = (random.uniform(0, 1), 0)
         node_colors.append('green')
@@ -62,12 +75,14 @@ def generate_cloud_fog_edge_network(cloud_count, fog_count, edge_count, filename
 
     entities = []
     for node, data in G.nodes(data=True):
+        cost = estimate_cost(data['type'], data['RAM'])
         entity = {
             'id': node,
             'RAM': data['RAM'],
             'HD': data['HD'],
             'IPT': data['IPT'],
-            'type': data['type']
+            'type': data['type'],
+            'cost_per_hour': cost
         }
         entities.append(entity)
 
@@ -85,5 +100,5 @@ def generate_cloud_fog_edge_network(cloud_count, fog_count, edge_count, filename
     nx.draw(G, pos=node_positions, with_labels=True, node_color=node_colors, node_size=500)
 
 
-# example usage
+# Example usage
 generate_cloud_fog_edge_network(cloud_count=1, fog_count=1, edge_count=3)
