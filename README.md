@@ -1,7 +1,10 @@
-> [!NOTE]
+> [!CAUTION]
 > There is an enhanced version of the simulator available called **YAIFS**. 
 > It features several improvements and a unified API with full compatibility with YAFS.
 > Check it out at: [YAIFS](https://github.com/acsicuib/YAIFS)
+
+----------------------------------------
+----------------------------------------
 
 ![YAFS logo](https://github.com/acsicuib/YAFS/raw/master/docs/_static/yafs_logo.png)
 
